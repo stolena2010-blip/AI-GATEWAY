@@ -18,7 +18,8 @@
 param(
     [string]$Branch = "main",
     [switch]$SkipRestart,
-    [switch]$ForceRequirements
+    [switch]$ForceRequirements,
+    [string]$ExpectedOrigin = "https://github.com/stolena2010-blip/drawingAIALGAT.git"
 )
 
 $ErrorActionPreference = "Stop"
@@ -65,6 +66,19 @@ Write-Host "  ✓ Backup saved to $backupDir" -ForegroundColor Green
 
 # ── 3. Pull latest code ──────────────────────────────────────────────
 Write-Host "[3/5] Pulling latest from GitHub ($Branch)..." -ForegroundColor Yellow
+
+# Warn if this server folder points at an unexpected remote repository.
+$originUrl = git remote get-url origin 2>$null
+if ($originUrl) {
+    $normalizedOrigin = $originUrl.Trim().ToLower().TrimEnd('.git')
+    $normalizedExpected = $ExpectedOrigin.Trim().ToLower().TrimEnd('.git')
+    if ($normalizedOrigin -ne $normalizedExpected) {
+        Write-Host "  ⚠ WARNING: origin remote does not match expected repo" -ForegroundColor Yellow
+        Write-Host "    origin:   $originUrl" -ForegroundColor Yellow
+        Write-Host "    expected: $ExpectedOrigin" -ForegroundColor Yellow
+        Write-Host "    Continuing update, but verify this server points to the correct project repo." -ForegroundColor Yellow
+    }
+}
 
 # Save current commit for comparison
 $oldCommit = git rev-parse HEAD 2>$null

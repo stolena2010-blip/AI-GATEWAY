@@ -67,7 +67,7 @@
     "8": "gpt-5.4",
     "9": "o4-mini"
   },
-  "scheduler_enabled": true,
+  "scheduler_enabled": false,
   "scheduler_regular_from": "07:00",
   "scheduler_regular_to": "19:45",
   "scheduler_heavy_from": "20:00",

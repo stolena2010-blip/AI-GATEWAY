@@ -25,9 +25,15 @@
 
 ### אפשרות א' — Clone מ-GitHub (מומלץ)
 ```powershell
-git clone https://github.com/stolena2010-blip/DRAW-ANALIZER.git C:\DrawingAI
+git clone https://github.com/stolena2010-blip/drawingAIALGAT.git C:\DrawingAI
 cd C:\DrawingAI
 ```
+
+### זרימת עבודה רשמית (DEV -> SERVER)
+1. פיתוח ושינויים מתבצעים ב-`C:\DEV DRAWAI` (זהו ה-Repo הקנוני).
+2. מעלים את השינויים ל-GitHub מה-DEV בלבד.
+3. בשרת `C:\DrawingAI` מריצים `deploy\update.ps1` כדי למשוך את השינויים.
+4. לא מבצעים פיתוח ישיר בשרת, למעט קונפיגורציה מקומית (`.env`, `automation_config.json`).
 
 ### אפשרות ב' — העתקה ידנית
 העתיקי את **כל** התיקיות והקבצים הבאים:
@@ -85,7 +91,7 @@ status_log.txt                 ← ייווצר אוטומטית
 
 ```powershell
 cd C:\DrawingAI\deploy
-.\install_server.ps1 -GitHubRepo "https://github.com/stolena2010-blip/DRAW-ANALIZER.git"
+.\install_server.ps1 -GitHubRepo "https://github.com/stolena2010-blip/drawingAIALGAT.git"
 ```
 
 הסקריפט:

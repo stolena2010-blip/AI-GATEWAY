@@ -13,7 +13,7 @@
 
 .EXAMPLE
     # Open PowerShell as Administrator on the server, then:
-    .\install_server.ps1 -GitHubRepo "https://github.com/YOUR_USER/AI-DRAW.git"
+    .\install_server.ps1 -GitHubRepo "https://github.com/stolena2010-blip/drawingAIALGAT.git"
 #>
 
 param(
