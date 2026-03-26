@@ -32,7 +32,7 @@ st.markdown(BRAND_CSS, unsafe_allow_html=True)
 sidebar_logo()
 # Extra page-specific styles handled by brand.py BRAND_CSS
 
-st.html(brand_header("דשבורד — DrawingAI Pro"))
+st.html(brand_header("DASHBOARD — DrawingAI Pro"))
 
 # ═══════  PERIOD FILTER BAR  ═══════
 filter_cols = st.columns([2, 1, 1, 1])
