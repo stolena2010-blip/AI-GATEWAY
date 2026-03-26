@@ -539,26 +539,6 @@ with tab_accuracy:
     pl_cols[1].metric("📧 מיילים עם PL", emails_with_pl)
     pl_cols[2].metric("📊 אחוז תיקון", f"{pl_pct:.1f}%")
 
-    # --- Top Errors ---
-    error_counter = Counter()
-    for e in email_entries:
-        for err in (e.get("error_types") or []):
-            error_counter[err] += 1
-
-    if error_counter:
-        st.markdown("")
-        st.subheader("⚠️ שגיאות נפוצות")
-        error_labels = {
-            "missing_part_number": "חסר מספר פריט",
-            "low_confidence": "ביטחון נמוך",
-            "api_error": "שגיאת API",
-            "timeout": "חריגת זמן",
-        }
-        for err, cnt in error_counter.most_common(5):
-            label = error_labels.get(err, err)
-            st.markdown(f"- **{label}**: {cnt}")
-
-
 # ╔═══════════════════════════════════════════════╗
 # ║  TAB 2: EFFICIENCY                            ║
 # ╚═══════════════════════════════════════════════╝
