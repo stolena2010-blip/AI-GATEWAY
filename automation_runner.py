@@ -143,6 +143,60 @@ def _now_iso() -> str:
     return datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
 
 
+# Keep enough processed-message keys to survive long running periods.
+MAX_PROCESSED_KEYS_PER_MAILBOX = 20_000
+
+
+def _message_identity_keys(message: Dict[str, Any]) -> List[str]:
+    """Build stable dedup keys for a message.
+
+    Graph `id` can occasionally change; `internetMessageId` is usually stable.
+    We keep both plus a lightweight fingerprint fallback.
+    """
+    keys: List[str] = []
+    msg_id = str(message.get("id") or "").strip()
+    if msg_id:
+        keys.append(msg_id)  # backward compatibility with existing state
+        keys.append(f"id:{msg_id}")
+
+    internet_id = str(message.get("internetMessageId") or "").strip()
+    if internet_id:
+        keys.append(f"imid:{internet_id.lower()}")
+
+    sender = (
+        str(
+            message.get("from", {})
+            .get("emailAddress", {})
+            .get("address", "")
+        )
+        .strip()
+        .lower()
+    )
+    received = str(message.get("receivedDateTime") or "").strip()
+    subject = str(message.get("subject") or "").strip().lower()
+    if sender and received and subject:
+        keys.append(f"fp:{sender}|{received}|{subject}")
+
+    # Preserve order while removing duplicates.
+    seen = set()
+    ordered: List[str] = []
+    for key in keys:
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        ordered.append(key)
+    return ordered
+
+
+def _is_message_processed(message: Dict[str, Any], processed_keys: set) -> bool:
+    return any(key in processed_keys for key in _message_identity_keys(message))
+
+
+def _mark_message_processed(processed_keys: set, message: Dict[str, Any]) -> None:
+    for key in _message_identity_keys(message):
+        processed_keys.add(key)
+
+
 
 # File renaming is now handled in customer_extractor_v3_dual.py via _copy_folder_to_tosend()
 
@@ -600,7 +654,7 @@ class AutomationRunner:
                     except Exception:
                         pass
                 
-                mailbox_processed_ids.add(msg_id)
+                _mark_message_processed(mailbox_processed_ids, msg)
                 
                 if cleanup_download:
                     try:
@@ -664,7 +718,10 @@ class AutomationRunner:
         rerun_count = 0
         try:
             rerun_messages = helper.mailbox.list_messages(rerun_folder_id, limit=50, received_after=None)
-            rerun_new = [m for m in rerun_messages if m.get("id") and m.get("id") not in mailbox_processed_ids]
+            rerun_new = [
+                m for m in rerun_messages
+                if m.get("id") and not _is_message_processed(m, mailbox_processed_ids)
+            ]
 
             if not rerun_new:
                 return 0
@@ -704,7 +761,7 @@ class AutomationRunner:
                     except Exception:
                         pass
 
-                mailbox_processed_ids.add(rmsg_id)
+                _mark_message_processed(mailbox_processed_ids, rmsg)
         except Exception as e:
             logger.debug(f"RERUN folder scan error (non-critical): {e}")
 
@@ -1043,7 +1100,7 @@ class AutomationRunner:
                         )
                         if ext_reruns > 0:
                             logger.info(f"🔄 Handled {ext_reruns} RERUN(s) from {rerun_mailbox}")
-                            processed_ids_by_mailbox[rerun_mailbox] = list(rerun_pids)[-5000:]
+                            processed_ids_by_mailbox[rerun_mailbox] = list(rerun_pids)[-MAX_PROCESSED_KEYS_PER_MAILBOX:]
                             state["processed_ids_by_mailbox"] = processed_ids_by_mailbox
                             _save_json(self.state_path, state)
                     else:
@@ -1122,7 +1179,7 @@ class AutomationRunner:
                     if start_reruns > 0:
                         logger.info(f"🔄 Handled {start_reruns} RERUN(s) at cycle start")
                         # Persist immediately so IDs survive a stop
-                        processed_ids_by_mailbox[mailbox] = list(mailbox_processed_ids)[-5000:]
+                        processed_ids_by_mailbox[mailbox] = list(mailbox_processed_ids)[-MAX_PROCESSED_KEYS_PER_MAILBOX:]
                         state["processed_ids_by_mailbox"] = processed_ids_by_mailbox
                         _save_json(self.state_path, state)
 
@@ -1166,7 +1223,10 @@ class AutomationRunner:
                     m.get("receivedDateTime", "")
                 ))
 
-                new_messages = [m for m in messages if m.get("id") and m.get("id") not in mailbox_processed_ids]
+                new_messages = [
+                    m for m in messages
+                    if m.get("id") and not _is_message_processed(m, mailbox_processed_ids)
+                ]
                 logger.info(f"📬 {len(new_messages)} new messages after filtering "
                             f"{len(mailbox_processed_ids)} processed IDs")
                 if not new_messages:
@@ -1181,7 +1241,10 @@ class AutomationRunner:
                         0 if (m.get("from", {}).get("emailAddress", {}).get("address", "") or "").lower() == mailbox.lower() else 1,
                         m.get("receivedDateTime", "")
                     ))
-                    new_messages = [m for m in messages if m.get("id") and m.get("id") not in mailbox_processed_ids]
+                    new_messages = [
+                        m for m in messages
+                        if m.get("id") and not _is_message_processed(m, mailbox_processed_ids)
+                    ]
 
                 if not new_messages:
                     self._status(f"אין מיילים חדשים בתיבה: {mailbox}")
@@ -1204,7 +1267,10 @@ class AutomationRunner:
                     if not new_messages:
                         logger.info(f"🏋️ No heavy emails in initial fetch — retrying without date filter")
                         retry_msgs = helper.mailbox.list_messages(folder_id, limit=limit, received_after=None)
-                        retry_new = [m for m in retry_msgs if m.get("id") and m.get("id") not in mailbox_processed_ids]
+                        retry_new = [
+                            m for m in retry_msgs
+                            if m.get("id") and not _is_message_processed(m, mailbox_processed_ids)
+                        ]
                         new_messages = [
                             m for m in retry_new
                             if heavy_category_name in (m.get("categories") or [])
@@ -1240,9 +1306,9 @@ class AutomationRunner:
                     try:
                         _fresh_state = _load_json(self.state_path, {})
                         _fresh_ids = set(_fresh_state.get("processed_ids_by_mailbox", {}).get(mailbox, []))
-                        if msg_id in _fresh_ids and msg_id not in mailbox_processed_ids:
+                        if _is_message_processed(msg, _fresh_ids) and not _is_message_processed(msg, mailbox_processed_ids):
                             logger.info(f"⏭️ SKIP: msg {msg_id[:8]} was processed by another runner — skipping")
-                            mailbox_processed_ids.add(msg_id)
+                            _mark_message_processed(mailbox_processed_ids, msg)
                             continue
                     except Exception:
                         pass
@@ -1265,7 +1331,7 @@ class AutomationRunner:
                                 helper.mark_message_processed(msg_id, "AI SKIPPED")
                             except Exception:
                                 pass
-                        mailbox_processed_ids.add(msg_id)
+                        _mark_message_processed(mailbox_processed_ids, msg)
                         continue
                     # ═══ END SKIP SENDERS ═══
 
@@ -1283,7 +1349,7 @@ class AutomationRunner:
                                 "categories": sorted(matched_cats),
                                 "timestamp": _now_iso()
                             })
-                            mailbox_processed_ids.add(msg_id)
+                            _mark_message_processed(mailbox_processed_ids, msg)
                             continue
                     # ═══ END SKIP BY CATEGORY ═══
 
@@ -1301,7 +1367,7 @@ class AutomationRunner:
                     is_rerun = msg_sender == mailbox.lower().strip()
                     if is_rerun:
                         logger.info(f"⏭️ SKIP: sender is ourselves ({msg_sender}) — ignoring in inbox (use RERUN folder)")
-                        mailbox_processed_ids.add(msg_id)
+                        _mark_message_processed(mailbox_processed_ids, msg)
                         if mark_as_processed:
                             try:
                                 helper.ensure_category("AI RERUN", "preset9")
@@ -1328,7 +1394,7 @@ class AutomationRunner:
                                 logger.info(f"📭 Marked as '{nodraw_category_name}' (no attachments)")
                             except Exception:
                                 pass
-                        mailbox_processed_ids.add(msg_id)
+                        _mark_message_processed(mailbox_processed_ids, msg)
                         continue
                     # ═══ END SKIP NO ATTACHMENTS ═══
 
@@ -1403,7 +1469,7 @@ class AutomationRunner:
                                     shutil.rmtree(run_dir)
                             except Exception:
                                 pass
-                        mailbox_processed_ids.add(msg_id)
+                        _mark_message_processed(mailbox_processed_ids, msg)
                         _append_log(log_path, {
                             "event": "no_draw_skipped",
                             "message_id": msg_id,
@@ -1803,18 +1869,18 @@ class AutomationRunner:
                             logger.debug(f"Ignored: {e}")
                             pass
 
-                    mailbox_processed_ids.add(msg_id)
+                    _mark_message_processed(mailbox_processed_ids, msg)
                     # Update the dict BEFORE building state — otherwise per-message save writes empty state
                     processed_ids_by_mailbox[mailbox] = mailbox_processed_ids
                     state["processed_ids_by_mailbox"] = {
-                        k: list(v)[-5000:] if isinstance(v, set) else v[-5000:]
+                        k: list(v)[-MAX_PROCESSED_KEYS_PER_MAILBOX:] if isinstance(v, set) else v[-MAX_PROCESSED_KEYS_PER_MAILBOX:]
                         for k, v in processed_ids_by_mailbox.items()
                     }
                     state["last_checked_by_mailbox"] = last_checked_by_mailbox
                     combined = set()
                     for ids_list in processed_ids_by_mailbox.values():
                         combined.update(ids_list if isinstance(ids_list, set) else set(ids_list))
-                    state["processed_ids"] = list(combined)[-5000:]
+                    state["processed_ids"] = list(combined)[-MAX_PROCESSED_KEYS_PER_MAILBOX:]
                     _save_json(self.state_path, state)
                     logger.info(f"\U0001f4e7 Mail processed & saved: {msg_id[:20]}... (total: {len(mailbox_processed_ids)})")
 
@@ -1840,7 +1906,7 @@ class AutomationRunner:
                                 )
                                 if folder_reruns > 0:
                                     logger.info(f"🔄 Handled {folder_reruns} RERUN(s) between emails (separate mailbox)")
-                                    processed_ids_by_mailbox[rerun_mailbox] = list(rerun_pids_mid)[-5000:]
+                                    processed_ids_by_mailbox[rerun_mailbox] = list(rerun_pids_mid)[-MAX_PROCESSED_KEYS_PER_MAILBOX:]
                                     state["processed_ids_by_mailbox"] = processed_ids_by_mailbox
                                     _save_json(self.state_path, state)
                             else:
@@ -1855,7 +1921,7 @@ class AutomationRunner:
                                 )
                                 if folder_reruns > 0:
                                     logger.info(f"🔄 Handled {folder_reruns} RERUN(s) between emails (folder)")
-                                    processed_ids_by_mailbox[mailbox] = list(mailbox_processed_ids)[-5000:]
+                                    processed_ids_by_mailbox[mailbox] = list(mailbox_processed_ids)[-MAX_PROCESSED_KEYS_PER_MAILBOX:]
                                     state["processed_ids_by_mailbox"] = processed_ids_by_mailbox
                                     _save_json(self.state_path, state)
                         except Exception as e:
@@ -1880,7 +1946,7 @@ class AutomationRunner:
                             )
                             if end_reruns > 0:
                                 logger.info(f"🔄 Handled {end_reruns} RERUN(s) at cycle end (separate mailbox)")
-                                processed_ids_by_mailbox[rerun_mailbox] = list(rerun_pids_end)[-5000:]
+                                processed_ids_by_mailbox[rerun_mailbox] = list(rerun_pids_end)[-MAX_PROCESSED_KEYS_PER_MAILBOX:]
                                 state["processed_ids_by_mailbox"] = processed_ids_by_mailbox
                                 _save_json(self.state_path, state)
                         except Exception as e:
@@ -1897,11 +1963,11 @@ class AutomationRunner:
                         )
                         if end_reruns > 0:
                             logger.info(f"🔄 Handled {end_reruns} RERUN(s) at cycle end")
-                            processed_ids_by_mailbox[mailbox] = list(mailbox_processed_ids)[-5000:]
+                            processed_ids_by_mailbox[mailbox] = list(mailbox_processed_ids)[-MAX_PROCESSED_KEYS_PER_MAILBOX:]
                             state["processed_ids_by_mailbox"] = processed_ids_by_mailbox
                             _save_json(self.state_path, state)
 
-                processed_ids_by_mailbox[mailbox] = list(mailbox_processed_ids)[-5000:]
+                processed_ids_by_mailbox[mailbox] = list(mailbox_processed_ids)[-MAX_PROCESSED_KEYS_PER_MAILBOX:]
                 # Use the fetch timestamp (when list_messages was called), NOT current time.
                 # This prevents the gap: emails arriving during hours-long processing
                 # would be behind _now_iso() but after fetch_timestamp.
@@ -1926,7 +1992,7 @@ class AutomationRunner:
 
             state["processed_ids_by_mailbox"] = processed_ids_by_mailbox
             state["last_checked_by_mailbox"] = last_checked_by_mailbox
-            state["processed_ids"] = list(combined_processed_ids)[-5000:]
+            state["processed_ids"] = list(combined_processed_ids)[-MAX_PROCESSED_KEYS_PER_MAILBOX:]
             state["last_checked"] = _now_iso()
             _save_json(self.state_path, state)
 

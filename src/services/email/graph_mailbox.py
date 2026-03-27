@@ -427,7 +427,7 @@ class GraphMailboxConnector:
             
             params = {
                 "$top": limit,
-                "$select": "id,subject,from,receivedDateTime,hasAttachments,bodyPreview,webLink,categories",
+                "$select": "id,internetMessageId,subject,from,receivedDateTime,hasAttachments,bodyPreview,webLink,categories",
                 "$expand": "attachments($select=id)"
             }
             
