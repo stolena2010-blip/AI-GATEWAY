@@ -1,0 +1,30 @@
+# CI-only dependencies (no GUI, headless OpenCV)
+# Mirrors requirements.txt minus customtkinter/streamlit + uses headless opencv
+
+# Azure OpenAI
+openai>=1.12.0
+msal>=1.26.0
+
+# Data Processing
+pandas>=2.0.0
+numpy>=1.24.0
+openpyxl>=3.1.0
+xlrd>=2.0.0
+
+# PDF Processing
+pdfplumber>=0.9.0
+
+# Image Processing & OCR (headless for CI)
+opencv-python-headless>=4.8.0
+Pillow>=10.0.0
+pytesseract>=0.3.10
+
+# Environment & Config
+python-dotenv>=1.0.0
+filelock>=3.13.0
+
+# HTTP
+requests>=2.31.0
+
+# Testing
+pytest>=7.4.0
