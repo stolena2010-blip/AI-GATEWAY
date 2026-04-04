@@ -433,3 +433,26 @@
 [11:48:50]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 5,112 in / 121 out | cost=$0.0146
 [11:48:55]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 1,865 in / 21 out | cost=$0.0050
 [11:48:59]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 1,958 in / 12 out | cost=$0.0050
+12:30:03 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 211 chars
+12:30:06 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 1020 chars
+12:30:10 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: md-c1324-2090-e_sheet1_a
+12:30:10 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[12:30:15]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,827 in / 76 out | cost=$0.0082
+12:30:15 │ src.services.extraction.ocr_engine   │ INFO │ Stage 1B: IAI Top Red Header OCR Fallback
+12:30:16 │ src.services.extraction.ocr_engine   │ INFO │ IAI fallback: regular attempts did not provide part/drawing. Trying top red header...
+12:30:16 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[12:30:20]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 3,112 in / 68 out | cost=$0.0088
+[12:30:26]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 5,112 in / 125 out | cost=$0.0147
+[12:30:30]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 1,865 in / 21 out | cost=$0.0050
+[12:30:35]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 1,958 in / 12 out | cost=$0.0050
+12:32:03 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 10596x6548 → 6967x4305 (69M → 30M px)
+12:32:04 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 362 chars
+12:32:12 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 6623x4678 → 6517x4603 (31M → 30M px)
+12:32:14 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 3229 chars
+12:32:18 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: 1040n451-001_pdf_3ku03qab11m1h_stamped
+12:32:18 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[12:32:24]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,946 in / 56 out | cost=$0.0082
+12:32:24 │ src.services.extraction.ocr_engine   │ INFO │ SUCCESS on attempt 1 for '1040n451-001_pdf_3ku03qab11m1h_stamped' with confidence 'high'
+[12:32:31]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 7,184 in / 283 out | cost=$0.0222
+[12:32:42]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 3,937 in / 745 out | cost=$0.0210
+[12:32:47]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 4,030 in / 11 out | cost=$0.0102

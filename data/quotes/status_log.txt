@@ -764,3 +764,1417 @@
 [11:49:36] הסבב הושלם בהצלחה
 11:49:38 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
 [11:49:38] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+11:54:39 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+11:54:39 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+11:54:39 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+11:54:39 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+11:54:39 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+11:54:39 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+11:54:39 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+11:54:39 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+11:54:39 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+11:54:39 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+11:54:39 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+11:54:39 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+11:54:39 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+11:54:39 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[11:54:40] 🔐 Requesting access token for Graph API...
+[11:54:40] ✅ Access token received (valid until 12:54:39)
+11:54:41 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[11:54:51] 🔐 Requesting access token for Graph API...
+[11:54:51] ✅ Access token received (valid until 12:54:50)
+11:54:52 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+11:55:12 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 08:45:01+00:00, fetch_ts=2026-04-04T08:55:11Z)
+11:55:12 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2400 processed IDs
+[11:55:12] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[11:55:13] אין מיילים חדשים בתיבה: tal@chrom.co.il
+11:55:24 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2815 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2400}
+[11:55:24] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+11:55:25 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[11:55:25] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+12:00:26 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+12:00:26 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+12:00:26 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+12:00:26 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+12:00:26 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+12:00:26 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+12:00:26 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+12:00:26 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+12:00:26 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+12:00:26 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+12:00:26 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+12:00:26 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+12:00:26 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+12:00:26 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[12:00:27] 🔐 Requesting access token for Graph API...
+[12:00:27] ✅ Access token received (valid until 13:00:26)
+12:00:28 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[12:00:39] 🔐 Requesting access token for Graph API...
+[12:00:39] ✅ Access token received (valid until 13:00:38)
+12:00:39 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+12:00:59 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 08:52:11+00:00, fetch_ts=2026-04-04T09:00:59Z)
+12:00:59 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2400 processed IDs
+[12:00:59] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[12:01:00] אין מיילים חדשים בתיבה: tal@chrom.co.il
+12:01:10 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2815 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2400}
+[12:01:10] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+12:01:11 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[12:01:11] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+12:06:13 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+12:06:13 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+12:06:13 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+12:06:13 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+12:06:13 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+12:06:13 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+12:06:13 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+12:06:13 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+12:06:13 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+12:06:13 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+12:06:13 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+12:06:13 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+12:06:13 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+12:06:13 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[12:06:14] 🔐 Requesting access token for Graph API...
+[12:06:14] ✅ Access token received (valid until 13:06:13)
+12:06:15 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[12:06:25] 🔐 Requesting access token for Graph API...
+[12:06:25] ✅ Access token received (valid until 13:06:24)
+12:06:26 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+12:06:45 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 08:57:59+00:00, fetch_ts=2026-04-04T09:06:45Z)
+12:06:45 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2400 processed IDs
+[12:06:45] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[12:06:46] אין מיילים חדשים בתיבה: tal@chrom.co.il
+12:06:55 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2815 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2400}
+[12:06:55] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+12:06:56 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[12:06:56] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+12:11:57 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+12:11:57 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+12:11:57 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+12:11:57 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+12:11:57 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+12:11:57 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+12:11:57 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+12:11:57 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+12:11:57 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+12:11:57 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+12:11:57 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+12:11:57 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+12:11:57 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+12:11:57 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[12:11:58] 🔐 Requesting access token for Graph API...
+[12:11:58] ✅ Access token received (valid until 13:11:57)
+12:11:59 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[12:12:09] 🔐 Requesting access token for Graph API...
+[12:12:09] ✅ Access token received (valid until 13:12:08)
+12:12:09 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+12:12:29 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 09:03:45+00:00, fetch_ts=2026-04-04T09:12:29Z)
+12:12:29 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2400 processed IDs
+[12:12:29] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[12:12:30] אין מיילים חדשים בתיבה: tal@chrom.co.il
+12:12:40 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2815 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2400}
+[12:12:40] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+12:12:41 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[12:12:41] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+12:17:43 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+12:17:43 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+12:17:43 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+12:17:43 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+12:17:43 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+12:17:43 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+12:17:43 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+12:17:43 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+12:17:43 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+12:17:43 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+12:17:43 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+12:17:43 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+12:17:43 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+12:17:43 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[12:17:43] 🔐 Requesting access token for Graph API...
+[12:17:44] ✅ Access token received (valid until 13:17:43)
+12:17:44 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[12:17:54] 🔐 Requesting access token for Graph API...
+[12:17:55] ✅ Access token received (valid until 13:17:54)
+12:17:55 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+12:18:16 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 09:09:29+00:00, fetch_ts=2026-04-04T09:18:15Z)
+12:18:16 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2400 processed IDs
+[12:18:16] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[12:18:16] אין מיילים חדשים בתיבה: tal@chrom.co.il
+12:18:27 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2815 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2400}
+[12:18:27] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+12:18:28 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[12:18:28] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+12:23:30 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+12:23:30 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+12:23:30 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+12:23:30 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+12:23:30 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+12:23:30 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+12:23:30 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+12:23:30 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+12:23:30 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+12:23:30 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+12:23:30 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+12:23:30 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+12:23:30 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+12:23:30 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[12:23:30] 🔐 Requesting access token for Graph API...
+[12:23:30] ✅ Access token received (valid until 13:23:29)
+12:23:31 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[12:23:41] 🔐 Requesting access token for Graph API...
+[12:23:41] ✅ Access token received (valid until 13:23:40)
+12:23:42 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+12:24:02 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 09:15:15+00:00, fetch_ts=2026-04-04T09:24:02Z)
+12:24:02 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2400 processed IDs
+[12:24:02] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[12:24:03] אין מיילים חדשים בתיבה: tal@chrom.co.il
+12:24:13 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2815 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2400}
+[12:24:13] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+12:24:15 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[12:24:15] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+12:29:16 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+12:29:16 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+12:29:16 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+12:29:16 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+12:29:16 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+12:29:16 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+12:29:16 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+12:29:16 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+12:29:16 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+12:29:16 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+12:29:16 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+12:29:16 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+12:29:16 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+12:29:16 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[12:29:17] 🔐 Requesting access token for Graph API...
+[12:29:17] ✅ Access token received (valid until 13:29:16)
+12:29:18 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[12:29:27] 🔐 Requesting access token for Graph API...
+[12:29:27] ✅ Access token received (valid until 13:29:26)
+12:29:27 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+12:29:46 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 2 messages (received_after=2026-04-04 09:21:02+00:00, fetch_ts=2026-04-04T09:29:45Z)
+12:29:46 │ quotes:automation_runner             │ INFO │ 📬 2 new messages after filtering 2400 processed IDs
+12:29:46 │ quotes:automation_runner             │ INFO │ 📊 Sorted 2 emails chronologically (oldest first)
+[12:29:47] מוריד מייל 1/2 | tal@chrom.co.il: AAMkADU1
+[12:29:48] מריץ ניתוח [1/2] | tal@chrom.co.il...
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │ 📂 Prompts folder: prompts/quotes
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │ Scanning folder: C:\dev DrawingAI\NEW FILES\automation\from\auto_20260404122947_tal_at_chrom_co_il_AAMkADU1\20260404_092417__FW_ TEST111
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │ (including subfolders)
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │ 📊 B2B file confidence filter: HIGH (גבוה בלבד)
+12:29:48 │ quotes:src.pipeline.archive_extractor │ INFO │ Extracting ZIP: C1324-2090.zip -> C:\dev DrawingAI\NEW FILES\automation\from\auto_20260404122947_tal_at_chrom_co_il_AAMkADU1\20260404_092417__FW_ TEST111
+12:29:48 │ quotes:src.pipeline.archive_extractor │ INFO │ Extracted 4 files (flattened)
+12:29:48 │ quotes:src.pipeline.archive_extractor │ INFO │ Deleted ZIP after extract: C1324-2090.zip
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │ [FOLDER] Found 1 folder(s) to process
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │ [SETUP] Initializing Azure OpenAI client...
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │ [AI] Azure OpenAI: gpt-4o-vision
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │ [TIP] Press Ctrl+C during processing to skip the current file or stop
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │ [OUTPUT] Output folder: C:\dev DrawingAI\NEW FILES
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │ Target folder: 20260404_092417__FW_ TEST111
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │ ======================================================================
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │ Folder 1/1: 20260404_092417__FW_ TEST111
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │ ======================================================================
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │ Found 5 files in folder
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │ PHASE 1: File Type Classification
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │ ======================================================================
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │ [1/5]  c1324-2090-0e1_a.jt
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │  Type: 3D_MODEL
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │ 3D model file (.jt)
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │ [2/5]  c1324-2090-0e1_a.stp
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │  Type: 3D_MODEL
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │ 3D model file (.stp)
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │ [3/5]  email.txt
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │  Type: OTHER
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │ Unsupported format (.txt)
+12:29:48 │ quotes:customer_extractor_v3_dual    │ INFO │ [4/5]  md-c1324-2090-e_sheet1_a.pdf
+[12:29:53]       💲 Stage 0 (Classification/Layout/Rotation) | model=gpt-4o-vision | tokens: 1,103 in / 149 out | cost=$0.0042
+12:29:53 │ quotes:customer_extractor_v3_dual    │ INFO │  Type: DRAWING
+12:29:53 │ quotes:customer_extractor_v3_dual    │ INFO │ המסמך מכיל Title Block בפינה הימנית התחתונה עם שדות כמו PART NO., DRAWING NO., REVISION, MATERIAL, SCALE. יש קווי מתאר טכניים, קווי מידה עם חיצים ומספרים, סימונים הנדסיים כמו זוויות, רדיוסים וקוטרים, views שונים (Front, Side), חתכים (Section A-A), הערות טכניות (NOTES), וסמלי GD&T. זהו שרטוט הנדסי ברור. (confidence: high)
+12:29:53 │ quotes:customer_extractor_v3_dual    │ INFO │ [5/5]  PL_MD-C1324-2090-E_A.PDF
+12:29:53 │ quotes:customer_extractor_v3_dual    │ INFO │  Type: PARTS_LIST
+12:29:53 │ quotes:customer_extractor_v3_dual    │ INFO │ Parts list (identified by filename)
+12:29:53 │ quotes:customer_extractor_v3_dual    │ INFO │ ======================================================================
+12:29:53 │ quotes:customer_extractor_v3_dual    │ INFO │ Classification Summary (this folder):
+12:29:53 │ quotes:customer_extractor_v3_dual    │ INFO │ ======================================================================
+12:29:53 │ quotes:customer_extractor_v3_dual    │ INFO │  3D_MODEL: 2
+12:29:53 │ quotes:customer_extractor_v3_dual    │ INFO │  OTHER: 1
+12:29:53 │ quotes:customer_extractor_v3_dual    │ INFO │  DRAWING: 1
+12:29:53 │ quotes:customer_extractor_v3_dual    │ INFO │  PARTS_LIST: 1
+12:29:53 │ quotes:customer_extractor_v3_dual    │ INFO │ Classification cost (this folder):
+12:29:53 │ quotes:customer_extractor_v3_dual    │ INFO │ Input:  1,103 tokens ($0.0028)
+12:29:53 │ quotes:customer_extractor_v3_dual    │ INFO │ Output: 149 tokens ($0.0015)
+12:29:53 │ quotes:customer_extractor_v3_dual    │ INFO │ Total:  $0.0042 USD (0.02)
+12:29:53 │ quotes:customer_extractor_v3_dual    │ INFO │ Time: 4.6 seconds
+12:29:53 │ quotes:customer_extractor_v3_dual    │ INFO │ ======================================================================
+12:29:53 │ quotes:src.pipeline.drawing_processor │ INFO │ PHASE 2: Processing 1 Drawing Files
+12:29:53 │ quotes:src.pipeline.drawing_processor │ INFO │ ======================================================================
+12:29:53 │ quotes:src.pipeline.drawing_processor │ INFO │ [1/1]  md-c1324-2090-e_sheet1_a.pdf
+12:29:53 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ pdfplumber: 72 chars
+12:29:53 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ PDF pages: 1
+[12:29:53]      Estimated dimensions at DPI 200: 3386x2402px
+[12:29:53]      High-res drawing detected (3386px) - using region extraction
+[12:29:53]      Creating overview at DPI 200...
+[12:29:54]      Overview: 3386x2402px
+[12:29:54]      Extracting high-res regions at DPI 400...
+[12:29:54]      High-res full: 6772x4804px
+[12:29:54]      title_block: 2708x1681 → 5416x3362px (2.0)
+[12:29:54]      notes: 2708x1681 → 4874x3026px (1.8)
+[12:29:54]      material_box: 1693x720 → 3047x1296px (1.8)
+[12:29:54]         📐 Asking Azure Vision about rotation...
+[12:29:56]         📐 Azure Vision response: '0'
+[12:29:56]         ✓ Azure: Rotation < 2° threshold
+12:29:56 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ ✓ Azure Vision: No significant rotation
+12:29:56 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Using high-res region extraction
+12:29:56 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Quality issues: בהיר מדי (בהירות: 249)
+[12:29:57]      Enhancing contrast (brightness: 244, contrast: 50)...
+12:29:57 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Running OCR on high-res TITLE BLOCK...
+12:30:03 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Running OCR on OVERVIEW for other stages...
+12:30:06 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Sending to GPT (8 stages selected)
+12:30:06 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ 🎯 IAI Model (OCR, score: 7)
+[12:30:10]       💲 Stage 0 (Classification/Layout/Rotation) | model=gpt-4o-vision | tokens: 1,382 in / 83 out | cost=$0.0043
+12:30:10 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Layout: TB:Bottom-Right-Medium | PN:In Title Block | DN:In Title Block | MAT:Not Visible...
+12:30:21 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Stage 1: ['customer_name', 'part_number', 'item_name', 'drawing_number', 'revision', 'validation_warnings', '_searched_for_pn_field']
+12:30:26 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Stage 2: SUCCESS - ['material', 'coating_processes', 'painting_processes', 'colors', 'marking_process', 'part_dimensions', 'specifications', 'parts_list_page', 'inserts_hardware', 'process_summary_hebrew', 'process_summary_hebrew_short']
+12:30:30 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Stage 3: NOTES extraction
+12:30:30 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ 🔍 Validating extracted NOTES...
+12:30:35 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Stage 4: Geometric area calculation
+12:30:35 │ quotes:src.services.extraction.sanity_checks │ INFO │ Drawing# no match in filename, using OCR: 'MD-C1324-2090-E'
+12:30:35 │ quotes:src.services.extraction.sanity_checks │ INFO │ Part# copied from Drawing# (no explicit P.N. field found)
+12:30:35 │ quotes:src.services.extraction.sanity_checks │ INFO │ Confidence: HIGH (part# in filename, also drawing#)
+12:30:35 │ quotes:customer_extractor_v3_dual    │ INFO │ Customer: IAI
+12:30:35 │ quotes:customer_extractor_v3_dual    │ INFO │ ✅ Part#: MD-C1324-2090-E (in filename)
+12:30:35 │ quotes:customer_extractor_v3_dual    │ INFO │ Item Name: IO-2 EMI LEFT COVER
+12:30:35 │ quotes:customer_extractor_v3_dual    │ INFO │ ✅ Drawing#: MD-C1324-2090-E (in filename)
+12:30:35 │ quotes:customer_extractor_v3_dual    │ INFO │ Revision: A
+12:30:35 │ quotes:customer_extractor_v3_dual    │ INFO │ Marking: IDENTIFY PARTS PER PS500100
+12:30:35 │ quotes:customer_extractor_v3_dual    │ INFO │ Area: 179.2 cm
+12:30:35 │ quotes:customer_extractor_v3_dual    │ INFO │ Specifications: IDENTIFY PARTS PER PS500100
+12:30:35 │ quotes:customer_extractor_v3_dual    │ INFO │ Parts List: page SEE SEPARATE PARTS LIST
+12:30:35 │ quotes:customer_extractor_v3_dual    │ INFO │ Summary: סימון IDENTIFY PARTS PER PS500100
+12:30:35 │ quotes:customer_extractor_v3_dual    │ INFO │ Notes: IDENTIFY PARTS PER PS500100...
+12:30:35 │ quotes:src.pipeline.drawing_processor │ INFO │ Runtime: 42.16s | Cost: $0.0371
+12:30:35 │ quotes:customer_extractor_v3_dual    │ INFO │ [STAGE2] Stage 2: Match quantities and descriptions (1 items)...
+12:30:35 │ quotes:src.services.extraction.document_reader │ INFO │ ✓ Found: email.txt
+12:30:35 │ quotes:src.services.extraction.document_reader │ INFO │ Found per-part quantities in email/txt: 2 rows
+12:30:35 │ quotes:src.services.extraction.document_reader │ INFO │ [AI] Sending to Azure OpenAI...
+12:30:37 │ quotes:src.services.extraction.document_reader │ INFO │ ✓ AI found per-part quantities: 2 items
+12:30:37 │ quotes:src.services.extraction.document_reader │ INFO │ ℹ️ Sanitized part_quantities: dropped 2 garbage key(s), kept 0
+12:30:37 │ quotes:src.services.extraction.document_reader │ INFO │ No PDF/image order/quote documents found — checking Excel files...
+12:30:37 │ quotes:customer_extractor_v3_dual    │ INFO │ Email: FW: TEST111...
+12:30:37 │ quotes:src.services.extraction.quantity_matcher │ INFO │ NO MATCH: Could not match 'mdc13242090e' with any item in orders/quotes
+12:30:37 │ quotes:customer_extractor_v3_dual    │ INFO │ Trying PL filename matching for items without a match...
+12:30:37 │ quotes:customer_extractor_v3_dual    │ INFO │ 0 items with specific quantity
+12:30:37 │ quotes:src.pipeline.pl_processor     │ INFO │ Updating file_classifications with associated_item for 1 PL files...
+12:30:37 │ quotes:src.pipeline.pl_processor     │ INFO │ PL: PL_MD-C1324-2090-E_A.PDF → associated_item: MD-C1324-2090-E
+12:30:37 │ quotes:src.pipeline.pl_processor     │ INFO │ [STAGE6] Stage 6: Extract PL data (1 parts lists)...
+12:30:37 │ quotes:src.pipeline.pl_processor     │ INFO │ Processing: PL_MD-C1324-2090-E_A.PDF
+12:30:41 │ quotes:src.services.reporting.pl_generator │ INFO │ Found associated_item 'MD-C1324-2090-E' for PL_MD-C1324-2090-E_A.PDF
+12:30:43 │ quotes:src.services.reporting.pl_generator │ INFO │ Structured PL: processes, material
+12:30:43 │ quotes:src.pipeline.pl_processor     │ INFO │ Extracted 2 items from this PL ($0.0007)
+12:30:43 │ quotes:src.pipeline.pl_processor     │ INFO │ Matching 2 PL items to 1 drawings via associated_item...
+12:30:43 │ quotes:src.pipeline.pl_processor     │ INFO │ PL item → drawing 'IO-2 EMI LEFT COVER' (associated: MD-C1324-2090-E)
+12:30:43 │ quotes:src.pipeline.pl_processor     │ INFO │ PL item → drawing 'IO-2 EMI LEFT COVER' (associated: MD-C1324-2090-E)
+12:30:43 │ quotes:src.pipeline.pl_processor     │ INFO │ Stage 6 complete: 2 PL items extracted
+12:30:43 │ quotes:src.pipeline.pl_processor     │ INFO │ PL Part Number Override check...
+12:30:43 │ quotes:src.pipeline.pl_processor     │ INFO │ No overrides needed (OCR matches PL)
+12:30:43 │ quotes:src.pipeline.pl_processor     │ INFO │ PL Summary Hebrew propagated to 'MD-C1324-2090-E': 1 parts
+12:30:43 │ quotes:customer_extractor_v3_dual    │ INFO │ [STAGE9] Stage 9: Smart merge descriptions (1 items)...
+12:30:55 │ quotes:src.services.extraction.stage9_merge │ INFO │ [STAGE9] Batch 1: 1 items → 1 results ($0.0087)
+12:30:55 │ quotes:src.services.extraction.stage9_merge │ INFO │ [STAGE9] Merged 1/1 items (tokens: 2,398 in / 1,383 out)
+12:30:55 │ quotes:customer_extractor_v3_dual    │ INFO │ [STAGE9] Merged 1 items ($0.0087)
+12:30:55 │ quotes:src.pipeline.folder_saver     │ INFO │ Saving files in folder '20260404_092417__FW_ TEST111'...
+12:30:55 │ quotes:src.services.reporting.excel_export │ INFO │ Creating new Parts_List_Items sheet with 2 items
+12:30:55 │ quotes:src.services.reporting.excel_export │ INFO │ Added PL Items sheet with 2 items to drawing_results_20260404_092417__FW__TEST111.xlsx
+12:30:55 │ quotes:src.pipeline.folder_saver     │ INFO │ ✓ Drawing analysis: drawing_results_20260404_092417__FW__TEST111.xlsx (1 drawings)
+12:30:55 │ quotes:src.services.reporting.excel_export │ INFO │ Classification report saved: C:\dev DrawingAI\NEW FILES\automation\from\auto_20260404122947_tal_at_chrom_co_il_AAMkADU1\20260404_092417__FW_ TEST111\file_classification_20260404_092417__FW__TEST111.xlsx
+12:30:55 │ quotes:src.services.reporting.excel_export │ INFO │ 5 files classified
+12:30:55 │ quotes:src.services.reporting.excel_export │ INFO │ Metadata included: file names, titles, sizes, dates
+12:30:55 │ quotes:src.pipeline.folder_saver     │ INFO │ ✓ File mapping: file_classification_20260404_092417__FW__TEST111.xlsx (5 files)
+12:30:55 │ quotes:src.pipeline.folder_saver     │ INFO │ Updating Parts_List_Items with associated_items...
+12:30:55 │ quotes:src.services.reporting.excel_export │ INFO │ Built classification map with 4 entries
+12:30:55 │ quotes:src.services.reporting.excel_export │ INFO │ ✓ Updated 2 rows with associated_items
+12:30:55 │ quotes:src.services.reporting.b2b_export │ INFO │ Creating 3 B2B text file variants...
+12:30:55 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2B file saved: B2B-0_200002-20260404122948.txt (1 rows, 171 bytes)
+12:30:55 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2BH file saved: B2BH-0_200002-20260404122948.txt (1 rows, 171 bytes)
+12:30:55 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2BM file saved: B2BM-0_200002-20260404122948.txt (1 rows, 171 bytes)
+12:30:55 │ quotes:src.services.file.file_renamer │ INFO │ ✓ c1324-2090-0e1_a.jt → B2BModel_c1324-2090-0e1_a_25.jt
+12:30:55 │ quotes:src.services.file.file_renamer │ INFO │ ✓ c1324-2090-0e1_a.stp → B2BModel_c1324-2090-0e1_a_25.stp
+12:30:55 │ quotes:src.services.file.file_renamer │ INFO │ ✓ md-c1324-2090-e_sheet1_a.pdf → B2BDraw_md-c1324-2090-e_sheet1_a_30.pdf
+12:30:55 │ quotes:src.services.file.file_renamer │ INFO │ ✓ PL_MD-C1324-2090-E_A.PDF → B2BDoc_PL_MD-C1324-2090-E_A_99.PDF
+12:30:55 │ quotes:src.pipeline.folder_saver     │ INFO │ Total renamed: 4 files
+12:30:55 │ quotes:customer_extractor_v3_dual    │ INFO │ Folder '20260404_092417__FW_ TEST111' finished - 1 drawings
+12:30:55 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+12:30:55 │ quotes:src.pipeline.results_merger   │ INFO │ Copying all processed folders to TO_SEND...
+12:30:55 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+12:30:55 │ quotes:src.services.file.file_utils  │ INFO │ [RENAME] Renaming files in source folder...
+12:30:55 │ quotes:src.services.file.file_utils  │ INFO │ [RESULT] Renamed 0 files
+12:30:55 │ quotes:src.services.file.file_utils  │ INFO │ [METADATA] Creating ALL_METADATA.json (all files)...
+12:30:55 │ quotes:src.services.file.file_utils  │ INFO │ ✓ Created metadata: ALL_METADATA.json (4 files)
+12:30:55 │ quotes:src.services.file.file_utils  │ INFO │ [METADATA] Creating metadata.json (filtered, confidence=HIGH)...
+12:30:55 │ quotes:src.services.file.file_utils  │ INFO │ ✓ Created filtered metadata: metadata.json (4 files, confidence=HIGH)
+12:30:55 │ quotes:src.services.file.file_utils  │ INFO │ [B2B] Processing B2B file variants (confidence: HIGH)...
+12:30:55 │ quotes:src.services.file.file_utils  │ INFO │ ✓ Saved ALL variant for RERUN: ALL_B2B-0_200002-20260404122948.txt
+12:30:55 │ quotes:src.services.file.file_utils  │ INFO │ ✓ Selected B2BH → renamed to B2B-0_200002-20260404122948.txt
+12:30:55 │ quotes:src.services.file.file_utils  │ INFO │ Copied to TO_SEND: 20260404_092417__FW_ TEST111_TO_SEND (9 files)
+12:30:55 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+12:30:55 │ quotes:src.pipeline.results_merger   │ INFO │ Merging files from all folders...
+12:30:55 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+12:30:55 │ quotes:src.pipeline.results_merger   │ INFO │ Merging drawing_results files...
+12:30:55 │ quotes:src.pipeline.results_merger   │ INFO │ Read 1 rows from drawing_results_20260404_092417__FW__TEST111.xlsx
+12:30:55 │ quotes:src.pipeline.results_merger   │ INFO │ Read 2 PL items from drawing_results_20260404_092417__FW__TEST111.xlsx
+12:30:55 │ quotes:src.pipeline.results_merger   │ INFO │ Adding PL Items to summary file from sub-folders...
+12:30:55 │ quotes:src.pipeline.results_merger   │ INFO │ Copied 2 rows from drawing_results_20260404_092417__FW__TEST111.xlsx
+12:30:55 │ quotes:src.pipeline.results_merger   │ INFO │ Added PL Items sheet with 2 rows to SUMMARY
+12:30:55 │ quotes:src.pipeline.results_merger   │ INFO │ ✅ Combined drawing analysis: SUMMARY_all_results_20260404122948.xlsx (1 drawings)
+12:30:55 │ quotes:src.pipeline.results_merger   │ INFO │ Includes 2 combined PL items
+12:30:55 │ quotes:src.pipeline.results_merger   │ INFO │ 📄 Creating summary text file...
+12:30:55 │ quotes:src.services.reporting.b2b_export │ INFO │ Creating 3 B2B text file variants...
+12:30:55 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2B file saved: B2B-0_200002-20260404122948.txt (1 rows, 171 bytes)
+12:30:55 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2BH file saved: B2BH-0_200002-20260404122948.txt (1 rows, 171 bytes)
+12:30:55 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2BM file saved: B2BM-0_200002-20260404122948.txt (1 rows, 171 bytes)
+12:30:55 │ quotes:src.pipeline.results_merger   │ INFO │ Merging file_classification files...
+12:30:55 │ quotes:src.pipeline.results_merger   │ INFO │ Found 5 file classifications from current run
+12:30:55 │ quotes:src.services.reporting.excel_export │ INFO │ Classification report saved: C:\dev DrawingAI\NEW FILES\SUMMARY_all_classifications_20260404122948.xlsx
+12:30:55 │ quotes:src.services.reporting.excel_export │ INFO │ 9 files classified
+12:30:55 │ quotes:src.services.reporting.excel_export │ INFO │ Metadata included: file names, titles, sizes, dates
+12:30:55 │ quotes:src.pipeline.results_merger   │ INFO │ Combined file mapping: SUMMARY_all_classifications_20260404122948.xlsx (9 files)
+[12:30:55] ======================================================================
+12:30:55 │ quotes:src.core.cost_tracker         │ INFO │ ======================================================================
+[12:30:55] Cost Summary
+12:30:55 │ quotes:src.core.cost_tracker         │ INFO │ Cost Summary
+[12:30:55] ======================================================================
+12:30:55 │ quotes:src.core.cost_tracker         │ INFO │ ======================================================================
+[12:30:55] Total files processed: 1
+12:30:55 │ quotes:src.core.cost_tracker         │ INFO │ Total files processed: 1
+[12:30:55] Successful: 1
+12:30:55 │ quotes:src.core.cost_tracker         │ INFO │ Successful: 1
+[12:30:55] Tokens:
+12:30:55 │ quotes:src.core.cost_tracker         │ INFO │ Tokens:
+[12:30:55] Input:  15,542 tokens
+12:30:55 │ quotes:src.core.cost_tracker         │ INFO │ Input:  15,542 tokens
+[12:30:55] Output: 1,700 tokens
+12:30:55 │ quotes:src.core.cost_tracker         │ INFO │ Output: 1,700 tokens
+[12:30:55] Costs (Current Model):
+12:30:55 │ quotes:src.core.cost_tracker         │ INFO │ Costs (Current Model):
+[12:30:55] Input:  $0.0389 USD (0.14)
+12:30:55 │ quotes:src.core.cost_tracker         │ INFO │ Input:  $0.0389 USD (0.14)
+[12:30:55] Output: $0.0170 USD (0.06)
+12:30:55 │ quotes:src.core.cost_tracker         │ INFO │ Output: $0.0170 USD (0.06)
+12:30:55 │ quotes:src.core.cost_tracker         │ INFO │
+[12:30:55] Total:  $0.0459 USD (0.17)
+12:30:55 │ quotes:src.core.cost_tracker         │ INFO │ Total:  $0.0459 USD (0.17)
+[12:30:55] Average per drawing: $0.045863 USD (0.1697)
+12:30:55 │ quotes:src.core.cost_tracker         │ INFO │ Average per drawing: $0.045863 USD (0.1697)
+[12:30:55] ======================================================================
+12:30:55 │ quotes:src.core.cost_tracker         │ INFO │ ======================================================================
+12:30:55 │ quotes:customer_extractor_v3_dual    │ INFO │ OCR cache: 2 hits, 2 misses (50% hit rate, ~16s saved)
+12:30:55 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+12:30:55 │ quotes:src.pipeline.results_merger   │ INFO │ The following files were saved successfully:
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ SUMMARY_all_results_20260404122948.xlsx
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ - 1 drawings combined
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ SUMMARY_all_classifications_20260404122948.xlsx
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ - 5 files combined
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ Additional files in each subfolder:
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ - drawing_results_[subfolder].xlsx
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ - file_classification_[subfolder].xlsx
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ Final Summary Excel file: C:\dev DrawingAI\NEW FILES\SUMMARY_all_results_20260404122948.xlsx
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ Total files processed: 1
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ Folders processed: 1
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ Field Extraction Statistics:
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ - customer_name: 1/1
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ - part_number: 1/1
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ - item_name: 1/1
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ - drawing_number: 1/1
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ - revision: 1/1
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ Confidence Levels:
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ -  Full: 0  High: 1  Medium: 0  Low: 0
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ - material: 0/1
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ - coating_processes: 0/1
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ - painting_processes: 0/1
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ - colors: 0/1
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ - part_area: 1/1
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ - specifications: 1/1
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ - parts_list_page: 1/1
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ - process_summary_hebrew: 1/1
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ - notes_full_text: 1/1
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ Total execution time: 1m 7s
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ Average per drawing: 67.5s
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ API Costs: $0.0459
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+12:30:56 │ quotes:src.pipeline.results_merger   │ INFO │ All files saved in: C:\dev DrawingAI\NEW FILES
+12:30:56 │ quotes:automation_runner             │ INFO │ Found TO_SEND folder: 20260404_092417__FW_ TEST111_TO_SEND
+12:30:56 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'PL_MD-C1324-2090-E_A 	MD-C1324-2090-E 	A 	.PDF' WAS SENT
+12:30:56 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.pdf' WAS SENT
+12:30:56 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.jt' WAS SENT
+12:30:56 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.stp' WAS SENT
+[12:30:56] שולח מייל... (tal@chrom.co.il)
+12:30:56 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'PL_MD-C1324-2090-E_A 	MD-C1324-2090-E 	A 	.PDF' WAS SENT
+12:30:56 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.pdf' WAS SENT
+12:30:56 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.jt' WAS SENT
+12:30:56 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.stp' WAS SENT
+12:30:56 │ quotes:src.services.email.graph_mailbox │ INFO │ 📎 Replacing DISPLAY_NAME 'PL_MD-C1324-2090-E_A 	MD-C1324-2090-E 	A 	.PDF' with FILE_NAME 'B2BDoc_PL_MD-C1324-2090-E_A_99.PDF'
+12:30:56 │ quotes:src.services.email.graph_mailbox │ INFO │ 📎 Replacing DISPLAY_NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.pdf' with FILE_NAME 'B2BDraw_md-c1324-2090-e_sheet1_a_30.pdf'
+12:30:56 │ quotes:src.services.email.graph_mailbox │ INFO │ 📎 Replacing DISPLAY_NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.jt' with FILE_NAME 'B2BModel_c1324-2090-0e1_a_25.jt'
+12:30:56 │ quotes:src.services.email.graph_mailbox │ INFO │ 📎 Replacing DISPLAY_NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.stp' with FILE_NAME 'B2BModel_c1324-2090-0e1_a_25.stp'
+12:30:57 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Email sent successfully to quotes_check@algat.co.il
+[12:30:57] מסמן מייל כמעובד... (tal@chrom.co.il)
+12:30:57 │ quotes:src.services.email.graph_mailbox │ INFO │ 🔍 Checking category 'AI Processed' in mailbox tal@chrom.co.il
+12:30:57 │ quotes:src.services.email.graph_mailbox │ INFO │ ✓ Category 'AI Processed' exists (color: preset0)
+12:30:59 │ quotes:automation_runner             │ INFO │ ✅ Marked as 'AI Processed'
+12:30:59 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2819 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2404}
+12:30:59 │ quotes:automation_runner             │ INFO │ 📧 Mail processed & saved: AAMkADU1OTQ5YzdmLWQ5... (total: 2404)
+[12:31:11] מוריד מייל 2/2 | tal@chrom.co.il: AAMkADU1
+[12:31:15] מריץ ניתוח [2/2] | tal@chrom.co.il...
+12:31:15 │ quotes:customer_extractor_v3_dual    │ INFO │ 📂 Prompts folder: prompts/quotes
+12:31:15 │ quotes:customer_extractor_v3_dual    │ INFO │ Scanning folder: C:\dev DrawingAI\NEW FILES\automation\from\auto_20260404123111_tal_at_chrom_co_il_AAMkADU1\20260404_092434__FW_ TEST
+12:31:15 │ quotes:customer_extractor_v3_dual    │ INFO │ (including subfolders)
+12:31:15 │ quotes:customer_extractor_v3_dual    │ INFO │ 📊 B2B file confidence filter: HIGH (גבוה בלבד)
+12:31:15 │ quotes:customer_extractor_v3_dual    │ INFO │ [FOLDER] Found 1 folder(s) to process
+12:31:15 │ quotes:customer_extractor_v3_dual    │ INFO │ [SETUP] Initializing Azure OpenAI client...
+12:31:15 │ quotes:customer_extractor_v3_dual    │ INFO │ [AI] Azure OpenAI: gpt-4o-vision
+12:31:15 │ quotes:customer_extractor_v3_dual    │ INFO │ [TIP] Press Ctrl+C during processing to skip the current file or stop
+12:31:15 │ quotes:customer_extractor_v3_dual    │ INFO │ [OUTPUT] Output folder: C:\dev DrawingAI\NEW FILES
+12:31:15 │ quotes:customer_extractor_v3_dual    │ INFO │ Target folder: 20260404_092434__FW_ TEST
+12:31:15 │ quotes:customer_extractor_v3_dual    │ INFO │ ======================================================================
+12:31:15 │ quotes:customer_extractor_v3_dual    │ INFO │ Folder 1/1: 20260404_092434__FW_ TEST
+12:31:15 │ quotes:customer_extractor_v3_dual    │ INFO │ ======================================================================
+12:31:15 │ quotes:customer_extractor_v3_dual    │ INFO │ Found 4 files in folder
+12:31:15 │ quotes:customer_extractor_v3_dual    │ INFO │ PHASE 1: File Type Classification
+12:31:15 │ quotes:customer_extractor_v3_dual    │ INFO │ ======================================================================
+12:31:15 │ quotes:customer_extractor_v3_dual    │ INFO │ [1/4]  1040n451-001_pdf_3ku03qab11m1h_stamped.pdf
+[12:31:21]      Downsampled: 4967x3508  4096x2892
+[12:31:26]       💲 Stage 0 (Classification/Layout/Rotation) | model=gpt-4o-vision | tokens: 1,103 in / 152 out | cost=$0.0043
+12:31:26 │ quotes:customer_extractor_v3_dual    │ INFO │  Type: DRAWING
+12:31:26 │ quotes:customer_extractor_v3_dual    │ INFO │ המסמך מכיל Title Block בפינה הימנית התחתונה עם שדות כמו PART NO., DRAWING NO., REVISION, MATERIAL, SCALE. יש קווי מתאר טכניים, קווי מידה עם חיצים ומספרים, סימונים הנדסיים כמו זוויות, רדיוסים וקוטרים. בנוסף, יש views שונים (Top, Front, Side), חתכים (Section A-A), והערות טכניות. המסמך נראה כמו תוכנית ייצור מכנית עם סמלי GD&T. (confidence: high)
+12:31:26 │ quotes:customer_extractor_v3_dual    │ INFO │ [2/4]  email.txt
+12:31:26 │ quotes:customer_extractor_v3_dual    │ INFO │  Type: OTHER
+12:31:26 │ quotes:customer_extractor_v3_dual    │ INFO │ Unsupported format (.txt)
+12:31:26 │ quotes:customer_extractor_v3_dual    │ INFO │ [3/4]  Optimetal_Ltd_Request_for_Quotation_23943.pdf
+[12:31:30]       💲 Stage 0 (Classification/Layout/Rotation) | model=gpt-4o-vision | tokens: 1,103 in / 123 out | cost=$0.0040
+12:31:30 │ quotes:customer_extractor_v3_dual    │ INFO │  Type: QUOTE
+12:31:30 │ quotes:customer_extractor_v3_dual    │ INFO │ המסמך מכיל כותרת ברורה 'בקשה להצעת מחיר מספר', מספר הצעה (23943), טבלה עם פריטים, תיאורים, כמויות ומחירים מוצעים, וכן פרטי ספק ולקוח. בנוסף, יש תוקף להצעה ותנאים כלליים. אין שרטוטים הנדסיים או בלוק כותרת טכני. (confidence: high)
+12:31:30 │ quotes:customer_extractor_v3_dual    │ INFO │ Quote Number: 23943
+12:31:30 │ quotes:customer_extractor_v3_dual    │ INFO │ [4/4]  PL1040N451-001_-.pdf
+12:31:30 │ quotes:customer_extractor_v3_dual    │ INFO │  Type: PARTS_LIST
+12:31:30 │ quotes:customer_extractor_v3_dual    │ INFO │ Parts list (identified by filename)
+12:31:30 │ quotes:customer_extractor_v3_dual    │ INFO │ ======================================================================
+12:31:30 │ quotes:customer_extractor_v3_dual    │ INFO │ Classification Summary (this folder):
+12:31:30 │ quotes:customer_extractor_v3_dual    │ INFO │ ======================================================================
+12:31:30 │ quotes:customer_extractor_v3_dual    │ INFO │  DRAWING: 1
+12:31:30 │ quotes:customer_extractor_v3_dual    │ INFO │  OTHER: 1
+12:31:30 │ quotes:customer_extractor_v3_dual    │ INFO │  QUOTE: 1
+12:31:30 │ quotes:customer_extractor_v3_dual    │ INFO │  PARTS_LIST: 1
+12:31:30 │ quotes:customer_extractor_v3_dual    │ INFO │ Classification cost (this folder):
+12:31:30 │ quotes:customer_extractor_v3_dual    │ INFO │ Input:  2,206 tokens ($0.0055)
+12:31:30 │ quotes:customer_extractor_v3_dual    │ INFO │ Output: 275 tokens ($0.0028)
+12:31:30 │ quotes:customer_extractor_v3_dual    │ INFO │ Total:  $0.0083 USD (0.03)
+12:31:30 │ quotes:customer_extractor_v3_dual    │ INFO │ Time: 14.6 seconds
+12:31:30 │ quotes:customer_extractor_v3_dual    │ INFO │ ======================================================================
+12:31:30 │ quotes:src.pipeline.drawing_processor │ INFO │ PHASE 2: Processing 1 Drawing Files
+12:31:30 │ quotes:src.pipeline.drawing_processor │ INFO │ ======================================================================
+12:31:30 │ quotes:src.pipeline.drawing_processor │ INFO │ [1/1]  1040n451-001_pdf_3ku03qab11m1h_stamped.pdf
+12:31:32 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ pdfplumber: 3210 chars
+12:31:32 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ PDF pages: 1
+[12:31:32]      Estimated dimensions at DPI 200: 6622x4677px
+[12:31:32]      High-res drawing detected (6622px) - using region extraction
+[12:31:32]      Creating overview at DPI 200...
+[12:31:33]      Overview: 6623x4678px
+[12:31:33]      Extracting high-res regions at DPI 400...
+[12:31:35]      High-res full: 13245x9355px
+[12:31:36]      title_block: 5298x3274 → 10596x6548px (2.0)
+[12:31:36]      notes: 5298x3274 → 6967x4306px (1.8)
+[12:31:36]      material_box: 3311x1403 → 5960x2525px (1.8)
+[12:31:37]         📐 Asking Azure Vision about rotation...
+[12:31:40]         📐 Azure Vision response: '0'
+[12:31:40]         ✓ Azure: Rotation < 2° threshold
+12:31:40 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ ✓ Azure Vision: No significant rotation
+12:31:40 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Using high-res region extraction
+12:31:41 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Quality issues: ניגודיות נמוכה (22), בהיר מדי (בהירות: 252)
+[12:31:42]      Enhancing contrast (brightness: 251, contrast: 28)...
+[12:31:43]      Enhanced: brightness 251→251, contrast 28→28
+12:31:43 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Running OCR on high-res TITLE BLOCK...
+12:32:04 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Running OCR on OVERVIEW for other stages...
+12:32:14 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Sending to GPT (8 stages selected)
+12:32:14 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ 🎯 IAI Model (OCR, score: 5)
+[12:32:18]       💲 Stage 0 (Classification/Layout/Rotation) | model=gpt-4o-vision | tokens: 1,382 in / 88 out | cost=$0.0043
+12:32:18 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Layout: TB:Bottom-Right-Medium | PN:In-Title-Block | DN:In-Title-Block | MAT:In-Notes | ...
+12:32:24 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Stage 1: ['customer_name', 'part_number', 'item_name', 'drawing_number', 'revision', 'validation_warnings', '_searched_for_pn_field']
+12:32:31 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Stage 2: SUCCESS - ['material', 'coating_processes', 'painting_processes', 'colors', 'marking_process', 'part_dimensions', 'specifications', 'parts_list_page', 'inserts_hardware', 'process_summary_hebrew', 'process_summary_hebrew_short']
+12:32:42 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Stage 3: NOTES extraction
+12:32:42 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ 🔍 Validating extracted NOTES...
+12:32:47 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Stage 4: Geometric area calculation
+12:32:47 │ quotes:src.services.extraction.sanity_checks │ INFO │ Part# no match in filename, using OCR: '1040N451-001'
+12:32:47 │ quotes:src.services.extraction.sanity_checks │ INFO │ Drawing# copied from Part#
+12:32:47 │ quotes:src.services.extraction.sanity_checks │ INFO │ Confidence: HIGH (part# in filename, also drawing#)
+12:32:47 │ quotes:customer_extractor_v3_dual    │ INFO │ Customer: IAI
+12:32:47 │ quotes:customer_extractor_v3_dual    │ INFO │ ✅ Part#: 1040N451-001 (in filename)
+12:32:47 │ quotes:customer_extractor_v3_dual    │ INFO │ Item Name: HORIZONTAL BEAM
+12:32:47 │ quotes:customer_extractor_v3_dual    │ INFO │ ✅ Drawing#: 1040N451-001 (in filename)
+12:32:47 │ quotes:customer_extractor_v3_dual    │ INFO │ Revision: -
+12:32:47 │ quotes:customer_extractor_v3_dual    │ INFO │ Material: S355J2 PER EN 10025-2
+12:32:47 │ quotes:customer_extractor_v3_dual    │ INFO │ Painting: POLYURETHANE PAINT SYSTEM INSTRUCTIONS PER ELTA DOC. 5903U496-001/LATEST REVISION
+12:32:47 │ quotes:customer_extractor_v3_dual    │ INFO │ Colors: YELLOW BUFF, COLOR NO.23613
+12:32:47 │ quotes:customer_extractor_v3_dual    │ INFO │ Marking: IDENTIFICATION MARKING PER SPECIFICATION 5902N800-001
+12:32:47 │ quotes:customer_extractor_v3_dual    │ INFO │ Area: ~9000 cm
+12:32:47 │ quotes:customer_extractor_v3_dual    │ INFO │ Specifications: welding AWS D1.1:2020, filler metal AWS 5.18 ER70S-6, magnetic particles tested AWS D1.1, stress relief heat treatment AWS D1.1:2020 PARAGRAPH 7.8.1, polyurethane paint system ELTA DOC. 5903U496-001, color SAE-AMS-STD-595 COLOR NO.23613, identification marking 5902N800-001
+12:32:47 │ quotes:customer_extractor_v3_dual    │ INFO │ Summary: פלדה S355J2 PER EN 10025-2 | צביעה פוליאוריתנית | מיסוך הברגות ואזורים מסומנים, סימון זיהוי | YELLOW BUFF, COLOR NO.23613
+12:32:47 │ quotes:customer_extractor_v3_dual    │ INFO │ Notes: NOTES: 1. MATERIAL: S355J2 PER EN 10025-2. 2. THE MASTER DEFINITION FOR THIS PART IS THE 3D UNIGRAPH...
+12:32:47 │ quotes:src.pipeline.drawing_processor │ INFO │ Runtime: 76.94s | Cost: $0.0659
+12:32:47 │ quotes:customer_extractor_v3_dual    │ INFO │ [STAGE2] Stage 2: Match quantities and descriptions (1 items)...
+12:32:47 │ quotes:src.services.extraction.document_reader │ INFO │ ✓ Found: email.txt
+12:32:47 │ quotes:src.services.extraction.document_reader │ INFO │ Found per-part quantities in email/txt: 2 rows
+12:32:47 │ quotes:src.services.extraction.document_reader │ INFO │ [AI] Sending to Azure OpenAI...
+12:32:48 │ quotes:src.services.extraction.document_reader │ INFO │ ✓ AI found per-part quantities: 2 items
+12:32:48 │ quotes:src.services.extraction.document_reader │ INFO │ ℹ️ Sanitized part_quantities: dropped 2 garbage key(s), kept 0
+12:32:49 │ quotes:src.services.extraction.document_reader │ INFO │ Enhanced processing: cropping table area for Optimetal_Ltd_Request_for_Quotation_23943.pdf...
+12:32:52 │ quotes:src.services.extraction.document_reader │ INFO │ Enhanced TABLE: 2x zoom + processing (2976x3976px)
+12:32:52 │ quotes:src.services.extraction.document_reader │ INFO │ Sending PO/Quote to Vision API (449KB image)...
+[12:32:58]       💲 Stage 8 (Quote/Order Item Details) | model=gpt-5.4 | tokens: 2,579 in / 53 out | cost=$0.0072
+12:32:58 │ quotes:src.services.extraction.document_reader │ INFO │ Vision API response received for Optimetal_Ltd_Request_for_Quotation_23943.pdf
+12:32:58 │ quotes:src.services.extraction.document_reader │ INFO │ Extracted 1 items from document
+12:32:58 │ quotes:src.services.extraction.document_reader │ INFO │ Items from PDF/image documents: 1
+12:32:58 │ quotes:customer_extractor_v3_dual    │ INFO │ Email: FW: TEST...
+12:32:58 │ quotes:customer_extractor_v3_dual    │ INFO │ '1040n451001' -> Qty: ['29']
+12:32:58 │ quotes:src.services.extraction.quantity_matcher │ INFO │ Assigned from order/quote:
+12:32:58 │ quotes:src.services.extraction.quantity_matcher │ INFO │ Quantity: '29'
+12:32:58 │ quotes:src.services.extraction.quantity_matcher │ INFO │ Match Type: ספציפי למספר פריט
+12:32:58 │ quotes:src.services.extraction.quantity_matcher │ INFO │ Source: הצעה/הזמנה
+12:32:58 │ quotes:src.services.extraction.quantity_matcher │ INFO │ work_description_doc='ציפוי אבץ'
+12:32:58 │ quotes:customer_extractor_v3_dual    │ INFO │ Trying PL filename matching for items without a match...
+12:32:58 │ quotes:customer_extractor_v3_dual    │ INFO │ 1 items with specific quantity
+12:32:58 │ quotes:src.pipeline.pl_processor     │ INFO │ Updating file_classifications with associated_item for 1 PL files...
+12:32:58 │ quotes:src.pipeline.pl_processor     │ INFO │ PL: PL1040N451-001_-.pdf → associated_item: 1040N451-001
+12:32:58 │ quotes:src.pipeline.pl_processor     │ INFO │ [STAGE6] Stage 6: Extract PL data (1 parts lists)...
+12:32:58 │ quotes:src.pipeline.pl_processor     │ INFO │ Processing: PL1040N451-001_-.pdf
+12:32:58 │ quotes:src.services.reporting.pl_generator │ INFO │ PL main part number: 1040N451-001 (format: NEW_TABULAR)
+12:33:00 │ quotes:src.services.reporting.pl_generator │ INFO │ Found associated_item '1040N451-001' for PL1040N451-001_-.pdf
+12:33:01 │ quotes:src.pipeline.pl_processor     │ INFO │ Extracted 3 items from this PL ($0.0005)
+12:33:01 │ quotes:src.pipeline.pl_processor     │ INFO │ Matching 3 PL items to 1 drawings via associated_item...
+12:33:01 │ quotes:src.pipeline.pl_processor     │ INFO │ PL item → drawing 'HORIZONTAL BEAM' (associated: 1040N451-001)
+12:33:01 │ quotes:src.pipeline.pl_processor     │ INFO │ PL item → drawing 'HORIZONTAL BEAM' (associated: 1040N451-001)
+12:33:01 │ quotes:src.pipeline.pl_processor     │ INFO │ PL item → drawing 'HORIZONTAL BEAM' (associated: 1040N451-001)
+12:33:01 │ quotes:src.pipeline.pl_processor     │ INFO │ Stage 6 complete: 3 PL items extracted
+12:33:01 │ quotes:src.pipeline.pl_processor     │ INFO │ PL Part Number Override check...
+12:33:01 │ quotes:src.pipeline.pl_processor     │ INFO │ ✓ CONFIRMED: '1040N451-001' matches PL (AS PL)
+12:33:01 │ quotes:src.pipeline.pl_processor     │ INFO │ No overrides needed (OCR matches PL)
+12:33:01 │ quotes:customer_extractor_v3_dual    │ INFO │ [STAGE9] Stage 9: Smart merge descriptions (1 items)...
+12:33:30 │ quotes:src.services.extraction.stage9_merge │ INFO │ [STAGE9] Batch 1: 1 items → 1 results ($0.0182)
+12:33:30 │ quotes:src.services.extraction.stage9_merge │ INFO │ [STAGE9] Merged 1/1 items (tokens: 2,495 in / 3,502 out)
+12:33:30 │ quotes:customer_extractor_v3_dual    │ INFO │ [STAGE9] Merged 1 items ($0.0182)
+12:33:30 │ quotes:src.pipeline.folder_saver     │ INFO │ Saving files in folder '20260404_092434__FW_ TEST'...
+12:33:30 │ quotes:src.services.reporting.excel_export │ INFO │ Creating new Parts_List_Items sheet with 3 items
+12:33:30 │ quotes:src.services.reporting.excel_export │ INFO │ Added PL Items sheet with 3 items to drawing_results_20260404_092434__FW__TEST.xlsx
+12:33:30 │ quotes:src.pipeline.folder_saver     │ INFO │ ✓ Drawing analysis: drawing_results_20260404_092434__FW__TEST.xlsx (1 drawings)
+12:33:30 │ quotes:src.services.reporting.excel_export │ INFO │ Classification report saved: C:\dev DrawingAI\NEW FILES\automation\from\auto_20260404123111_tal_at_chrom_co_il_AAMkADU1\20260404_092434__FW_ TEST\file_classification_20260404_092434__FW__TEST.xlsx
+12:33:30 │ quotes:src.services.reporting.excel_export │ INFO │ 4 files classified
+12:33:30 │ quotes:src.services.reporting.excel_export │ INFO │ Metadata included: file names, titles, sizes, dates
+12:33:30 │ quotes:src.pipeline.folder_saver     │ INFO │ ✓ File mapping: file_classification_20260404_092434__FW__TEST.xlsx (4 files)
+12:33:30 │ quotes:src.pipeline.folder_saver     │ INFO │ Updating Parts_List_Items with associated_items...
+12:33:30 │ quotes:src.services.reporting.excel_export │ INFO │ Built classification map with 2 entries
+12:33:30 │ quotes:src.services.reporting.excel_export │ INFO │ ✓ Updated 3 rows with associated_items
+12:33:30 │ quotes:src.services.reporting.b2b_export │ INFO │ Creating 3 B2B text file variants...
+12:33:30 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2B file saved: B2B-0_200002-23943.txt (1 rows, 228 bytes)
+12:33:30 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2BH file saved: B2BH-0_200002-23943.txt (1 rows, 228 bytes)
+12:33:30 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2BM file saved: B2BM-0_200002-23943.txt (1 rows, 228 bytes)
+12:33:30 │ quotes:src.services.file.file_renamer │ INFO │ ✓ 1040n451-001_pdf_3ku03qab11m1h_stamped.pdf → B2BDraw_1040n451-001_pdf_3ku03qab11m1h_stamped_30.pdf
+12:33:30 │ quotes:src.services.file.file_renamer │ INFO │ ✓ PL1040N451-001_-.pdf → B2BDoc_PL1040N451-001_-_99.pdf
+12:33:30 │ quotes:src.pipeline.folder_saver     │ INFO │ Total renamed: 2 files
+12:33:30 │ quotes:customer_extractor_v3_dual    │ INFO │ Folder '20260404_092434__FW_ TEST' finished - 1 drawings
+12:33:30 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+12:33:30 │ quotes:src.pipeline.results_merger   │ INFO │ Copying all processed folders to TO_SEND...
+12:33:30 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+12:33:30 │ quotes:src.services.file.file_utils  │ INFO │ [RENAME] Renaming files in source folder...
+12:33:30 │ quotes:src.services.file.file_utils  │ INFO │ [RESULT] Renamed 0 files
+12:33:30 │ quotes:src.services.file.file_utils  │ INFO │ [METADATA] Creating ALL_METADATA.json (all files)...
+12:33:30 │ quotes:src.services.file.file_utils  │ INFO │ ✓ Created metadata: ALL_METADATA.json (2 files)
+12:33:30 │ quotes:src.services.file.file_utils  │ INFO │ [METADATA] Creating metadata.json (filtered, confidence=HIGH)...
+12:33:30 │ quotes:src.services.file.file_utils  │ INFO │ ✓ Created filtered metadata: metadata.json (2 files, confidence=HIGH)
+12:33:30 │ quotes:src.services.file.file_utils  │ INFO │ [B2B] Processing B2B file variants (confidence: HIGH)...
+12:33:30 │ quotes:src.services.file.file_utils  │ INFO │ ✓ Saved ALL variant for RERUN: ALL_B2B-0_200002-23943.txt
+12:33:30 │ quotes:src.services.file.file_utils  │ INFO │ ✓ Selected B2BH → renamed to B2B-0_200002-23943.txt
+12:33:30 │ quotes:src.services.file.file_utils  │ INFO │ Copied to TO_SEND: 20260404_092434__FW_ TEST_TO_SEND (8 files)
+12:33:30 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+12:33:30 │ quotes:src.pipeline.results_merger   │ INFO │ Merging files from all folders...
+12:33:30 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+12:33:30 │ quotes:src.pipeline.results_merger   │ INFO │ Merging drawing_results files...
+12:33:30 │ quotes:src.pipeline.results_merger   │ INFO │ Read 1 rows from drawing_results_20260404_092434__FW__TEST.xlsx
+12:33:30 │ quotes:src.pipeline.results_merger   │ INFO │ Read 3 PL items from drawing_results_20260404_092434__FW__TEST.xlsx
+12:33:30 │ quotes:src.pipeline.results_merger   │ INFO │ Adding PL Items to summary file from sub-folders...
+12:33:30 │ quotes:src.pipeline.results_merger   │ INFO │ Copied 3 rows from drawing_results_20260404_092434__FW__TEST.xlsx
+12:33:30 │ quotes:src.pipeline.results_merger   │ INFO │ Added PL Items sheet with 3 rows to SUMMARY
+12:33:30 │ quotes:src.pipeline.results_merger   │ INFO │ ✅ Combined drawing analysis: SUMMARY_all_results_20260404123115.xlsx (1 drawings)
+12:33:30 │ quotes:src.pipeline.results_merger   │ INFO │ Includes 3 combined PL items
+12:33:30 │ quotes:src.pipeline.results_merger   │ INFO │ 📄 Creating summary text file...
+12:33:30 │ quotes:src.services.reporting.b2b_export │ INFO │ Creating 3 B2B text file variants...
+12:33:30 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2B file saved: B2B-0_200002-20260404123115.txt (1 rows, 237 bytes)
+12:33:30 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2BH file saved: B2BH-0_200002-20260404123115.txt (1 rows, 237 bytes)
+12:33:30 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2BM file saved: B2BM-0_200002-20260404123115.txt (1 rows, 237 bytes)
+12:33:30 │ quotes:src.pipeline.results_merger   │ INFO │ Merging file_classification files...
+12:33:30 │ quotes:src.pipeline.results_merger   │ INFO │ Found 4 file classifications from current run
+12:33:30 │ quotes:src.services.reporting.excel_export │ INFO │ Classification report saved: C:\dev DrawingAI\NEW FILES\SUMMARY_all_classifications_20260404123115.xlsx
+12:33:30 │ quotes:src.services.reporting.excel_export │ INFO │ 6 files classified
+12:33:30 │ quotes:src.services.reporting.excel_export │ INFO │ Metadata included: file names, titles, sizes, dates
+12:33:30 │ quotes:src.pipeline.results_merger   │ INFO │ Combined file mapping: SUMMARY_all_classifications_20260404123115.xlsx (6 files)
+[12:33:30] ======================================================================
+12:33:30 │ quotes:src.core.cost_tracker         │ INFO │ ======================================================================
+[12:33:30] Cost Summary
+12:33:30 │ quotes:src.core.cost_tracker         │ INFO │ Cost Summary
+[12:33:30] ======================================================================
+12:33:30 │ quotes:src.core.cost_tracker         │ INFO │ ======================================================================
+[12:33:31] Total files processed: 1
+12:33:31 │ quotes:src.core.cost_tracker         │ INFO │ Total files processed: 1
+[12:33:31] Successful: 1
+12:33:31 │ quotes:src.core.cost_tracker         │ INFO │ Successful: 1
+[12:33:31] Tokens:
+12:33:31 │ quotes:src.core.cost_tracker         │ INFO │ Tokens:
+[12:33:31] Input:  21,974 tokens
+12:33:31 │ quotes:src.core.cost_tracker         │ INFO │ Input:  21,974 tokens
+[12:33:31] Output: 4,685 tokens
+12:33:31 │ quotes:src.core.cost_tracker         │ INFO │ Output: 4,685 tokens
+[12:33:31] Costs (Current Model):
+12:33:31 │ quotes:src.core.cost_tracker         │ INFO │ Costs (Current Model):
+[12:33:31] Input:  $0.0549 USD (0.20)
+12:33:31 │ quotes:src.core.cost_tracker         │ INFO │ Input:  $0.0549 USD (0.20)
+[12:33:31] Output: $0.0469 USD (0.17)
+12:33:31 │ quotes:src.core.cost_tracker         │ INFO │ Output: $0.0469 USD (0.17)
+12:33:31 │ quotes:src.core.cost_tracker         │ INFO │
+[12:33:31] Total:  $0.0841 USD (0.31)
+12:33:31 │ quotes:src.core.cost_tracker         │ INFO │ Total:  $0.0841 USD (0.31)
+[12:33:31] Average per drawing: $0.084101 USD (0.3112)
+12:33:31 │ quotes:src.core.cost_tracker         │ INFO │ Average per drawing: $0.084101 USD (0.3112)
+[12:33:31] ======================================================================
+12:33:31 │ quotes:src.core.cost_tracker         │ INFO │ ======================================================================
+12:33:31 │ quotes:customer_extractor_v3_dual    │ INFO │ OCR cache: 1 hits, 2 misses (33% hit rate, ~8s saved)
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ The following files were saved successfully:
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ SUMMARY_all_results_20260404123115.xlsx
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ - 1 drawings combined
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ SUMMARY_all_classifications_20260404123115.xlsx
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ - 4 files combined
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ Additional files in each subfolder:
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ - drawing_results_[subfolder].xlsx
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ - file_classification_[subfolder].xlsx
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ Final Summary Excel file: C:\dev DrawingAI\NEW FILES\SUMMARY_all_results_20260404123115.xlsx
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ Total files processed: 1
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ Folders processed: 1
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ Field Extraction Statistics:
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ - customer_name: 1/1
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ - part_number: 1/1
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ - item_name: 1/1
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ - drawing_number: 1/1
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ - revision: 1/1
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ Confidence Levels:
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ -  Full: 0  High: 1  Medium: 0  Low: 0
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ - material: 1/1
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ - coating_processes: 0/1
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ - painting_processes: 1/1
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ - colors: 1/1
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ - part_area: 1/1
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ - specifications: 1/1
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ - parts_list_page: 0/1
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ - process_summary_hebrew: 1/1
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ - notes_full_text: 1/1
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ Total execution time: 2m 15s
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ Average per drawing: 135.4s
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ API Costs: $0.0841
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+12:33:31 │ quotes:src.pipeline.results_merger   │ INFO │ All files saved in: C:\dev DrawingAI\NEW FILES
+12:33:31 │ quotes:automation_runner             │ INFO │ Found TO_SEND folder: 20260404_092434__FW_ TEST_TO_SEND
+12:33:31 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'PL1040N451-001_- 	1040N451-001 	- 	.pdf' WAS SENT
+12:33:31 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME '1040N451-001 	1040N451-001 	- 	.pdf' WAS SENT
+[12:33:31] שולח מייל... (tal@chrom.co.il)
+12:33:31 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'PL1040N451-001_- 	1040N451-001 	- 	.pdf' WAS SENT
+12:33:31 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME '1040N451-001 	1040N451-001 	- 	.pdf' WAS SENT
+12:33:31 │ quotes:src.services.email.graph_mailbox │ INFO │ 📎 Replacing DISPLAY_NAME 'PL1040N451-001_- 	1040N451-001 	- 	.pdf' with FILE_NAME 'B2BDoc_PL1040N451-001_-_99.pdf'
+12:33:31 │ quotes:src.services.email.graph_mailbox │ INFO │ 📎 Replacing DISPLAY_NAME '1040N451-001 	1040N451-001 	- 	.pdf' with FILE_NAME 'B2BDraw_1040n451-001_pdf_3ku03qab11m1h_stamped_30.pdf'
+12:33:32 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Email sent successfully to quotes_check@algat.co.il
+[12:33:32] מסמן מייל כמעובד... (tal@chrom.co.il)
+12:33:32 │ quotes:src.services.email.graph_mailbox │ INFO │ 🔍 Checking category 'AI Processed' in mailbox tal@chrom.co.il
+12:33:32 │ quotes:src.services.email.graph_mailbox │ INFO │ ✓ Category 'AI Processed' exists (color: preset0)
+12:33:33 │ quotes:automation_runner             │ INFO │ ✅ Marked as 'AI Processed'
+12:33:34 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2823 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2408}
+12:33:34 │ quotes:automation_runner             │ INFO │ 📧 Mail processed & saved: AAMkADU1OTQ5YzdmLWQ5... (total: 2408)
+12:33:52 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2823 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2408}
+[12:33:52] הסבב הושלם בהצלחה
+12:33:53 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[12:33:53] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+12:38:54 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+12:38:54 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+12:38:54 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+12:38:54 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+12:38:54 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+12:38:54 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+12:38:54 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+12:38:54 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+12:38:54 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+12:38:54 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+12:38:54 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+12:38:54 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+12:38:54 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+12:38:54 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[12:38:55] 🔐 Requesting access token for Graph API...
+[12:38:55] ✅ Access token received (valid until 13:38:54)
+12:38:56 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[12:39:05] 🔐 Requesting access token for Graph API...
+[12:39:06] ✅ Access token received (valid until 13:39:05)
+12:39:06 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+12:39:24 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 09:26:45+00:00, fetch_ts=2026-04-04T09:39:23Z)
+12:39:24 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2408 processed IDs
+[12:39:24] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[12:39:24] אין מיילים חדשים בתיבה: tal@chrom.co.il
+12:39:34 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2823 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2408}
+[12:39:34] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+12:39:35 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[12:39:35] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+12:44:36 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+12:44:36 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+12:44:36 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+12:44:37 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+12:44:37 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+12:44:37 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+12:44:37 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+12:44:37 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+12:44:37 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+12:44:37 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+12:44:37 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+12:44:37 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+12:44:37 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+12:44:37 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[12:44:37] 🔐 Requesting access token for Graph API...
+[12:44:37] ✅ Access token received (valid until 13:44:36)
+12:44:38 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[12:44:47] 🔐 Requesting access token for Graph API...
+[12:44:47] ✅ Access token received (valid until 13:44:46)
+12:44:48 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+12:45:05 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 09:36:23+00:00, fetch_ts=2026-04-04T09:45:05Z)
+12:45:05 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2408 processed IDs
+[12:45:05] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[12:45:06] אין מיילים חדשים בתיבה: tal@chrom.co.il
+12:45:15 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2823 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2408}
+[12:45:15] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+12:45:16 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[12:45:16] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+12:50:18 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+12:50:18 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+12:50:18 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+12:50:18 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+12:50:18 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+12:50:18 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+12:50:18 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+12:50:18 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+12:50:18 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+12:50:18 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+12:50:18 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+12:50:18 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+12:50:18 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+12:50:18 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[12:50:18] 🔐 Requesting access token for Graph API...
+[12:50:18] ✅ Access token received (valid until 13:50:17)
+12:50:19 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[12:50:29] 🔐 Requesting access token for Graph API...
+[12:50:29] ✅ Access token received (valid until 13:50:28)
+12:50:29 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+12:50:47 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 09:42:05+00:00, fetch_ts=2026-04-04T09:50:47Z)
+12:50:47 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2408 processed IDs
+[12:50:47] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[12:50:47] אין מיילים חדשים בתיבה: tal@chrom.co.il
+12:50:57 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2823 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2408}
+[12:50:57] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+12:50:58 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[12:50:58] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+12:55:59 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+12:55:59 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+12:55:59 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+12:55:59 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+12:55:59 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+12:55:59 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+12:55:59 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+12:55:59 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+12:55:59 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+12:55:59 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+12:55:59 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+12:55:59 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+12:55:59 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+12:55:59 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[12:56:00] 🔐 Requesting access token for Graph API...
+[12:56:00] ✅ Access token received (valid until 13:55:59)
+12:56:01 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[12:56:10] 🔐 Requesting access token for Graph API...
+[12:56:10] ✅ Access token received (valid until 13:56:09)
+12:56:10 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+12:56:28 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 09:47:47+00:00, fetch_ts=2026-04-04T09:56:28Z)
+12:56:28 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2408 processed IDs
+[12:56:28] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[12:56:29] אין מיילים חדשים בתיבה: tal@chrom.co.il
+12:56:39 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2823 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2408}
+[12:56:39] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+12:56:40 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[12:56:40] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+13:01:41 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+13:01:41 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+13:01:41 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+13:01:41 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+13:01:41 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+13:01:41 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+13:01:41 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+13:01:41 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+13:01:41 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+13:01:41 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+13:01:41 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+13:01:41 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+13:01:41 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+13:01:41 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[13:01:41] 🔐 Requesting access token for Graph API...
+[13:01:41] ✅ Access token received (valid until 14:01:40)
+13:01:42 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[13:01:52] 🔐 Requesting access token for Graph API...
+[13:01:52] ✅ Access token received (valid until 14:01:51)
+13:01:52 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+13:02:11 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 09:53:28+00:00, fetch_ts=2026-04-04T10:02:10Z)
+13:02:11 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2408 processed IDs
+[13:02:11] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[13:02:11] אין מיילים חדשים בתיבה: tal@chrom.co.il
+13:02:21 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2823 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2408}
+[13:02:21] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+13:02:22 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[13:02:22] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+13:07:23 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+13:07:23 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+13:07:23 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+13:07:23 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+13:07:23 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+13:07:23 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+13:07:23 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+13:07:23 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+13:07:23 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+13:07:23 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+13:07:23 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+13:07:23 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+13:07:23 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+13:07:23 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[13:07:24] 🔐 Requesting access token for Graph API...
+[13:07:24] ✅ Access token received (valid until 14:07:23)
+13:07:25 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[13:07:34] 🔐 Requesting access token for Graph API...
+[13:07:34] ✅ Access token received (valid until 14:07:33)
+13:07:34 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+13:07:52 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 09:59:10+00:00, fetch_ts=2026-04-04T10:07:51Z)
+13:07:52 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2408 processed IDs
+[13:07:52] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[13:07:52] אין מיילים חדשים בתיבה: tal@chrom.co.il
+13:08:02 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2823 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2408}
+[13:08:02] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+13:08:03 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[13:08:03] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+13:13:04 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+13:13:04 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+13:13:04 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+13:13:04 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+13:13:04 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+13:13:04 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+13:13:04 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+13:13:04 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+13:13:04 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+13:13:04 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+13:13:04 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+13:13:04 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+13:13:04 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+13:13:04 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[13:13:05] 🔐 Requesting access token for Graph API...
+[13:13:05] ✅ Access token received (valid until 14:13:04)
+13:13:05 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[13:13:15] 🔐 Requesting access token for Graph API...
+[13:13:15] ✅ Access token received (valid until 14:13:14)
+13:13:15 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+13:13:33 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 10:04:51+00:00, fetch_ts=2026-04-04T10:13:33Z)
+13:13:33 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2408 processed IDs
+[13:13:33] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[13:13:34] אין מיילים חדשים בתיבה: tal@chrom.co.il
+13:13:44 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2823 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2408}
+[13:13:44] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+13:13:45 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[13:13:45] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+13:18:46 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+13:18:46 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+13:18:46 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+13:18:46 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+13:18:46 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+13:18:46 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+13:18:46 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+13:18:46 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+13:18:46 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+13:18:46 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+13:18:46 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+13:18:46 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+13:18:46 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+13:18:46 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[13:18:46] 🔐 Requesting access token for Graph API...
+[13:18:47] ✅ Access token received (valid until 14:18:46)
+13:18:47 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[13:18:56] 🔐 Requesting access token for Graph API...
+[13:18:56] ✅ Access token received (valid until 14:18:55)
+13:18:57 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+13:19:15 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 10:10:33+00:00, fetch_ts=2026-04-04T10:19:14Z)
+13:19:15 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2408 processed IDs
+[13:19:15] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[13:19:15] אין מיילים חדשים בתיבה: tal@chrom.co.il
+13:19:25 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2823 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2408}
+[13:19:25] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+13:19:26 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[13:19:26] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+13:24:28 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+13:24:28 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+13:24:28 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+13:24:28 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+13:24:28 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+13:24:28 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+13:24:28 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+13:24:28 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+13:24:28 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+13:24:28 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+13:24:28 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+13:24:28 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+13:24:28 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+13:24:28 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[13:24:28] 🔐 Requesting access token for Graph API...
+[13:24:28] ✅ Access token received (valid until 14:24:27)
+13:24:29 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[13:24:41] 🔐 Requesting access token for Graph API...
+[13:24:41] ✅ Access token received (valid until 14:24:40)
+13:24:42 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+13:25:06 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 1 messages (received_after=2026-04-04 10:16:14+00:00, fetch_ts=2026-04-04T10:25:06Z)
+13:25:06 │ quotes:automation_runner             │ INFO │ 📬 1 new messages after filtering 2408 processed IDs
+13:25:07 │ quotes:automation_runner             │ INFO │ 📭 SKIP: mail 1/1 has no attachments — marking NO DRAW
+[13:25:07] 📭 דילוג על מייל 1/1 — ללא קבצים מצורפים
+13:25:07 │ quotes:src.services.email.graph_mailbox │ INFO │ 🔍 Checking category 'NO DRAW' in mailbox tal@chrom.co.il
+13:25:07 │ quotes:src.services.email.graph_mailbox │ INFO │ ✓ Category 'NO DRAW' exists (color: preset0)
+13:25:09 │ quotes:automation_runner             │ INFO │ 📭 Marked as 'NO DRAW' (no attachments)
+13:25:18 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2827 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2412}
+[13:25:18] הסבב הושלם בהצלחה
+13:25:19 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[13:25:19] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+13:30:20 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+13:30:20 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+13:30:20 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+13:30:20 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+13:30:20 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+13:30:20 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+13:30:20 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+13:30:20 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+13:30:20 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+13:30:20 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+13:30:20 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+13:30:20 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+13:30:20 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+13:30:20 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[13:30:21] 🔐 Requesting access token for Graph API...
+[13:30:21] ✅ Access token received (valid until 14:30:20)
+13:30:22 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[13:30:35] 🔐 Requesting access token for Graph API...
+[13:30:36] ✅ Access token received (valid until 14:30:35)
+13:30:36 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+13:31:00 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 10:22:06+00:00, fetch_ts=2026-04-04T10:30:59Z)
+13:31:00 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2412 processed IDs
+[13:31:00] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[13:31:01] אין מיילים חדשים בתיבה: tal@chrom.co.il
+13:31:14 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2827 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2412}
+[13:31:14] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+13:31:15 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[13:31:15] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+13:36:16 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+13:36:16 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+13:36:16 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+13:36:16 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+13:36:16 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+13:36:16 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+13:36:16 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+13:36:16 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+13:36:16 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+13:36:16 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+13:36:16 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+13:36:16 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+13:36:16 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+13:36:16 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[13:36:16] 🔐 Requesting access token for Graph API...
+[13:36:17] ✅ Access token received (valid until 14:36:16)
+13:36:17 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[13:36:26] 🔐 Requesting access token for Graph API...
+[13:36:26] ✅ Access token received (valid until 14:36:25)
+13:36:27 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+13:36:44 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 10:27:59+00:00, fetch_ts=2026-04-04T10:36:44Z)
+13:36:44 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2412 processed IDs
+[13:36:44] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[13:36:45] אין מיילים חדשים בתיבה: tal@chrom.co.il
+13:36:54 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2827 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2412}
+[13:36:54] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+13:36:55 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[13:36:55] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+13:41:57 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+13:41:57 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+13:41:57 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+13:41:57 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+13:41:57 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+13:41:57 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+13:41:57 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+13:41:57 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+13:41:57 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+13:41:57 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+13:41:57 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+13:41:57 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+13:41:57 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+13:41:57 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[13:41:57] 🔐 Requesting access token for Graph API...
+[13:41:58] ✅ Access token received (valid until 14:41:57)
+13:41:58 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[13:42:07] 🔐 Requesting access token for Graph API...
+[13:42:08] ✅ Access token received (valid until 14:42:07)
+13:42:08 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+13:42:27 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 10:33:44+00:00, fetch_ts=2026-04-04T10:42:26Z)
+13:42:27 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2412 processed IDs
+[13:42:27] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[13:42:27] אין מיילים חדשים בתיבה: tal@chrom.co.il
+13:42:37 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2827 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2412}
+[13:42:37] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+13:42:38 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[13:42:38] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+13:47:39 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+13:47:39 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+13:47:39 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+13:47:39 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+13:47:39 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+13:47:39 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+13:47:39 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+13:47:39 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+13:47:39 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+13:47:39 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+13:47:39 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+13:47:39 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+13:47:39 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+13:47:39 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[13:47:40] 🔐 Requesting access token for Graph API...
+[13:47:40] ✅ Access token received (valid until 14:47:39)
+13:47:40 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[13:47:49] 🔐 Requesting access token for Graph API...
+[13:47:50] ✅ Access token received (valid until 14:47:49)
+13:47:50 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+13:48:07 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 10:39:26+00:00, fetch_ts=2026-04-04T10:48:07Z)
+13:48:07 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2412 processed IDs
+[13:48:07] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[13:48:11] אין מיילים חדשים בתיבה: tal@chrom.co.il
+13:48:20 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2827 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2412}
+[13:48:20] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+13:48:21 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[13:48:21] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+13:53:22 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+13:53:22 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+13:53:22 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+13:53:22 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+13:53:22 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+13:53:22 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+13:53:23 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+13:53:23 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+13:53:23 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+13:53:23 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+13:53:23 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+13:53:23 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+13:53:23 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+13:53:23 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[13:53:23] 🔐 Requesting access token for Graph API...
+[13:53:23] ✅ Access token received (valid until 14:53:22)
+13:53:24 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[13:53:33] 🔐 Requesting access token for Graph API...
+[13:53:33] ✅ Access token received (valid until 14:53:32)
+13:53:34 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+13:53:52 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 10:45:07+00:00, fetch_ts=2026-04-04T10:53:51Z)
+13:53:52 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2412 processed IDs
+[13:53:52] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[13:53:52] אין מיילים חדשים בתיבה: tal@chrom.co.il
+13:54:02 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2827 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2412}
+[13:54:02] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+13:54:03 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[13:54:03] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+13:59:04 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+13:59:04 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+13:59:04 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+13:59:04 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+13:59:04 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+13:59:04 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+13:59:04 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+13:59:04 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+13:59:04 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+13:59:04 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+13:59:04 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+13:59:04 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+13:59:04 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+13:59:04 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[13:59:05] 🔐 Requesting access token for Graph API...
+[13:59:05] ✅ Access token received (valid until 14:59:04)
+13:59:06 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[13:59:15] 🔐 Requesting access token for Graph API...
+[13:59:15] ✅ Access token received (valid until 14:59:14)
+13:59:16 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+13:59:33 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 10:50:51+00:00, fetch_ts=2026-04-04T10:59:33Z)
+13:59:33 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2412 processed IDs
+[13:59:33] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[13:59:34] אין מיילים חדשים בתיבה: tal@chrom.co.il
+13:59:43 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2827 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2412}
+[13:59:43] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+13:59:44 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[13:59:44] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+14:04:45 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+14:04:45 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+14:04:45 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+14:04:45 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+14:04:45 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+14:04:45 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+14:04:45 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+14:04:45 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+14:04:45 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+14:04:45 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+14:04:45 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+14:04:45 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+14:04:45 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+14:04:45 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[14:04:46] 🔐 Requesting access token for Graph API...
+[14:04:46] ✅ Access token received (valid until 15:04:45)
+14:04:47 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[14:04:56] 🔐 Requesting access token for Graph API...
+[14:04:56] ✅ Access token received (valid until 15:04:55)
+14:04:56 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+14:05:14 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 10:56:33+00:00, fetch_ts=2026-04-04T11:05:14Z)
+14:05:14 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2412 processed IDs
+[14:05:14] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[14:05:15] אין מיילים חדשים בתיבה: tal@chrom.co.il
+14:05:25 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2827 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2412}
+[14:05:25] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+14:05:26 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[14:05:26] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+14:10:27 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+14:10:27 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+14:10:27 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+14:10:27 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+14:10:27 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+14:10:27 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+14:10:27 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+14:10:27 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+14:10:27 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+14:10:27 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+14:10:27 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+14:10:27 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+14:10:27 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+14:10:27 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[14:10:28] 🔐 Requesting access token for Graph API...
+[14:10:28] ✅ Access token received (valid until 15:10:27)
+14:10:29 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[14:10:39] 🔐 Requesting access token for Graph API...
+[14:10:39] ✅ Access token received (valid until 15:10:38)
+14:10:40 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+14:10:57 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 11:02:14+00:00, fetch_ts=2026-04-04T11:10:57Z)
+14:10:57 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2412 processed IDs
+[14:10:57] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[14:10:57] אין מיילים חדשים בתיבה: tal@chrom.co.il
+14:11:07 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2827 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2412}
+[14:11:07] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+14:11:08 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[14:11:08] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+14:16:09 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+14:16:09 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+14:16:09 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+14:16:09 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+14:16:09 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+14:16:09 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+14:16:09 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+14:16:09 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+14:16:09 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+14:16:09 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+14:16:09 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+14:16:09 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+14:16:09 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+14:16:09 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[14:16:10] 🔐 Requesting access token for Graph API...
+[14:16:10] ✅ Access token received (valid until 15:16:09)
+14:16:11 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[14:16:20] 🔐 Requesting access token for Graph API...
+[14:16:20] ✅ Access token received (valid until 15:16:19)
+14:16:21 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+14:16:39 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 11:07:57+00:00, fetch_ts=2026-04-04T11:16:38Z)
+14:16:39 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2412 processed IDs
+[14:16:39] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[14:16:39] אין מיילים חדשים בתיבה: tal@chrom.co.il
+14:16:49 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2827 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2412}
+[14:16:49] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+14:16:50 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[14:16:50] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+14:21:51 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+14:21:51 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+14:21:51 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+14:21:51 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+14:21:51 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+14:21:51 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+14:21:51 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+14:21:51 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+14:21:51 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+14:21:51 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+14:21:51 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+14:21:51 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+14:21:51 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+14:21:51 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[14:21:52] 🔐 Requesting access token for Graph API...
+[14:21:52] ✅ Access token received (valid until 15:21:51)
+14:21:53 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[14:22:02] 🔐 Requesting access token for Graph API...
+[14:22:02] ✅ Access token received (valid until 15:22:01)
+14:22:02 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+14:22:20 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 11:13:38+00:00, fetch_ts=2026-04-04T11:22:20Z)
+14:22:20 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2412 processed IDs
+[14:22:20] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[14:22:21] אין מיילים חדשים בתיבה: tal@chrom.co.il
+14:22:30 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2827 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2412}
+[14:22:30] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+14:22:31 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[14:22:31] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+14:24:27 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+14:24:27 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+14:24:27 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+14:24:27 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+14:24:27 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+14:24:27 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+14:24:27 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+14:24:27 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+14:24:27 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+14:24:27 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+14:24:27 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+14:24:27 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+14:24:27 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+14:24:27 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[14:24:28] 🔐 Requesting access token for Graph API...
+[14:24:28] ✅ Access token received (valid until 15:24:27)
+14:24:29 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[14:24:39] 🔐 Requesting access token for Graph API...
+[14:24:39] ✅ Access token received (valid until 15:24:38)
+14:24:39 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+14:24:57 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 11:19:20+00:00, fetch_ts=2026-04-04T11:24:57Z)
+14:24:57 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2412 processed IDs
+[14:24:57] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[14:24:58] אין מיילים חדשים בתיבה: tal@chrom.co.il
+14:25:08 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2827 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2412}
+[14:25:08] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+14:25:09 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[14:25:09] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+14:27:33 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+14:27:33 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+14:27:33 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+14:27:33 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+14:27:33 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+14:27:33 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+14:27:33 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+14:27:33 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+14:27:33 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+14:27:33 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+14:27:33 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+14:27:33 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+14:27:33 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+14:27:33 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[14:27:34] 🔐 Requesting access token for Graph API...
+[14:27:34] ✅ Access token received (valid until 15:27:33)
+14:27:34 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[14:27:44] 🔐 Requesting access token for Graph API...
+[14:27:44] ✅ Access token received (valid until 15:27:43)
+14:27:45 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+14:28:04 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 11:21:57+00:00, fetch_ts=2026-04-04T11:28:03Z)
+14:28:04 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2412 processed IDs
+[14:28:04] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[14:28:04] אין מיילים חדשים בתיבה: tal@chrom.co.il
+14:28:15 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2827 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2412}
+[14:28:15] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+14:28:16 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[14:28:16] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+14:30:11 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+14:30:11 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+14:30:11 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+14:30:11 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+14:30:11 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+14:30:11 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+14:30:11 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+14:30:11 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+14:30:11 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+14:30:11 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+14:30:11 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+14:30:11 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+14:30:11 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+14:30:11 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[14:30:11] 🔐 Requesting access token for Graph API...
+[14:30:12] ✅ Access token received (valid until 15:30:11)
+14:30:12 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[14:30:21] 🔐 Requesting access token for Graph API...
+[14:30:22] ✅ Access token received (valid until 15:30:21)
+14:30:22 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+14:30:51 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 11:25:03+00:00, fetch_ts=2026-04-04T11:30:51Z)
+14:30:51 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2412 processed IDs
+[14:30:51] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[14:30:52] אין מיילים חדשים בתיבה: tal@chrom.co.il
+14:31:01 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2827 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2412}
+[14:31:01] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+14:31:02 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[14:31:02] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+14:31:12 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+14:31:12 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+14:31:12 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+14:31:12 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+14:31:12 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+14:31:12 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+14:31:12 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+14:31:12 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+14:31:12 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+14:31:12 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+14:31:12 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+14:31:12 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+14:31:12 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+14:31:12 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[14:31:13] 🔐 Requesting access token for Graph API...
+[14:31:13] ✅ Access token received (valid until 15:31:12)
+14:31:14 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[14:31:24] 🔐 Requesting access token for Graph API...
+[14:31:24] ✅ Access token received (valid until 15:31:23)
+14:31:24 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+14:31:44 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 11:27:51+00:00, fetch_ts=2026-04-04T11:31:43Z)
+14:31:44 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2412 processed IDs
+[14:31:44] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[14:31:45] אין מיילים חדשים בתיבה: tal@chrom.co.il
+14:31:56 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2827 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2412}
+[14:31:56] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+14:31:57 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[14:31:57] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+14:33:17 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+14:33:17 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+14:33:17 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+14:33:17 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+14:33:17 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+14:33:17 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+14:33:17 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+14:33:17 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+14:33:17 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+14:33:17 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+14:33:17 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+14:33:17 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+14:33:17 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+14:33:17 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[14:33:18] 🔐 Requesting access token for Graph API...
+[14:33:18] ✅ Access token received (valid until 15:33:17)
+14:33:18 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[14:33:27] 🔐 Requesting access token for Graph API...
+[14:33:27] ✅ Access token received (valid until 15:33:26)
+14:33:28 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+14:33:45 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 0 messages (received_after=2026-04-04 11:28:43+00:00, fetch_ts=2026-04-04T11:33:44Z)
+14:33:45 │ quotes:automation_runner             │ INFO │ 📬 0 new messages after filtering 2412 processed IDs
+[14:33:45] בודק שוב עם scan_from_date בלבד... (tal@chrom.co.il)
+[14:33:45] אין מיילים חדשים בתיבה: tal@chrom.co.il
+14:33:55 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2827 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2412}
+[14:33:55] אין מיילים חדשים בכל התיבות | הסבב הסתיים
+14:33:56 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[14:33:56] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx

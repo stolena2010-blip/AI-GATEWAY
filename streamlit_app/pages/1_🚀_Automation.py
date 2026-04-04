@@ -26,7 +26,7 @@ from streamlit_app.backend.email_helpers import (
 )
 from streamlit_app.backend.runner_bridge import get_runner_bridge, get_pipeline_bridge
 from streamlit_app.backend.log_reader import read_log_tail, get_countdown, detect_active_run
-from streamlit_app.brand import BRAND_CSS, brand_header, sidebar_logo, profile_banner, profile_tab_css
+from streamlit_app.brand import BRAND_CSS, brand_header, sidebar_logo, profile_banner, profile_tab_css, get_profile_color
 
 
 def _is_time_in_range(now_time, start_time, end_time) -> bool:
@@ -197,6 +197,31 @@ def _render_profile_tab(profile: dict, tab_index: int):
 
     # ── Profile banner ──
     st.html(profile_banner(pn))
+
+    # ── Visual reminder for non-quotes profiles ──
+    if pn != "quotes":
+        pc = get_profile_color(pn)
+        st.html(f"""
+        <div style="
+            background: linear-gradient(90deg, {pc['bg']} 0%, rgba(239,68,68,0.08) 100%);
+            border: 2px solid {pc['accent']};
+            border-right: 6px solid #ef4444;
+            border-radius: 10px;
+            padding: 10px 18px;
+            margin-bottom: 12px;
+            direction: rtl;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        ">
+            <span style="font-size:22px;">⚠️</span>
+            <span style="font-size:15px; font-weight:700; color:#fbbf24;">
+                שימו לב! את/ה עובד/ת על תהליך
+                <span style="color:{pc['accent']}; font-weight:900;">{pc['icon']} {pc['label']}</span>
+                — לא הצעות מחיר!
+            </span>
+        </div>
+        """)
 
     engine_type = cfg.get("ai_engine", {}).get("type", "vision")
     email_cfg = cfg.get("email", {})
