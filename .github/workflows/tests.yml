@@ -31,9 +31,16 @@ jobs:
       - name: Run tests
         run: |
           python -c "import sys; print(f'Python {sys.version}')"
-          python -c "import cv2; print(f'cv2 OK: {cv2.__version__}')" || echo "cv2 import failed"
-          python -c "import PIL; print(f'PIL OK: {PIL.__version__}')" || echo "PIL import failed"
-          python -m pytest tests/ -v --tb=long 2>&1 || echo "EXIT CODE: $?"
+          python -c "import cv2; print(f'cv2 OK: {cv2.__version__}')" || echo "cv2 import FAILED"
+          python -c "import PIL; print(f'PIL OK: {PIL.__version__}')" || echo "PIL import FAILED"
+          set +e
+          python -m pytest tests/ -v --tb=long 2>&1 | tee test_output.txt
+          TEST_EXIT=${PIPESTATUS[0]}
+          echo "## Test Results" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -100 test_output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          exit $TEST_EXIT
         env:
           AZURE_OPENAI_ENDPOINT: "https://dummy.openai.azure.com/"
           AZURE_OPENAI_API_KEY: "dummy-key-for-tests"
