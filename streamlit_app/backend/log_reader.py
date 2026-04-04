@@ -30,17 +30,27 @@ def _read_jsonl_file(path: Path) -> List[Dict[str, Any]]:
     return entries
 
 
-def load_log_entries(max_entries: int = 10000) -> List[Dict[str, Any]]:
-    """Load entries from ALL automation_log*.jsonl files, deduplicated by id.
-    Matches original dashboard_gui.py behavior."""
+def load_log_entries(max_entries: int = 10000, profile_name: str = "quotes") -> List[Dict[str, Any]]:
+    """Load entries from ALL automation_log*.jsonl files for a profile, deduplicated by id."""
     seen_ids: set = set()
     all_entries: List[Dict[str, Any]] = []
 
-    # Gather all log files: main + backups + .bak + dated
-    log_files = list(LOG_DIR.glob("automation_log*.jsonl"))
-    bak = LOG_DIR / "automation_log.jsonl.bak"
-    if bak.exists() and bak not in log_files:
-        log_files.append(bak)
+    # Per-profile log directory
+    profile_dir = LOG_DIR / "data" / profile_name
+
+    # Gather log files: per-profile dir first, then legacy root (for migration)
+    log_files: List[Path] = []
+    if profile_dir.exists():
+        log_files.extend(profile_dir.glob("automation_log*.jsonl"))
+        bak = profile_dir / "automation_log.jsonl.bak"
+        if bak.exists() and bak not in log_files:
+            log_files.append(bak)
+    # Legacy root files — only for "quotes" (all legacy data is quotes)
+    if not log_files and profile_name == "quotes":
+        log_files = list(LOG_DIR.glob("automation_log*.jsonl"))
+        bak = LOG_DIR / "automation_log.jsonl.bak"
+        if bak.exists() and bak not in log_files:
+            log_files.append(bak)
 
     for path in log_files:
         for entry in _read_jsonl_file(path):
@@ -133,12 +143,14 @@ def calc_weighted_accuracy(accuracy_data: Dict[str, Any], weights: Dict[str, flo
     return (score / total) * 100
 
 
-def save_entry_field(entry_id: str, field: str, value: Any) -> bool:
+def save_entry_field(entry_id: str, field: str, value: Any, profile_name: str = "quotes") -> bool:
     """Update a single field on a log entry in-place.
     Rewrites the JSONL file with the updated entry. Returns True on success."""
-    if not JSONL_PATH.exists():
+    profile_jsonl = LOG_DIR / "data" / profile_name / "automation_log.jsonl"
+    target = profile_jsonl if profile_jsonl.exists() else JSONL_PATH
+    if not target.exists():
         return False
-    lines = JSONL_PATH.read_text(encoding="utf-8").splitlines()
+    lines = target.read_text(encoding="utf-8").splitlines()
     updated = False
     new_lines = []
     for line in lines:
@@ -158,7 +170,7 @@ def save_entry_field(entry_id: str, field: str, value: Any) -> bool:
         else:
             new_lines.append(line)
     if updated:
-        JSONL_PATH.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
+        target.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
     return updated
 
 
@@ -207,13 +219,31 @@ def _extract_timestamp(line: str) -> str:
     return "99:99:99"
 
 
-def read_log_tail(n_lines: int = 100) -> str:
-    """Read status_log.txt which contains both print() output and logger output,
-    providing the same detail level as the terminal."""
+def _get_profile_status_log(profile_name: str = "quotes") -> Path:
+    """Return the per-profile status_log.txt path."""
+    return LOG_DIR / "data" / profile_name / "status_log.txt"
+
+
+def read_log_tail(n_lines: int = 100, profile_name: str = "quotes") -> str:
+    """Read per-profile status_log.txt which contains both print() output and
+    logger output, providing the same detail level as the terminal."""
     lines: list[str] = []
 
-    # ── Primary source: status_log.txt (contains both print + logger output) ──
-    if STATUS_LOG.exists():
+    profile_log = _get_profile_status_log(profile_name)
+
+    # ── Primary source: per-profile status_log.txt ──
+    if profile_log.exists():
+        try:
+            raw = profile_log.read_text(encoding="utf-8", errors="replace").splitlines()
+            for line in raw:
+                clean = _ANSI_RE.sub('', line).strip()
+                if clean:
+                    lines.append(clean)
+        except Exception:
+            pass
+
+    # ── Fallback: legacy root status_log.txt (migration period) ──
+    if not lines and STATUS_LOG.exists():
         try:
             raw = STATUS_LOG.read_text(encoding="utf-8", errors="replace").splitlines()
             for line in raw:
@@ -253,16 +283,20 @@ def read_log_tail(n_lines: int = 100) -> str:
     return "\n".join(tail)
 
 
-def detect_active_run() -> dict:
-    """Detect active run from status_log.txt timestamps and keywords.
+def detect_active_run(profile_name: str = "quotes") -> dict:
+    """Detect active run from per-profile status_log.txt timestamps and keywords.
     Returns dict with active (bool), run_type ('heavy'|'regular'|''), email_progress ('3/5'|'').
     Works even when session_state.runner is None (e.g. after browser refresh)."""
     import re
     result = {"active": False, "run_type": "", "email_progress": ""}
-    if not STATUS_LOG.exists():
+    _log = _get_profile_status_log(profile_name)
+    # Fallback to legacy root log during migration
+    if not _log.exists():
+        _log = STATUS_LOG
+    if not _log.exists():
         return result
     try:
-        mtime = STATUS_LOG.stat().st_mtime
+        mtime = _log.stat().st_mtime
         age = datetime.now().timestamp() - mtime
         if age > 120:  # File not modified in last 2 minutes
             return result
@@ -329,15 +363,15 @@ def detect_active_run() -> dict:
     return result
 
 
-def get_countdown() -> dict:
+def get_countdown(profile_name: str = "quotes") -> dict:
     """Calculate countdown to next automation run from state + config files.
     Returns dict with next_run (str), remaining_seconds (int), remaining_text (str)."""
     import json
-    state_path = LOG_DIR / "automation_state.json"
+    profile_state = LOG_DIR / "data" / profile_name / "state.json"
     config_path = LOG_DIR / "automation_config.json"
     result = {"next_run": "", "remaining_seconds": -1, "remaining_text": ""}
     try:
-        state = json.loads(state_path.read_text(encoding="utf-8"))
+        state = json.loads(profile_state.read_text(encoding="utf-8"))
         config = json.loads(config_path.read_text(encoding="utf-8"))
     except Exception:
         return result
@@ -371,3 +405,80 @@ def get_countdown() -> dict:
 
     result["next_run"] = next_dt.strftime("%H:%M:%S")
     return result
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Multi-profile log loading
+# ═══════════════════════════════════════════════════════════════════
+
+def load_profile_log_entries(profile_name: str, max_entries: int = 5000) -> List[Dict[str, Any]]:
+    """Load log entries for a specific profile from its JSONL log file."""
+    log_path = LOG_DIR / "logs" / f"{profile_name}_log.jsonl"
+    if not log_path.exists():
+        return []
+    entries = _read_jsonl_file(log_path)
+    # Also check project root (legacy location)
+    alt_path = LOG_DIR / f"{profile_name}_log.jsonl"
+    if alt_path.exists():
+        entries.extend(_read_jsonl_file(alt_path))
+
+    def _ts(e):
+        ts = e.get("timestamp") or e.get("start_time") or ""
+        try:
+            return datetime.fromisoformat(ts.replace("Z", "+00:00")).replace(tzinfo=None)
+        except (ValueError, TypeError):
+            return datetime.min
+
+    entries.sort(key=_ts, reverse=True)
+    return entries[:max_entries]
+
+
+def load_all_profile_log_entries(
+    profile_names: Optional[List[str]] = None,
+    max_entries: int = 10000,
+) -> List[Dict[str, Any]]:
+    """Load log entries from multiple profiles, merged and sorted.
+
+    If profile_names is None, loads from all profiles + legacy log.
+    """
+    all_entries = []
+
+    # Load log entries per requested profile (or legacy/quotes as fallback)
+    if profile_names:
+        for pname in profile_names:
+            all_entries.extend(load_log_entries(max_entries, profile_name=pname))
+    else:
+        all_entries.extend(load_log_entries(max_entries))
+
+    # Per-profile logs (from logs/{profile}_log.jsonl)
+    if profile_names is None:
+        # Auto-discover from logs/ directory
+        logs_dir = LOG_DIR / "logs"
+        if logs_dir.exists():
+            for f in logs_dir.glob("*_log.jsonl"):
+                pname = f.stem.replace("_log", "")
+                all_entries.extend(load_profile_log_entries(pname, max_entries))
+    else:
+        for pname in profile_names:
+            all_entries.extend(load_profile_log_entries(pname, max_entries))
+
+    # Deduplicate by id
+    seen = set()
+    deduped = []
+    for e in all_entries:
+        eid = e.get("id", "")
+        if eid and eid in seen:
+            continue
+        if eid:
+            seen.add(eid)
+        deduped.append(e)
+
+    def _ts(e):
+        ts = e.get("timestamp") or e.get("start_time") or ""
+        try:
+            return datetime.fromisoformat(ts.replace("Z", "+00:00")).replace(tzinfo=None)
+        except (ValueError, TypeError):
+            return datetime.min
+
+    deduped.sort(key=_ts, reverse=True)
+    return deduped[:max_entries]

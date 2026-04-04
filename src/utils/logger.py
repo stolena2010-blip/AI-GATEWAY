@@ -40,6 +40,22 @@ class GUICallbackHandler(logging.Handler):
             self.handleError(record)
 
 
+class _ProfileFilter(logging.Filter):
+    """Injects the current thread's profile name into log records.
+    If a profile is registered (via automation_runner._thread_profile_names),
+    adds '[PROFILE] ' prefix to the module name for clear identification."""
+
+    def filter(self, record):
+        try:
+            from automation_runner import _get_current_profile_name
+            pname = _get_current_profile_name()
+            if pname:
+                record.name = f"{pname}:{record.name}"
+        except Exception:
+            pass
+        return True
+
+
 def setup_logging(
     log_level: str = "INFO",
     log_dir: Optional[Path] = None,
@@ -68,14 +84,18 @@ def setup_logging(
     
     # Clear existing handlers
     root_logger.handlers.clear()
+
+    # Profile-name filter (injects thread's profile into log name)
+    profile_filter = _ProfileFilter()
     
     # Console handler
     if console_output:
         console_handler = logging.StreamHandler(sys.stdout)
         console_handler.setLevel(numeric_level)
+        console_handler.addFilter(profile_filter)
         
         console_formatter = ColoredFormatter(
-            '%(asctime)s │ %(name)-28s │ %(levelname)-8s │ %(message)s',
+            '%(asctime)s │ %(name)-36s │ %(levelname)-8s │ %(message)s',
             datefmt='%H:%M:%S'
         )
         console_handler.setFormatter(console_formatter)
@@ -93,9 +113,10 @@ def setup_logging(
             encoding='utf-8'
         )
         file_handler.setLevel(numeric_level)
+        file_handler.addFilter(profile_filter)
         
         file_formatter = logging.Formatter(
-            '%(asctime)s │ %(name)-28s │ %(levelname)-8s │ %(message)s',
+            '%(asctime)s │ %(name)-36s │ %(levelname)-8s │ %(message)s',
             datefmt='%Y-%m-%d %H:%M:%S'
         )
         file_handler.setFormatter(file_formatter)
@@ -104,7 +125,8 @@ def setup_logging(
     # GUI callback handler
     if gui_callback:
         gui_handler = GUICallbackHandler(gui_callback, level=numeric_level)
-        gui_handler.setFormatter(logging.Formatter('%(asctime)s │ %(name)-28s │ %(levelname)-8s │ %(message)s', datefmt='%H:%M:%S'))
+        gui_handler.addFilter(profile_filter)
+        gui_handler.setFormatter(logging.Formatter('%(asctime)s │ %(name)-36s │ %(levelname)-8s │ %(message)s', datefmt='%H:%M:%S'))
         root_logger.addHandler(gui_handler)
 
     # Quiet noisy third-party libraries

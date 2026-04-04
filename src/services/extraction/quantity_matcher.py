@@ -19,25 +19,39 @@ from src.utils.logger import get_logger
 logger = get_logger(__name__)
 
 
+def _abs_quantity(q_str: str) -> str:
+    """ERP systems often use negative numbers for demand; take absolute value."""
+    s = str(q_str).strip()
+    if s.startswith('-'):
+        rest = s[1:].strip()
+        if rest and re.match(r'^[\d,.\'\s]+$', rest):
+            return rest
+    return s
+
+
 def _key_matches_any_drawing(eq_norm: str, drawing_norms: set) -> bool:
     """Return True if *eq_norm* plausibly refers to one of the drawings.
 
     Uses the same flexible matching as the main quantity loop:
-    exact → containment → last-5-digit suffix.
+    exact → containment → last-5-digit suffix → digit containment.
     """
     if not eq_norm:
         return False
+    eq_digits = re.sub(r'\D', '', eq_norm)
     for dn in drawing_norms:
         # exact or containment
         if eq_norm == dn or eq_norm in dn or dn in eq_norm:
             return True
-        # suffix-digit match (≥5 digits each)
-        eq_digits = re.sub(r'\D', '', eq_norm)
         dn_digits = re.sub(r'\D', '', dn)
         if len(eq_digits) >= 5 and len(dn_digits) >= 5:
+            # suffix-digit match
             suf = min(5, len(eq_digits), len(dn_digits))
             if eq_digits[-suf:] == dn_digits[-suf:]:
                 return True
+            # digit containment (e.g. drawing '21021212' in email '21021212501')
+            if len(eq_digits) >= 7 and len(dn_digits) >= 7:
+                if eq_digits in dn_digits or dn_digits in eq_digits:
+                    return True
     return False
 
 
@@ -284,10 +298,10 @@ def match_quantities_to_drawings(
             if part_num_normalized in email_parts:
                 qty_value = email_parts[part_num_normalized]
                 if isinstance(qty_value, list):
-                    cleaned_qtys = [str(q).strip().strip('()') for q in qty_value]
+                    cleaned_qtys = [_abs_quantity(str(q).strip().strip('()')) for q in qty_value]
                     quantity_str = f"({', '.join(cleaned_qtys)})"
                 else:
-                    quantity_str = str(qty_value).strip().strip('()')
+                    quantity_str = _abs_quantity(str(qty_value).strip().strip('()'))
 
                 match_type = "מייל (שורה)"
                 qty_source = "מייל"
@@ -328,14 +342,22 @@ def match_quantities_to_drawings(
                                     best_email_match = email_key
                                     best_email_score = score
                                     logger.info(f"Suffix match: '{part_num_normalized}' ~ '{email_key_normalized}' (last {suffix_len} digits)")
+                            # digit containment (e.g. drawing '21021212' in email '21021212501')
+                            elif len(part_digits) >= 7 and len(email_digits) >= 7:
+                                if part_digits in email_digits or email_digits in part_digits:
+                                    score = min(len(part_digits), len(email_digits))
+                                    if score > best_email_score:
+                                        best_email_match = email_key
+                                        best_email_score = score
+                                        logger.info(f"Digit containment match: '{part_num_normalized}' ~ '{email_key_normalized}'")
 
                 if best_email_match:
                     qty_value = email_parts[best_email_match]
                     if isinstance(qty_value, list):
-                        cleaned_qtys = [str(q).strip().strip('()') for q in qty_value]
+                        cleaned_qtys = [_abs_quantity(str(q).strip().strip('()')) for q in qty_value]
                         quantity_str = f"({', '.join(cleaned_qtys)})"
                     else:
-                        quantity_str = str(qty_value).strip().strip('()')
+                        quantity_str = _abs_quantity(str(qty_value).strip().strip('()'))
 
                     match_type = "מייל (שורה - התאמה גמישה)"
                     qty_source = "מייל"

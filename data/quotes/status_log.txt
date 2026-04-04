@@ -1,0 +1,766 @@
+11:39:45 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Stage 4: Geometric area calculation
+11:39:45 │ quotes:src.services.extraction.sanity_checks │ INFO │ Part# no match in filename, using OCR: '1040N451-001'
+11:39:45 │ quotes:src.services.extraction.sanity_checks │ INFO │ Drawing# copied from Part#
+11:39:45 │ quotes:src.services.extraction.sanity_checks │ INFO │ Confidence: HIGH (part# in filename, also drawing#)
+11:39:45 │ quotes:customer_extractor_v3_dual    │ INFO │ Customer: IAI
+11:39:45 │ quotes:customer_extractor_v3_dual    │ INFO │ ✅ Part#: 1040N451-001 (in filename)
+11:39:45 │ quotes:customer_extractor_v3_dual    │ INFO │ Item Name: HORIZONTAL BEAM
+11:39:45 │ quotes:customer_extractor_v3_dual    │ INFO │ ✅ Drawing#: 1040N451-001 (in filename)
+11:39:45 │ quotes:customer_extractor_v3_dual    │ INFO │ Revision: -
+11:39:45 │ quotes:customer_extractor_v3_dual    │ INFO │ Material: S355J2 PER EN 10025-2
+11:39:45 │ quotes:customer_extractor_v3_dual    │ INFO │ Coating: STRESS RELIEF HEAT TREATMENT SHALL BE DONE ACCORDING TO AWS D1.1:2020 PARAGRAPH 7.8.1.
+11:39:45 │ quotes:customer_extractor_v3_dual    │ INFO │ Painting: POLYURETHANE PAINT SYSTEM INSTRUCTIONS PER ELTA DOC. 5903U496-001/LATEST REVISION. DO NOT COAT AND PAINT THREADS AND MARKED AREAS.
+11:39:45 │ quotes:customer_extractor_v3_dual    │ INFO │ Colors: YELLOW BUFF, COLOR NO.23613
+11:39:45 │ quotes:customer_extractor_v3_dual    │ INFO │ Marking: IDENTIFICATION MARKING PER SPECIFICATION 5902N800-001
+11:39:45 │ quotes:customer_extractor_v3_dual    │ INFO │ Area: ~9000 cm
+11:39:45 │ quotes:customer_extractor_v3_dual    │ INFO │ Specifications: EN 10025-2, AWS D1.1:2020, AWS 5.18 ER70S-6, ELTA DOC. 5903U496-001, SAE-AMS-STD-595, 5902N800-001
+11:39:45 │ quotes:customer_extractor_v3_dual    │ INFO │ Summary: S355J2 PER EN 10025-2 | STRESS RELIEF HEAT TREATMENT SHALL BE DONE ACCORDING TO AWS D1.1:2020 PARAGRAPH 7.8.1. | POLYURETHANE PAINT SYSTEM INSTRUCTIONS PER ELTA DOC. 5903U496-001/LATEST REVISION. | מיסוך הברגות, מיסוך אזורים מסומנים, סימון זיהוי, APPLY ANTI SEIZE, C5-A LOCTITE, ON ALL THREADS. | YELLOW BUFF, COLOR NO.23613
+11:39:45 │ quotes:customer_extractor_v3_dual    │ INFO │ Notes: NOTES: 1. MATERIAL: S355J2 PER EN 10025-2. 2. THE MASTER DEFINITION FOR THIS PART IS THE 3D UNIGRAPH...
+11:39:45 │ quotes:src.pipeline.drawing_processor │ INFO │ Runtime: 79.73s | Cost: $0.0673
+11:39:45 │ quotes:customer_extractor_v3_dual    │ INFO │ [STAGE2] Stage 2: Match quantities and descriptions (1 items)...
+11:39:45 │ quotes:src.services.extraction.document_reader │ INFO │ ✓ Found: email.txt
+11:39:45 │ quotes:src.services.extraction.document_reader │ INFO │ Found per-part quantities in email/txt: 2 rows
+11:39:45 │ quotes:src.services.extraction.document_reader │ INFO │ [AI] Sending to Azure OpenAI...
+11:39:47 │ quotes:src.services.extraction.document_reader │ INFO │ ✓ AI found per-part quantities: 2 items
+11:39:47 │ quotes:src.services.extraction.document_reader │ INFO │ ℹ️ Sanitized part_quantities: dropped 2 garbage key(s), kept 0
+11:39:48 │ quotes:src.services.extraction.document_reader │ INFO │ Enhanced processing: cropping table area for Optimetal_Ltd_Request_for_Quotation_23943.pdf...
+11:39:51 │ quotes:src.services.extraction.document_reader │ INFO │ Enhanced TABLE: 2x zoom + processing (2976x3976px)
+11:39:51 │ quotes:src.services.extraction.document_reader │ INFO │ Sending PO/Quote to Vision API (449KB image)...
+[11:39:57]       💲 Stage 8 (Quote/Order Item Details) | model=gpt-5.4 | tokens: 2,579 in / 53 out | cost=$0.0072
+11:39:57 │ quotes:src.services.extraction.document_reader │ INFO │ Vision API response received for Optimetal_Ltd_Request_for_Quotation_23943.pdf
+11:39:57 │ quotes:src.services.extraction.document_reader │ INFO │ Extracted 1 items from document
+11:39:57 │ quotes:src.services.extraction.document_reader │ INFO │ Items from PDF/image documents: 1
+11:39:57 │ quotes:customer_extractor_v3_dual    │ INFO │ Email: FW: TEST...
+11:39:57 │ quotes:customer_extractor_v3_dual    │ INFO │ '1040n451001' -> Qty: ['29']
+11:39:57 │ quotes:src.services.extraction.quantity_matcher │ INFO │ Assigned from order/quote:
+11:39:57 │ quotes:src.services.extraction.quantity_matcher │ INFO │ Quantity: '29'
+11:39:57 │ quotes:src.services.extraction.quantity_matcher │ INFO │ Match Type: ספציפי למספר פריט
+11:39:57 │ quotes:src.services.extraction.quantity_matcher │ INFO │ Source: הצעה/הזמנה
+11:39:57 │ quotes:src.services.extraction.quantity_matcher │ INFO │ work_description_doc='ציפוי אבץ'
+11:39:57 │ quotes:customer_extractor_v3_dual    │ INFO │ Trying PL filename matching for items without a match...
+11:39:57 │ quotes:customer_extractor_v3_dual    │ INFO │ 1 items with specific quantity
+11:39:57 │ quotes:src.pipeline.pl_processor     │ INFO │ Updating file_classifications with associated_item for 1 PL files...
+11:39:57 │ quotes:src.pipeline.pl_processor     │ INFO │ PL: PL1040N451-001_-.pdf → associated_item: 1040N451-001
+11:39:57 │ quotes:src.pipeline.pl_processor     │ INFO │ [STAGE6] Stage 6: Extract PL data (1 parts lists)...
+11:39:57 │ quotes:src.pipeline.pl_processor     │ INFO │ Processing: PL1040N451-001_-.pdf
+11:39:57 │ quotes:src.services.reporting.pl_generator │ INFO │ PL main part number: 1040N451-001 (format: NEW_TABULAR)
+11:40:00 │ quotes:src.services.reporting.pl_generator │ INFO │ Found associated_item '1040N451-001' for PL1040N451-001_-.pdf
+11:40:00 │ quotes:src.pipeline.pl_processor     │ INFO │ Extracted 3 items from this PL ($0.0005)
+11:40:00 │ quotes:src.pipeline.pl_processor     │ INFO │ Matching 3 PL items to 1 drawings via associated_item...
+11:40:00 │ quotes:src.pipeline.pl_processor     │ INFO │ PL item → drawing 'HORIZONTAL BEAM' (associated: 1040N451-001)
+11:40:00 │ quotes:src.pipeline.pl_processor     │ INFO │ PL item → drawing 'HORIZONTAL BEAM' (associated: 1040N451-001)
+11:40:00 │ quotes:src.pipeline.pl_processor     │ INFO │ PL item → drawing 'HORIZONTAL BEAM' (associated: 1040N451-001)
+11:40:00 │ quotes:src.pipeline.pl_processor     │ INFO │ Stage 6 complete: 3 PL items extracted
+11:40:00 │ quotes:src.pipeline.pl_processor     │ INFO │ PL Part Number Override check...
+11:40:00 │ quotes:src.pipeline.pl_processor     │ INFO │ ✓ CONFIRMED: '1040N451-001' matches PL (AS PL)
+11:40:00 │ quotes:src.pipeline.pl_processor     │ INFO │ No overrides needed (OCR matches PL)
+11:40:00 │ quotes:customer_extractor_v3_dual    │ INFO │ [STAGE9] Stage 9: Smart merge descriptions (1 items)...
+11:40:31 │ quotes:src.services.extraction.stage9_merge │ INFO │ [STAGE9] Batch 1: 1 items → 1 results ($0.0189)
+11:40:31 │ quotes:src.services.extraction.stage9_merge │ INFO │ [STAGE9] Merged 1/1 items (tokens: 2,534 in / 3,656 out)
+11:40:31 │ quotes:customer_extractor_v3_dual    │ INFO │ [STAGE9] Merged 1 items ($0.0189)
+11:40:31 │ quotes:src.pipeline.folder_saver     │ INFO │ Saving files in folder '20260404_083626__FW_ TEST'...
+11:40:31 │ quotes:src.services.reporting.excel_export │ INFO │ Creating new Parts_List_Items sheet with 3 items
+11:40:31 │ quotes:src.services.reporting.excel_export │ INFO │ Added PL Items sheet with 3 items to drawing_results_20260404_083626__FW__TEST.xlsx
+11:40:31 │ quotes:src.pipeline.folder_saver     │ INFO │ ✓ Drawing analysis: drawing_results_20260404_083626__FW__TEST.xlsx (1 drawings)
+11:40:31 │ quotes:src.services.reporting.excel_export │ INFO │ Classification report saved: C:\dev DrawingAI\NEW FILES\automation\from\auto_20260404113810_tal_at_chrom_co_il_AAMkADU1\20260404_083626__FW_ TEST\file_classification_20260404_083626__FW__TEST.xlsx
+11:40:31 │ quotes:src.services.reporting.excel_export │ INFO │ 4 files classified
+11:40:31 │ quotes:src.services.reporting.excel_export │ INFO │ Metadata included: file names, titles, sizes, dates
+11:40:31 │ quotes:src.pipeline.folder_saver     │ INFO │ ✓ File mapping: file_classification_20260404_083626__FW__TEST.xlsx (4 files)
+11:40:31 │ quotes:src.pipeline.folder_saver     │ INFO │ Updating Parts_List_Items with associated_items...
+11:40:31 │ quotes:src.services.reporting.excel_export │ INFO │ Built classification map with 2 entries
+11:40:31 │ quotes:src.services.reporting.excel_export │ INFO │ ✓ Updated 3 rows with associated_items
+11:40:31 │ quotes:src.services.reporting.b2b_export │ INFO │ Creating 3 B2B text file variants...
+11:40:31 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2B file saved: B2B-0_200002-23943.txt (1 rows, 325 bytes)
+11:40:31 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2BH file saved: B2BH-0_200002-23943.txt (1 rows, 325 bytes)
+11:40:31 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2BM file saved: B2BM-0_200002-23943.txt (1 rows, 325 bytes)
+11:40:31 │ quotes:src.services.file.file_renamer │ INFO │ ✓ 1040n451-001_pdf_3ku03qab11m1h_stamped.pdf → B2BDraw_1040n451-001_pdf_3ku03qab11m1h_stamped_30.pdf
+11:40:31 │ quotes:src.services.file.file_renamer │ INFO │ ✓ PL1040N451-001_-.pdf → B2BDoc_PL1040N451-001_-_99.pdf
+11:40:31 │ quotes:src.pipeline.folder_saver     │ INFO │ Total renamed: 2 files
+11:40:31 │ quotes:customer_extractor_v3_dual    │ INFO │ Folder '20260404_083626__FW_ TEST' finished - 1 drawings
+11:40:31 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:40:31 │ quotes:src.pipeline.results_merger   │ INFO │ Copying all processed folders to TO_SEND...
+11:40:31 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:40:31 │ quotes:src.services.file.file_utils  │ INFO │ [RENAME] Renaming files in source folder...
+11:40:31 │ quotes:src.services.file.file_utils  │ INFO │ [RESULT] Renamed 0 files
+11:40:31 │ quotes:src.services.file.file_utils  │ INFO │ [METADATA] Creating ALL_METADATA.json (all files)...
+11:40:31 │ quotes:src.services.file.file_utils  │ INFO │ ✓ Created metadata: ALL_METADATA.json (2 files)
+11:40:31 │ quotes:src.services.file.file_utils  │ INFO │ [METADATA] Creating metadata.json (filtered, confidence=HIGH)...
+11:40:31 │ quotes:src.services.file.file_utils  │ INFO │ ✓ Created filtered metadata: metadata.json (2 files, confidence=HIGH)
+11:40:31 │ quotes:src.services.file.file_utils  │ INFO │ [B2B] Processing B2B file variants (confidence: HIGH)...
+11:40:31 │ quotes:src.services.file.file_utils  │ INFO │ ✓ Saved ALL variant for RERUN: ALL_B2B-0_200002-23943.txt
+11:40:31 │ quotes:src.services.file.file_utils  │ INFO │ ✓ Selected B2BH → renamed to B2B-0_200002-23943.txt
+11:40:31 │ quotes:src.services.file.file_utils  │ INFO │ Copied to TO_SEND: 20260404_083626__FW_ TEST_TO_SEND (8 files)
+11:40:31 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:40:31 │ quotes:src.pipeline.results_merger   │ INFO │ Merging files from all folders...
+11:40:31 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:40:31 │ quotes:src.pipeline.results_merger   │ INFO │ Merging drawing_results files...
+11:40:31 │ quotes:src.pipeline.results_merger   │ INFO │ Read 1 rows from drawing_results_20260404_083626__FW__TEST.xlsx
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ Read 3 PL items from drawing_results_20260404_083626__FW__TEST.xlsx
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ Adding PL Items to summary file from sub-folders...
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ Copied 3 rows from drawing_results_20260404_083626__FW__TEST.xlsx
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ Added PL Items sheet with 3 rows to SUMMARY
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ ✅ Combined drawing analysis: SUMMARY_all_results_20260404113813.xlsx (1 drawings)
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ Includes 3 combined PL items
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ 📄 Creating summary text file...
+11:40:32 │ quotes:src.services.reporting.b2b_export │ INFO │ Creating 3 B2B text file variants...
+11:40:32 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2B file saved: B2B-0_200002-20260404113813.txt (1 rows, 334 bytes)
+11:40:32 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2BH file saved: B2BH-0_200002-20260404113813.txt (1 rows, 334 bytes)
+11:40:32 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2BM file saved: B2BM-0_200002-20260404113813.txt (1 rows, 334 bytes)
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ Merging file_classification files...
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ Found 4 file classifications from current run
+11:40:32 │ quotes:src.services.reporting.excel_export │ INFO │ Classification report saved: C:\dev DrawingAI\NEW FILES\SUMMARY_all_classifications_20260404113813.xlsx
+11:40:32 │ quotes:src.services.reporting.excel_export │ INFO │ 6 files classified
+11:40:32 │ quotes:src.services.reporting.excel_export │ INFO │ Metadata included: file names, titles, sizes, dates
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ Combined file mapping: SUMMARY_all_classifications_20260404113813.xlsx (6 files)
+[11:40:32] ======================================================================
+11:40:32 │ quotes:src.core.cost_tracker         │ INFO │ ======================================================================
+[11:40:32] Cost Summary
+11:40:32 │ quotes:src.core.cost_tracker         │ INFO │ Cost Summary
+[11:40:32] ======================================================================
+11:40:32 │ quotes:src.core.cost_tracker         │ INFO │ ======================================================================
+[11:40:32] Total files processed: 1
+11:40:32 │ quotes:src.core.cost_tracker         │ INFO │ Total files processed: 1
+[11:40:32] Successful: 1
+11:40:32 │ quotes:src.core.cost_tracker         │ INFO │ Successful: 1
+[11:40:32] Tokens:
+11:40:32 │ quotes:src.core.cost_tracker         │ INFO │ Tokens:
+[11:40:32] Input:  22,013 tokens
+11:40:32 │ quotes:src.core.cost_tracker         │ INFO │ Input:  22,013 tokens
+[11:40:32] Output: 4,928 tokens
+11:40:32 │ quotes:src.core.cost_tracker         │ INFO │ Output: 4,928 tokens
+[11:40:32] Costs (Current Model):
+11:40:32 │ quotes:src.core.cost_tracker         │ INFO │ Costs (Current Model):
+[11:40:32] Input:  $0.0550 USD (0.20)
+11:40:32 │ quotes:src.core.cost_tracker         │ INFO │ Input:  $0.0550 USD (0.20)
+[11:40:32] Output: $0.0493 USD (0.18)
+11:40:32 │ quotes:src.core.cost_tracker         │ INFO │ Output: $0.0493 USD (0.18)
+11:40:32 │ quotes:src.core.cost_tracker         │ INFO │
+[11:40:32] Total:  $0.0862 USD (0.32)
+11:40:32 │ quotes:src.core.cost_tracker         │ INFO │ Total:  $0.0862 USD (0.32)
+[11:40:32] Average per drawing: $0.086156 USD (0.3188)
+11:40:32 │ quotes:src.core.cost_tracker         │ INFO │ Average per drawing: $0.086156 USD (0.3188)
+[11:40:32] ======================================================================
+11:40:32 │ quotes:src.core.cost_tracker         │ INFO │ ======================================================================
+11:40:32 │ quotes:customer_extractor_v3_dual    │ INFO │ OCR cache: 1 hits, 2 misses (33% hit rate, ~8s saved)
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ The following files were saved successfully:
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ SUMMARY_all_results_20260404113813.xlsx
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ - 1 drawings combined
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ SUMMARY_all_classifications_20260404113813.xlsx
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ - 4 files combined
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ Additional files in each subfolder:
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ - drawing_results_[subfolder].xlsx
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ - file_classification_[subfolder].xlsx
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ Final Summary Excel file: C:\dev DrawingAI\NEW FILES\SUMMARY_all_results_20260404113813.xlsx
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ Total files processed: 1
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ Folders processed: 1
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ Field Extraction Statistics:
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ - customer_name: 1/1
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ - part_number: 1/1
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ - item_name: 1/1
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ - drawing_number: 1/1
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ - revision: 1/1
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ Confidence Levels:
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ -  Full: 0  High: 1  Medium: 0  Low: 0
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ - material: 1/1
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ - coating_processes: 1/1
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ - painting_processes: 1/1
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ - colors: 1/1
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ - part_area: 1/1
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ - specifications: 1/1
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ - parts_list_page: 0/1
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ - process_summary_hebrew: 1/1
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ - notes_full_text: 1/1
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ Total execution time: 2m 19s
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ Average per drawing: 139.0s
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ API Costs: $0.0862
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:40:32 │ quotes:src.pipeline.results_merger   │ INFO │ All files saved in: C:\dev DrawingAI\NEW FILES
+11:40:32 │ quotes:automation_runner             │ INFO │ Found TO_SEND folder: 20260404_083626__FW_ TEST_TO_SEND
+11:40:32 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'PL1040N451-001_- 	1040N451-001 	- 	.pdf' WAS SENT
+11:40:32 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME '1040N451-001 	1040N451-001 	- 	.pdf' WAS SENT
+[11:40:32] שולח מייל... (tal@chrom.co.il)
+11:40:32 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'PL1040N451-001_- 	1040N451-001 	- 	.pdf' WAS SENT
+11:40:32 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME '1040N451-001 	1040N451-001 	- 	.pdf' WAS SENT
+11:40:32 │ quotes:src.services.email.graph_mailbox │ INFO │ 📎 Replacing DISPLAY_NAME 'PL1040N451-001_- 	1040N451-001 	- 	.pdf' with FILE_NAME 'B2BDoc_PL1040N451-001_-_99.pdf'
+11:40:32 │ quotes:src.services.email.graph_mailbox │ INFO │ 📎 Replacing DISPLAY_NAME '1040N451-001 	1040N451-001 	- 	.pdf' with FILE_NAME 'B2BDraw_1040n451-001_pdf_3ku03qab11m1h_stamped_30.pdf'
+11:40:33 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Email sent successfully to quotes_check@algat.co.il
+[11:40:33] מסמן מייל כמעובד... (tal@chrom.co.il)
+11:40:33 │ quotes:src.services.email.graph_mailbox │ INFO │ 🔍 Checking category 'AI Processed' in mailbox tal@chrom.co.il
+11:40:33 │ quotes:src.services.email.graph_mailbox │ INFO │ ✓ Category 'AI Processed' exists (color: preset0)
+11:40:35 │ quotes:automation_runner             │ INFO │ ✅ Marked as 'AI Processed'
+11:40:35 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2807 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2392}
+11:40:35 │ quotes:automation_runner             │ INFO │ 📧 Mail processed & saved: AAMkADU1OTQ5YzdmLWQ5... (total: 2392)
+[11:40:48] מוריד מייל 2/2 | tal@chrom.co.il: AAMkADU1
+[11:40:50] מריץ ניתוח [2/2] | tal@chrom.co.il...
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │ 📂 Prompts folder: prompts/quotes
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │ Scanning folder: C:\dev DrawingAI\NEW FILES\automation\from\auto_20260404114048_tal_at_chrom_co_il_AAMkADU1\20260404_083635__FW_ TEST111
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │ (including subfolders)
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │ 📊 B2B file confidence filter: HIGH (גבוה בלבד)
+11:40:50 │ quotes:src.pipeline.archive_extractor │ INFO │ Extracting ZIP: C1324-2090.zip -> C:\dev DrawingAI\NEW FILES\automation\from\auto_20260404114048_tal_at_chrom_co_il_AAMkADU1\20260404_083635__FW_ TEST111
+11:40:50 │ quotes:src.pipeline.archive_extractor │ INFO │ Extracted 4 files (flattened)
+11:40:50 │ quotes:src.pipeline.archive_extractor │ INFO │ Deleted ZIP after extract: C1324-2090.zip
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │ [FOLDER] Found 1 folder(s) to process
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │ [SETUP] Initializing Azure OpenAI client...
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │ [AI] Azure OpenAI: gpt-4o-vision
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │ [TIP] Press Ctrl+C during processing to skip the current file or stop
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │ [OUTPUT] Output folder: C:\dev DrawingAI\NEW FILES
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │ Target folder: 20260404_083635__FW_ TEST111
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │ ======================================================================
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │ Folder 1/1: 20260404_083635__FW_ TEST111
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │ ======================================================================
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │ Found 5 files in folder
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │ PHASE 1: File Type Classification
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │ ======================================================================
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │ [1/5]  c1324-2090-0e1_a.jt
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │  Type: 3D_MODEL
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │ 3D model file (.jt)
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │ [2/5]  c1324-2090-0e1_a.stp
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │  Type: 3D_MODEL
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │ 3D model file (.stp)
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │ [3/5]  email.txt
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │  Type: OTHER
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │ Unsupported format (.txt)
+11:40:50 │ quotes:customer_extractor_v3_dual    │ INFO │ [4/5]  md-c1324-2090-e_sheet1_a.pdf
+[11:40:55]       💲 Stage 0 (Classification/Layout/Rotation) | model=gpt-4o-vision | tokens: 1,103 in / 147 out | cost=$0.0042
+11:40:55 │ quotes:customer_extractor_v3_dual    │ INFO │  Type: DRAWING
+11:40:55 │ quotes:customer_extractor_v3_dual    │ INFO │ המסמך מכיל Title Block בפינה הימנית התחתונה עם שדות כמו PART NO., DRAWING NO., REVISION, MATERIAL, SCALE. יש קווי מתאר טכניים, קווי מידה עם חיצים ומספרים, סימונים הנדסיים כמו זוויות, רדיוסים וקוטרים, views שונים (Top, Front, Side), חתכים (Section A-A), והערות טכניות. נראה כמו תוכנית ייצור מכנית עם סמלי GD&T. (confidence: high)
+11:40:55 │ quotes:customer_extractor_v3_dual    │ INFO │ [5/5]  PL_MD-C1324-2090-E_A.PDF
+11:40:55 │ quotes:customer_extractor_v3_dual    │ INFO │  Type: PARTS_LIST
+11:40:55 │ quotes:customer_extractor_v3_dual    │ INFO │ Parts list (identified by filename)
+11:40:55 │ quotes:customer_extractor_v3_dual    │ INFO │ ======================================================================
+11:40:55 │ quotes:customer_extractor_v3_dual    │ INFO │ Classification Summary (this folder):
+11:40:55 │ quotes:customer_extractor_v3_dual    │ INFO │ ======================================================================
+11:40:55 │ quotes:customer_extractor_v3_dual    │ INFO │  3D_MODEL: 2
+11:40:55 │ quotes:customer_extractor_v3_dual    │ INFO │  OTHER: 1
+11:40:55 │ quotes:customer_extractor_v3_dual    │ INFO │  DRAWING: 1
+11:40:55 │ quotes:customer_extractor_v3_dual    │ INFO │  PARTS_LIST: 1
+11:40:55 │ quotes:customer_extractor_v3_dual    │ INFO │ Classification cost (this folder):
+11:40:55 │ quotes:customer_extractor_v3_dual    │ INFO │ Input:  1,103 tokens ($0.0028)
+11:40:55 │ quotes:customer_extractor_v3_dual    │ INFO │ Output: 147 tokens ($0.0015)
+11:40:55 │ quotes:customer_extractor_v3_dual    │ INFO │ Total:  $0.0042 USD (0.02)
+11:40:55 │ quotes:customer_extractor_v3_dual    │ INFO │ Time: 4.8 seconds
+11:40:55 │ quotes:customer_extractor_v3_dual    │ INFO │ ======================================================================
+11:40:55 │ quotes:src.pipeline.drawing_processor │ INFO │ PHASE 2: Processing 1 Drawing Files
+11:40:55 │ quotes:src.pipeline.drawing_processor │ INFO │ ======================================================================
+11:40:55 │ quotes:src.pipeline.drawing_processor │ INFO │ [1/1]  md-c1324-2090-e_sheet1_a.pdf
+11:40:56 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ pdfplumber: 72 chars
+11:40:56 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ PDF pages: 1
+[11:40:56]      Estimated dimensions at DPI 200: 3386x2402px
+[11:40:56]      High-res drawing detected (3386px) - using region extraction
+[11:40:56]      Creating overview at DPI 200...
+[11:40:56]      Overview: 3386x2402px
+[11:40:56]      Extracting high-res regions at DPI 400...
+[11:40:56]      High-res full: 6772x4804px
+[11:40:57]      title_block: 2708x1681 → 5416x3362px (2.0)
+[11:40:57]      notes: 2708x1681 → 4874x3026px (1.8)
+[11:40:57]      material_box: 1693x720 → 3047x1296px (1.8)
+[11:40:57]         📐 Asking Azure Vision about rotation...
+[11:40:59]         📐 Azure Vision response: '0'
+[11:40:59]         ✓ Azure: Rotation < 2° threshold
+11:40:59 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ ✓ Azure Vision: No significant rotation
+11:40:59 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Using high-res region extraction
+11:40:59 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Quality issues: בהיר מדי (בהירות: 249)
+[11:41:00]      Enhancing contrast (brightness: 244, contrast: 50)...
+11:41:00 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Running OCR on high-res TITLE BLOCK...
+11:41:06 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Running OCR on OVERVIEW for other stages...
+11:41:09 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Sending to GPT (8 stages selected)
+11:41:09 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ 🎯 IAI Model (OCR, score: 7)
+[11:41:13]       💲 Stage 0 (Classification/Layout/Rotation) | model=gpt-4o-vision | tokens: 1,382 in / 85 out | cost=$0.0043
+11:41:13 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Layout: TB:Bottom-Right-Medium | PN:In Title Block | DN:In Title Block | MAT:Not Visible...
+11:41:25 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Stage 1: ['customer_name', 'part_number', 'item_name', 'drawing_number', 'revision', 'validation_warnings', '_searched_for_pn_field']
+11:41:30 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Stage 2: SUCCESS - ['material', 'coating_processes', 'painting_processes', 'colors', 'marking_process', 'part_dimensions', 'specifications', 'parts_list_page', 'inserts_hardware', 'process_summary_hebrew', 'process_summary_hebrew_short']
+11:41:34 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Stage 3: NOTES extraction
+11:41:34 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ 🔍 Validating extracted NOTES...
+11:41:38 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Stage 4: Geometric area calculation
+11:41:38 │ quotes:src.services.extraction.sanity_checks │ INFO │ Drawing# no match in filename, using OCR: 'MD-C1324-2090-E'
+11:41:38 │ quotes:src.services.extraction.sanity_checks │ INFO │ Part# copied from Drawing# (no explicit P.N. field found)
+11:41:38 │ quotes:src.services.extraction.sanity_checks │ INFO │ Confidence: HIGH (part# in filename, also drawing#)
+11:41:38 │ quotes:customer_extractor_v3_dual    │ INFO │ Customer: IAI
+11:41:38 │ quotes:customer_extractor_v3_dual    │ INFO │ ✅ Part#: MD-C1324-2090-E (in filename)
+11:41:38 │ quotes:customer_extractor_v3_dual    │ INFO │ Item Name: IO-2 EMI LEFT COVER
+11:41:38 │ quotes:customer_extractor_v3_dual    │ INFO │ ✅ Drawing#: MD-C1324-2090-E (in filename)
+11:41:38 │ quotes:customer_extractor_v3_dual    │ INFO │ Revision: A
+11:41:38 │ quotes:customer_extractor_v3_dual    │ INFO │ Marking: IDENTIFY PARTS PER PS500100
+11:41:38 │ quotes:customer_extractor_v3_dual    │ INFO │ Area: 179.2 cm
+11:41:38 │ quotes:customer_extractor_v3_dual    │ INFO │ Specifications: IDENTIFY PARTS PER PS500100
+11:41:38 │ quotes:customer_extractor_v3_dual    │ INFO │ Parts List: page SEE SEPARATE PARTS LIST
+11:41:38 │ quotes:customer_extractor_v3_dual    │ INFO │ Summary: סימון IDENTIFY PARTS PER PS500100
+11:41:38 │ quotes:customer_extractor_v3_dual    │ INFO │ Notes: IDENTIFY PARTS PER PS500100...
+11:41:38 │ quotes:src.pipeline.drawing_processor │ INFO │ Runtime: 43.45s | Cost: $0.0374
+11:41:38 │ quotes:customer_extractor_v3_dual    │ INFO │ [STAGE2] Stage 2: Match quantities and descriptions (1 items)...
+11:41:38 │ quotes:src.services.extraction.document_reader │ INFO │ ✓ Found: email.txt
+11:41:38 │ quotes:src.services.extraction.document_reader │ INFO │ Found per-part quantities in email/txt: 2 rows
+11:41:38 │ quotes:src.services.extraction.document_reader │ INFO │ [AI] Sending to Azure OpenAI...
+11:41:40 │ quotes:src.services.extraction.document_reader │ INFO │ ✓ AI found per-part quantities: 2 items
+11:41:40 │ quotes:src.services.extraction.document_reader │ INFO │ ℹ️ Sanitized part_quantities: dropped 2 garbage key(s), kept 0
+11:41:40 │ quotes:src.services.extraction.document_reader │ INFO │ No PDF/image order/quote documents found — checking Excel files...
+11:41:40 │ quotes:customer_extractor_v3_dual    │ INFO │ Email: FW: TEST111...
+11:41:40 │ quotes:src.services.extraction.quantity_matcher │ INFO │ NO MATCH: Could not match 'mdc13242090e' with any item in orders/quotes
+11:41:40 │ quotes:customer_extractor_v3_dual    │ INFO │ Trying PL filename matching for items without a match...
+11:41:40 │ quotes:customer_extractor_v3_dual    │ INFO │ 0 items with specific quantity
+11:41:40 │ quotes:src.pipeline.pl_processor     │ INFO │ Updating file_classifications with associated_item for 1 PL files...
+11:41:41 │ quotes:src.pipeline.pl_processor     │ INFO │ PL: PL_MD-C1324-2090-E_A.PDF → associated_item: MD-C1324-2090-E
+11:41:41 │ quotes:src.pipeline.pl_processor     │ INFO │ [STAGE6] Stage 6: Extract PL data (1 parts lists)...
+11:41:41 │ quotes:src.pipeline.pl_processor     │ INFO │ Processing: PL_MD-C1324-2090-E_A.PDF
+11:41:43 │ quotes:src.services.reporting.pl_generator │ INFO │ Found associated_item 'MD-C1324-2090-E' for PL_MD-C1324-2090-E_A.PDF
+11:41:45 │ quotes:src.services.reporting.pl_generator │ INFO │ Structured PL: processes, material
+11:41:45 │ quotes:src.pipeline.pl_processor     │ INFO │ Extracted 2 items from this PL ($0.0007)
+11:41:45 │ quotes:src.pipeline.pl_processor     │ INFO │ Matching 2 PL items to 1 drawings via associated_item...
+11:41:45 │ quotes:src.pipeline.pl_processor     │ INFO │ PL item → drawing 'IO-2 EMI LEFT COVER' (associated: MD-C1324-2090-E)
+11:41:45 │ quotes:src.pipeline.pl_processor     │ INFO │ PL item → drawing 'IO-2 EMI LEFT COVER' (associated: MD-C1324-2090-E)
+11:41:45 │ quotes:src.pipeline.pl_processor     │ INFO │ Stage 6 complete: 2 PL items extracted
+11:41:45 │ quotes:src.pipeline.pl_processor     │ INFO │ PL Part Number Override check...
+11:41:45 │ quotes:src.pipeline.pl_processor     │ INFO │ No overrides needed (OCR matches PL)
+11:41:45 │ quotes:src.pipeline.pl_processor     │ INFO │ PL Summary Hebrew propagated to 'MD-C1324-2090-E': 1 parts
+11:41:45 │ quotes:customer_extractor_v3_dual    │ INFO │ [STAGE9] Stage 9: Smart merge descriptions (1 items)...
+11:41:55 │ quotes:src.services.extraction.stage9_merge │ INFO │ [STAGE9] Batch 1: 1 items → 1 results ($0.0080)
+11:41:55 │ quotes:src.services.extraction.stage9_merge │ INFO │ [STAGE9] Merged 1/1 items (tokens: 2,398 in / 1,217 out)
+11:41:55 │ quotes:customer_extractor_v3_dual    │ INFO │ [STAGE9] Merged 1 items ($0.0080)
+11:41:55 │ quotes:src.pipeline.folder_saver     │ INFO │ Saving files in folder '20260404_083635__FW_ TEST111'...
+11:41:55 │ quotes:src.services.reporting.excel_export │ INFO │ Creating new Parts_List_Items sheet with 2 items
+11:41:55 │ quotes:src.services.reporting.excel_export │ INFO │ Added PL Items sheet with 2 items to drawing_results_20260404_083635__FW__TEST111.xlsx
+11:41:55 │ quotes:src.pipeline.folder_saver     │ INFO │ ✓ Drawing analysis: drawing_results_20260404_083635__FW__TEST111.xlsx (1 drawings)
+11:41:55 │ quotes:src.services.reporting.excel_export │ INFO │ Classification report saved: C:\dev DrawingAI\NEW FILES\automation\from\auto_20260404114048_tal_at_chrom_co_il_AAMkADU1\20260404_083635__FW_ TEST111\file_classification_20260404_083635__FW__TEST111.xlsx
+11:41:55 │ quotes:src.services.reporting.excel_export │ INFO │ 5 files classified
+11:41:55 │ quotes:src.services.reporting.excel_export │ INFO │ Metadata included: file names, titles, sizes, dates
+11:41:55 │ quotes:src.pipeline.folder_saver     │ INFO │ ✓ File mapping: file_classification_20260404_083635__FW__TEST111.xlsx (5 files)
+11:41:55 │ quotes:src.pipeline.folder_saver     │ INFO │ Updating Parts_List_Items with associated_items...
+11:41:55 │ quotes:src.services.reporting.excel_export │ INFO │ Built classification map with 4 entries
+11:41:55 │ quotes:src.services.reporting.excel_export │ INFO │ ✓ Updated 2 rows with associated_items
+11:41:55 │ quotes:src.services.reporting.b2b_export │ INFO │ Creating 3 B2B text file variants...
+11:41:55 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2B file saved: B2B-0_200002-20260404114050.txt (1 rows, 165 bytes)
+11:41:55 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2BH file saved: B2BH-0_200002-20260404114050.txt (1 rows, 165 bytes)
+11:41:55 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2BM file saved: B2BM-0_200002-20260404114050.txt (1 rows, 165 bytes)
+11:41:55 │ quotes:src.services.file.file_renamer │ INFO │ ✓ c1324-2090-0e1_a.jt → B2BModel_c1324-2090-0e1_a_25.jt
+11:41:55 │ quotes:src.services.file.file_renamer │ INFO │ ✓ c1324-2090-0e1_a.stp → B2BModel_c1324-2090-0e1_a_25.stp
+11:41:55 │ quotes:src.services.file.file_renamer │ INFO │ ✓ md-c1324-2090-e_sheet1_a.pdf → B2BDraw_md-c1324-2090-e_sheet1_a_30.pdf
+11:41:55 │ quotes:src.services.file.file_renamer │ INFO │ ✓ PL_MD-C1324-2090-E_A.PDF → B2BDoc_PL_MD-C1324-2090-E_A_99.PDF
+11:41:55 │ quotes:src.pipeline.folder_saver     │ INFO │ Total renamed: 4 files
+11:41:55 │ quotes:customer_extractor_v3_dual    │ INFO │ Folder '20260404_083635__FW_ TEST111' finished - 1 drawings
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ Copying all processed folders to TO_SEND...
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:41:55 │ quotes:src.services.file.file_utils  │ INFO │ [RENAME] Renaming files in source folder...
+11:41:55 │ quotes:src.services.file.file_utils  │ INFO │ [RESULT] Renamed 0 files
+11:41:55 │ quotes:src.services.file.file_utils  │ INFO │ [METADATA] Creating ALL_METADATA.json (all files)...
+11:41:55 │ quotes:src.services.file.file_utils  │ INFO │ ✓ Created metadata: ALL_METADATA.json (4 files)
+11:41:55 │ quotes:src.services.file.file_utils  │ INFO │ [METADATA] Creating metadata.json (filtered, confidence=HIGH)...
+11:41:55 │ quotes:src.services.file.file_utils  │ INFO │ ✓ Created filtered metadata: metadata.json (4 files, confidence=HIGH)
+11:41:55 │ quotes:src.services.file.file_utils  │ INFO │ [B2B] Processing B2B file variants (confidence: HIGH)...
+11:41:55 │ quotes:src.services.file.file_utils  │ INFO │ ✓ Saved ALL variant for RERUN: ALL_B2B-0_200002-20260404114050.txt
+11:41:55 │ quotes:src.services.file.file_utils  │ INFO │ ✓ Selected B2BH → renamed to B2B-0_200002-20260404114050.txt
+11:41:55 │ quotes:src.services.file.file_utils  │ INFO │ Copied to TO_SEND: 20260404_083635__FW_ TEST111_TO_SEND (9 files)
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ Merging files from all folders...
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ Merging drawing_results files...
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ Read 1 rows from drawing_results_20260404_083635__FW__TEST111.xlsx
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ Read 2 PL items from drawing_results_20260404_083635__FW__TEST111.xlsx
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ Adding PL Items to summary file from sub-folders...
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ Copied 2 rows from drawing_results_20260404_083635__FW__TEST111.xlsx
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ Added PL Items sheet with 2 rows to SUMMARY
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ ✅ Combined drawing analysis: SUMMARY_all_results_20260404114050.xlsx (1 drawings)
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ Includes 2 combined PL items
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ 📄 Creating summary text file...
+11:41:55 │ quotes:src.services.reporting.b2b_export │ INFO │ Creating 3 B2B text file variants...
+11:41:55 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2B file saved: B2B-0_200002-20260404114050.txt (1 rows, 165 bytes)
+11:41:55 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2BH file saved: B2BH-0_200002-20260404114050.txt (1 rows, 165 bytes)
+11:41:55 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2BM file saved: B2BM-0_200002-20260404114050.txt (1 rows, 165 bytes)
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ Merging file_classification files...
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ Found 5 file classifications from current run
+11:41:55 │ quotes:src.services.reporting.excel_export │ INFO │ Classification report saved: C:\dev DrawingAI\NEW FILES\SUMMARY_all_classifications_20260404114050.xlsx
+11:41:55 │ quotes:src.services.reporting.excel_export │ INFO │ 9 files classified
+11:41:55 │ quotes:src.services.reporting.excel_export │ INFO │ Metadata included: file names, titles, sizes, dates
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ Combined file mapping: SUMMARY_all_classifications_20260404114050.xlsx (9 files)
+[11:41:55] ======================================================================
+11:41:55 │ quotes:src.core.cost_tracker         │ INFO │ ======================================================================
+[11:41:55] Cost Summary
+11:41:55 │ quotes:src.core.cost_tracker         │ INFO │ Cost Summary
+[11:41:55] ======================================================================
+11:41:55 │ quotes:src.core.cost_tracker         │ INFO │ ======================================================================
+[11:41:55] Total files processed: 1
+11:41:55 │ quotes:src.core.cost_tracker         │ INFO │ Total files processed: 1
+[11:41:55] Successful: 1
+11:41:55 │ quotes:src.core.cost_tracker         │ INFO │ Successful: 1
+[11:41:55] Tokens:
+11:41:55 │ quotes:src.core.cost_tracker         │ INFO │ Tokens:
+[11:41:55] Input:  15,542 tokens
+11:41:55 │ quotes:src.core.cost_tracker         │ INFO │ Input:  15,542 tokens
+[11:41:55] Output: 1,551 tokens
+11:41:55 │ quotes:src.core.cost_tracker         │ INFO │ Output: 1,551 tokens
+[11:41:55] Costs (Current Model):
+11:41:55 │ quotes:src.core.cost_tracker         │ INFO │ Costs (Current Model):
+[11:41:55] Input:  $0.0389 USD (0.14)
+11:41:55 │ quotes:src.core.cost_tracker         │ INFO │ Input:  $0.0389 USD (0.14)
+[11:41:55] Output: $0.0155 USD (0.06)
+11:41:55 │ quotes:src.core.cost_tracker         │ INFO │ Output: $0.0155 USD (0.06)
+11:41:55 │ quotes:src.core.cost_tracker         │ INFO │
+[11:41:55] Total:  $0.0454 USD (0.17)
+11:41:55 │ quotes:src.core.cost_tracker         │ INFO │ Total:  $0.0454 USD (0.17)
+[11:41:55] Average per drawing: $0.045378 USD (0.1679)
+11:41:55 │ quotes:src.core.cost_tracker         │ INFO │ Average per drawing: $0.045378 USD (0.1679)
+[11:41:55] ======================================================================
+11:41:55 │ quotes:src.core.cost_tracker         │ INFO │ ======================================================================
+11:41:55 │ quotes:customer_extractor_v3_dual    │ INFO │ OCR cache: 2 hits, 2 misses (50% hit rate, ~16s saved)
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ The following files were saved successfully:
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ SUMMARY_all_results_20260404114050.xlsx
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ - 1 drawings combined
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ SUMMARY_all_classifications_20260404114050.xlsx
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ - 5 files combined
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ Additional files in each subfolder:
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ - drawing_results_[subfolder].xlsx
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ - file_classification_[subfolder].xlsx
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ Final Summary Excel file: C:\dev DrawingAI\NEW FILES\SUMMARY_all_results_20260404114050.xlsx
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ Total files processed: 1
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ Folders processed: 1
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ Field Extraction Statistics:
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ - customer_name: 1/1
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ - part_number: 1/1
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ - item_name: 1/1
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ - drawing_number: 1/1
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ - revision: 1/1
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ Confidence Levels:
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ -  Full: 0  High: 1  Medium: 0  Low: 0
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ - material: 0/1
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ - coating_processes: 0/1
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ - painting_processes: 0/1
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ - colors: 0/1
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ - part_area: 1/1
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ - specifications: 1/1
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ - parts_list_page: 1/1
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ - process_summary_hebrew: 1/1
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ - notes_full_text: 1/1
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ Total execution time: 1m 5s
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ Average per drawing: 65.2s
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ API Costs: $0.0454
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:41:55 │ quotes:src.pipeline.results_merger   │ INFO │ All files saved in: C:\dev DrawingAI\NEW FILES
+11:41:55 │ quotes:automation_runner             │ INFO │ Found TO_SEND folder: 20260404_083635__FW_ TEST111_TO_SEND
+11:41:55 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'PL_MD-C1324-2090-E_A 	MD-C1324-2090-E 	A 	.PDF' WAS SENT
+11:41:55 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.pdf' WAS SENT
+11:41:55 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.jt' WAS SENT
+11:41:55 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.stp' WAS SENT
+[11:41:55] שולח מייל... (tal@chrom.co.il)
+11:41:55 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'PL_MD-C1324-2090-E_A 	MD-C1324-2090-E 	A 	.PDF' WAS SENT
+11:41:55 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.pdf' WAS SENT
+11:41:55 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.jt' WAS SENT
+11:41:55 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.stp' WAS SENT
+11:41:55 │ quotes:src.services.email.graph_mailbox │ INFO │ 📎 Replacing DISPLAY_NAME 'PL_MD-C1324-2090-E_A 	MD-C1324-2090-E 	A 	.PDF' with FILE_NAME 'B2BDoc_PL_MD-C1324-2090-E_A_99.PDF'
+11:41:55 │ quotes:src.services.email.graph_mailbox │ INFO │ 📎 Replacing DISPLAY_NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.pdf' with FILE_NAME 'B2BDraw_md-c1324-2090-e_sheet1_a_30.pdf'
+11:41:55 │ quotes:src.services.email.graph_mailbox │ INFO │ 📎 Replacing DISPLAY_NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.jt' with FILE_NAME 'B2BModel_c1324-2090-0e1_a_25.jt'
+11:41:55 │ quotes:src.services.email.graph_mailbox │ INFO │ 📎 Replacing DISPLAY_NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.stp' with FILE_NAME 'B2BModel_c1324-2090-0e1_a_25.stp'
+11:41:57 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Email sent successfully to quotes_check@algat.co.il
+[11:41:57] מסמן מייל כמעובד... (tal@chrom.co.il)
+11:41:57 │ quotes:src.services.email.graph_mailbox │ INFO │ 🔍 Checking category 'AI Processed' in mailbox tal@chrom.co.il
+11:41:57 │ quotes:src.services.email.graph_mailbox │ INFO │ ✓ Category 'AI Processed' exists (color: preset0)
+11:41:59 │ quotes:automation_runner             │ INFO │ ✅ Marked as 'AI Processed'
+11:41:59 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2811 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2396}
+11:41:59 │ quotes:automation_runner             │ INFO │ 📧 Mail processed & saved: AAMkADU1OTQ5YzdmLWQ5... (total: 2396)
+11:42:26 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2811 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2396}
+[11:42:26] הסבב הושלם בהצלחה
+11:42:28 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[11:42:28] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+11:47:29 │ quotes:automation_runner             │ INFO │ 🔧 Stage 0 model override: gpt-4o-vision
+11:47:29 │ quotes:automation_runner             │ INFO │ 🔧 Stage 1 model override: gpt-5.4
+11:47:29 │ quotes:automation_runner             │ INFO │ 🔧 Stage 2 model override: gpt-5.4
+11:47:29 │ quotes:automation_runner             │ INFO │ 🔧 Stage 3 model override: gpt-5.4
+11:47:29 │ quotes:automation_runner             │ INFO │ 🔧 Stage 4 model override: gpt-4o-vision
+11:47:29 │ quotes:automation_runner             │ INFO │ 🔧 Stage 5 model override: gpt-5.4
+11:47:29 │ quotes:automation_runner             │ INFO │ 🔧 Stage 6 model override: gpt-4o-mini-email
+11:47:29 │ quotes:automation_runner             │ INFO │ 🔧 Stage 7 model override: o4-mini
+11:47:29 │ quotes:automation_runner             │ INFO │ 🔧 Stage 8 model override: gpt-5.4
+11:47:29 │ quotes:automation_runner             │ INFO │ 🔧 Stage 9 model override: o4-mini
+11:47:29 │ quotes:automation_runner             │ INFO │ 🚫 Skip senders list (1): netnorth@netnorth.co
+11:47:29 │ quotes:automation_runner             │ INFO │ 🏷️ Skip categories list (2): ירדנה, נועם
+11:47:29 │ quotes:automation_runner             │ INFO │ 📅 Scan from date: 2026-04-02T20:40:00
+11:47:29 │ quotes:automation_runner             │ INFO │ 🔄 Scanning RERUN folder in separate mailbox: quotes_check@algat.co.il
+[11:47:30] 🔐 Requesting access token for Graph API...
+[11:47:30] ✅ Access token received (valid until 12:47:29)
+11:47:30 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: quotes_check
+[11:47:40] 🔐 Requesting access token for Graph API...
+[11:47:40] ✅ Access token received (valid until 12:47:39)
+11:47:40 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Connected successfully to mailbox: Tal Leskovith
+11:48:01 │ quotes:automation_runner             │ INFO │ 📬 list_messages returned 1 messages (received_after=2026-04-04 08:35:09+00:00, fetch_ts=2026-04-04T08:48:01Z)
+11:48:01 │ quotes:automation_runner             │ INFO │ 📬 1 new messages after filtering 2396 processed IDs
+[11:48:01] מוריד מייל 1/1 | tal@chrom.co.il: AAMkADU1
+[11:48:02] מריץ ניתוח [1/1] | tal@chrom.co.il...
+11:48:02 │ quotes:customer_extractor_v3_dual    │ INFO │ 📂 Prompts folder: prompts/quotes
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │ Scanning folder: C:\dev DrawingAI\NEW FILES\automation\from\auto_20260404114801_tal_at_chrom_co_il_AAMkADU1\20260404_084743__FW_ TEST111
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │ (including subfolders)
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │ 📊 B2B file confidence filter: HIGH (גבוה בלבד)
+11:48:03 │ quotes:src.pipeline.archive_extractor │ INFO │ Extracting ZIP: C1324-2090.zip -> C:\dev DrawingAI\NEW FILES\automation\from\auto_20260404114801_tal_at_chrom_co_il_AAMkADU1\20260404_084743__FW_ TEST111
+11:48:03 │ quotes:src.pipeline.archive_extractor │ INFO │ Extracted 4 files (flattened)
+11:48:03 │ quotes:src.pipeline.archive_extractor │ INFO │ Deleted ZIP after extract: C1324-2090.zip
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │ [FOLDER] Found 1 folder(s) to process
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │ [SETUP] Initializing Azure OpenAI client...
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │ [AI] Azure OpenAI: gpt-4o-vision
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │ [TIP] Press Ctrl+C during processing to skip the current file or stop
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │ [OUTPUT] Output folder: C:\dev DrawingAI\NEW FILES
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │ Target folder: 20260404_084743__FW_ TEST111
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │ ======================================================================
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │ Folder 1/1: 20260404_084743__FW_ TEST111
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │ ======================================================================
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │ Found 5 files in folder
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │ PHASE 1: File Type Classification
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │ ======================================================================
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │ [1/5]  c1324-2090-0e1_a.jt
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │  Type: 3D_MODEL
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │ 3D model file (.jt)
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │ [2/5]  c1324-2090-0e1_a.stp
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │  Type: 3D_MODEL
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │ 3D model file (.stp)
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │ [3/5]  email.txt
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │  Type: OTHER
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │ Unsupported format (.txt)
+11:48:03 │ quotes:customer_extractor_v3_dual    │ INFO │ [4/5]  md-c1324-2090-e_sheet1_a.pdf
+[11:48:06]       💲 Stage 0 (Classification/Layout/Rotation) | model=gpt-4o-vision | tokens: 1,103 in / 144 out | cost=$0.0042
+11:48:06 │ quotes:customer_extractor_v3_dual    │ INFO │  Type: DRAWING
+11:48:06 │ quotes:customer_extractor_v3_dual    │ INFO │ המסמך מכיל Title Block בפינה הימנית התחתונה עם שדות כמו PART NO., DRAWING NO., REVISION, MATERIAL, SCALE. יש קווי מתאר טכניים, קווי מידה עם חיצים ומספרים, סימונים הנדסיים כמו זוויות, רדיוסים וקוטרים. בנוסף, יש views שונים (Front, Side), חתכים (Section A-A), והערות טכניות. זהו שרטוט הנדסי ברור. (confidence: high)
+11:48:06 │ quotes:customer_extractor_v3_dual    │ INFO │ [5/5]  PL_MD-C1324-2090-E_A.PDF
+11:48:06 │ quotes:customer_extractor_v3_dual    │ INFO │  Type: PARTS_LIST
+11:48:06 │ quotes:customer_extractor_v3_dual    │ INFO │ Parts list (identified by filename)
+11:48:06 │ quotes:customer_extractor_v3_dual    │ INFO │ ======================================================================
+11:48:06 │ quotes:customer_extractor_v3_dual    │ INFO │ Classification Summary (this folder):
+11:48:06 │ quotes:customer_extractor_v3_dual    │ INFO │ ======================================================================
+11:48:06 │ quotes:customer_extractor_v3_dual    │ INFO │  3D_MODEL: 2
+11:48:06 │ quotes:customer_extractor_v3_dual    │ INFO │  OTHER: 1
+11:48:06 │ quotes:customer_extractor_v3_dual    │ INFO │  DRAWING: 1
+11:48:06 │ quotes:customer_extractor_v3_dual    │ INFO │  PARTS_LIST: 1
+11:48:06 │ quotes:customer_extractor_v3_dual    │ INFO │ Classification cost (this folder):
+11:48:06 │ quotes:customer_extractor_v3_dual    │ INFO │ Input:  1,103 tokens ($0.0028)
+11:48:06 │ quotes:customer_extractor_v3_dual    │ INFO │ Output: 144 tokens ($0.0014)
+11:48:06 │ quotes:customer_extractor_v3_dual    │ INFO │ Total:  $0.0042 USD (0.02)
+11:48:06 │ quotes:customer_extractor_v3_dual    │ INFO │ Time: 3.7 seconds
+11:48:06 │ quotes:customer_extractor_v3_dual    │ INFO │ ======================================================================
+11:48:06 │ quotes:src.pipeline.drawing_processor │ INFO │ PHASE 2: Processing 1 Drawing Files
+11:48:06 │ quotes:src.pipeline.drawing_processor │ INFO │ ======================================================================
+11:48:06 │ quotes:src.pipeline.drawing_processor │ INFO │ [1/1]  md-c1324-2090-e_sheet1_a.pdf
+11:48:06 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ pdfplumber: 72 chars
+11:48:06 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ PDF pages: 1
+[11:48:06]      Estimated dimensions at DPI 200: 3386x2402px
+[11:48:06]      High-res drawing detected (3386px) - using region extraction
+[11:48:06]      Creating overview at DPI 200...
+[11:48:07]      Overview: 3386x2402px
+[11:48:07]      Extracting high-res regions at DPI 400...
+[11:48:07]      High-res full: 6772x4804px
+[11:48:07]      title_block: 2708x1681 → 5416x3362px (2.0)
+[11:48:07]      notes: 2708x1681 → 4874x3026px (1.8)
+[11:48:07]      material_box: 1693x720 → 3047x1296px (1.8)
+[11:48:07]         📐 Asking Azure Vision about rotation...
+[11:48:09]         📐 Azure Vision response: '0'
+[11:48:09]         ✓ Azure: Rotation < 2° threshold
+11:48:09 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ ✓ Azure Vision: No significant rotation
+11:48:09 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Using high-res region extraction
+11:48:10 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Quality issues: בהיר מדי (בהירות: 249)
+[11:48:10]      Enhancing contrast (brightness: 244, contrast: 50)...
+11:48:10 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Running OCR on high-res TITLE BLOCK...
+11:48:16 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Running OCR on OVERVIEW for other stages...
+11:48:19 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Sending to GPT (8 stages selected)
+11:48:19 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ 🎯 IAI Model (OCR, score: 7)
+[11:48:23]       💲 Stage 0 (Classification/Layout/Rotation) | model=gpt-4o-vision | tokens: 1,382 in / 90 out | cost=$0.0044
+11:48:23 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Layout: TB:Bottom-Right-Medium | PN:In-Title-Block | DN:In-Title-Block | MAT:Not-Visible...
+11:48:35 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Stage 1: ['customer_name', 'part_number', 'item_name', 'drawing_number', 'revision', 'validation_warnings', '_searched_for_pn_field']
+11:48:50 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Stage 2: SUCCESS - ['material', 'coating_processes', 'painting_processes', 'colors', 'marking_process', 'part_dimensions', 'specifications', 'parts_list_page', 'inserts_hardware', 'process_summary_hebrew', 'process_summary_hebrew_short']
+11:48:55 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Stage 3: NOTES extraction
+11:48:55 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ 🔍 Validating extracted NOTES...
+11:48:59 │ quotes:src.services.extraction.drawing_pipeline │ INFO │ Stage 4: Geometric area calculation
+11:48:59 │ quotes:src.services.extraction.sanity_checks │ INFO │ Drawing# no match in filename, using OCR: 'MD-C1324-2090-E'
+11:48:59 │ quotes:src.services.extraction.sanity_checks │ INFO │ Part# copied from Drawing# (no explicit P.N. field found)
+11:48:59 │ quotes:src.services.extraction.sanity_checks │ INFO │ Confidence: HIGH (part# in filename, also drawing#)
+11:48:59 │ quotes:customer_extractor_v3_dual    │ INFO │ Customer: IAI
+11:48:59 │ quotes:customer_extractor_v3_dual    │ INFO │ ✅ Part#: MD-C1324-2090-E (in filename)
+11:48:59 │ quotes:customer_extractor_v3_dual    │ INFO │ Item Name: IO-2 EMI LEFT COVER
+11:48:59 │ quotes:customer_extractor_v3_dual    │ INFO │ ✅ Drawing#: MD-C1324-2090-E (in filename)
+11:48:59 │ quotes:customer_extractor_v3_dual    │ INFO │ Revision: A
+11:48:59 │ quotes:customer_extractor_v3_dual    │ INFO │ Marking: IDENTIFY PARTS PER PS500100
+11:48:59 │ quotes:customer_extractor_v3_dual    │ INFO │ Area: 179.2 cm
+11:48:59 │ quotes:customer_extractor_v3_dual    │ INFO │ Specifications: PS500100
+11:48:59 │ quotes:customer_extractor_v3_dual    │ INFO │ Parts List: page SEE SEPARATE PARTS LIST
+11:48:59 │ quotes:customer_extractor_v3_dual    │ INFO │ Summary: סימון IDENTIFY PARTS PER PS500100
+11:48:59 │ quotes:customer_extractor_v3_dual    │ INFO │ Notes: IDENTIFY PARTS PER PS500100...
+11:48:59 │ quotes:src.pipeline.drawing_processor │ INFO │ Runtime: 52.76s | Cost: $0.0372
+11:48:59 │ quotes:customer_extractor_v3_dual    │ INFO │ [STAGE2] Stage 2: Match quantities and descriptions (1 items)...
+11:48:59 │ quotes:src.services.extraction.document_reader │ INFO │ ✓ Found: email.txt
+11:48:59 │ quotes:src.services.extraction.document_reader │ INFO │ Found per-part quantities in email/txt: 2 rows
+11:48:59 │ quotes:src.services.extraction.document_reader │ INFO │ [AI] Sending to Azure OpenAI...
+11:49:01 │ quotes:src.services.extraction.document_reader │ INFO │ ✓ AI found per-part quantities: 2 items
+11:49:01 │ quotes:src.services.extraction.document_reader │ INFO │ ℹ️ Sanitized part_quantities: dropped 2 garbage key(s), kept 0
+11:49:01 │ quotes:src.services.extraction.document_reader │ INFO │ No PDF/image order/quote documents found — checking Excel files...
+11:49:01 │ quotes:customer_extractor_v3_dual    │ INFO │ Email: FW: TEST111...
+11:49:01 │ quotes:src.services.extraction.quantity_matcher │ INFO │ NO MATCH: Could not match 'mdc13242090e' with any item in orders/quotes
+11:49:01 │ quotes:customer_extractor_v3_dual    │ INFO │ Trying PL filename matching for items without a match...
+11:49:01 │ quotes:customer_extractor_v3_dual    │ INFO │ 0 items with specific quantity
+11:49:01 │ quotes:src.pipeline.pl_processor     │ INFO │ Updating file_classifications with associated_item for 1 PL files...
+11:49:01 │ quotes:src.pipeline.pl_processor     │ INFO │ PL: PL_MD-C1324-2090-E_A.PDF → associated_item: MD-C1324-2090-E
+11:49:01 │ quotes:src.pipeline.pl_processor     │ INFO │ [STAGE6] Stage 6: Extract PL data (1 parts lists)...
+11:49:01 │ quotes:src.pipeline.pl_processor     │ INFO │ Processing: PL_MD-C1324-2090-E_A.PDF
+11:49:03 │ quotes:src.services.reporting.pl_generator │ INFO │ Found associated_item 'MD-C1324-2090-E' for PL_MD-C1324-2090-E_A.PDF
+11:49:05 │ quotes:src.services.reporting.pl_generator │ INFO │ Structured PL: processes, material
+11:49:05 │ quotes:src.pipeline.pl_processor     │ INFO │ Extracted 2 items from this PL ($0.0007)
+11:49:05 │ quotes:src.pipeline.pl_processor     │ INFO │ Matching 2 PL items to 1 drawings via associated_item...
+11:49:05 │ quotes:src.pipeline.pl_processor     │ INFO │ PL item → drawing 'IO-2 EMI LEFT COVER' (associated: MD-C1324-2090-E)
+11:49:05 │ quotes:src.pipeline.pl_processor     │ INFO │ PL item → drawing 'IO-2 EMI LEFT COVER' (associated: MD-C1324-2090-E)
+11:49:05 │ quotes:src.pipeline.pl_processor     │ INFO │ Stage 6 complete: 2 PL items extracted
+11:49:05 │ quotes:src.pipeline.pl_processor     │ INFO │ PL Part Number Override check...
+11:49:05 │ quotes:src.pipeline.pl_processor     │ INFO │ No overrides needed (OCR matches PL)
+11:49:05 │ quotes:src.pipeline.pl_processor     │ INFO │ PL Summary Hebrew propagated to 'MD-C1324-2090-E': 1 parts
+11:49:05 │ quotes:customer_extractor_v3_dual    │ INFO │ [STAGE9] Stage 9: Smart merge descriptions (1 items)...
+11:49:14 │ quotes:src.services.extraction.stage9_merge │ INFO │ [STAGE9] Batch 1: 1 items → 1 results ($0.0074)
+11:49:14 │ quotes:src.services.extraction.stage9_merge │ INFO │ [STAGE9] Merged 1/1 items (tokens: 2,393 in / 1,090 out)
+11:49:14 │ quotes:customer_extractor_v3_dual    │ INFO │ [STAGE9] Merged 1 items ($0.0074)
+11:49:14 │ quotes:src.pipeline.folder_saver     │ INFO │ Saving files in folder '20260404_084743__FW_ TEST111'...
+11:49:14 │ quotes:src.services.reporting.excel_export │ INFO │ Creating new Parts_List_Items sheet with 2 items
+11:49:14 │ quotes:src.services.reporting.excel_export │ INFO │ Added PL Items sheet with 2 items to drawing_results_20260404_084743__FW__TEST111.xlsx
+11:49:14 │ quotes:src.pipeline.folder_saver     │ INFO │ ✓ Drawing analysis: drawing_results_20260404_084743__FW__TEST111.xlsx (1 drawings)
+11:49:14 │ quotes:src.services.reporting.excel_export │ INFO │ Classification report saved: C:\dev DrawingAI\NEW FILES\automation\from\auto_20260404114801_tal_at_chrom_co_il_AAMkADU1\20260404_084743__FW_ TEST111\file_classification_20260404_084743__FW__TEST111.xlsx
+11:49:14 │ quotes:src.services.reporting.excel_export │ INFO │ 5 files classified
+11:49:14 │ quotes:src.services.reporting.excel_export │ INFO │ Metadata included: file names, titles, sizes, dates
+11:49:14 │ quotes:src.pipeline.folder_saver     │ INFO │ ✓ File mapping: file_classification_20260404_084743__FW__TEST111.xlsx (5 files)
+11:49:14 │ quotes:src.pipeline.folder_saver     │ INFO │ Updating Parts_List_Items with associated_items...
+11:49:14 │ quotes:src.services.reporting.excel_export │ INFO │ Built classification map with 4 entries
+11:49:14 │ quotes:src.services.reporting.excel_export │ INFO │ ✓ Updated 2 rows with associated_items
+11:49:14 │ quotes:src.services.reporting.b2b_export │ INFO │ Creating 3 B2B text file variants...
+11:49:14 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2B file saved: B2B-0_200002-20260404114803.txt (1 rows, 165 bytes)
+11:49:14 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2BH file saved: B2BH-0_200002-20260404114803.txt (1 rows, 165 bytes)
+11:49:14 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2BM file saved: B2BM-0_200002-20260404114803.txt (1 rows, 165 bytes)
+11:49:14 │ quotes:src.services.file.file_renamer │ INFO │ ✓ c1324-2090-0e1_a.jt → B2BModel_c1324-2090-0e1_a_25.jt
+11:49:14 │ quotes:src.services.file.file_renamer │ INFO │ ✓ c1324-2090-0e1_a.stp → B2BModel_c1324-2090-0e1_a_25.stp
+11:49:14 │ quotes:src.services.file.file_renamer │ INFO │ ✓ md-c1324-2090-e_sheet1_a.pdf → B2BDraw_md-c1324-2090-e_sheet1_a_30.pdf
+11:49:14 │ quotes:src.services.file.file_renamer │ INFO │ ✓ PL_MD-C1324-2090-E_A.PDF → B2BDoc_PL_MD-C1324-2090-E_A_99.PDF
+11:49:14 │ quotes:src.pipeline.folder_saver     │ INFO │ Total renamed: 4 files
+11:49:14 │ quotes:customer_extractor_v3_dual    │ INFO │ Folder '20260404_084743__FW_ TEST111' finished - 1 drawings
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ Copying all processed folders to TO_SEND...
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:49:14 │ quotes:src.services.file.file_utils  │ INFO │ [RENAME] Renaming files in source folder...
+11:49:14 │ quotes:src.services.file.file_utils  │ INFO │ [RESULT] Renamed 0 files
+11:49:14 │ quotes:src.services.file.file_utils  │ INFO │ [METADATA] Creating ALL_METADATA.json (all files)...
+11:49:14 │ quotes:src.services.file.file_utils  │ INFO │ ✓ Created metadata: ALL_METADATA.json (4 files)
+11:49:14 │ quotes:src.services.file.file_utils  │ INFO │ [METADATA] Creating metadata.json (filtered, confidence=HIGH)...
+11:49:14 │ quotes:src.services.file.file_utils  │ INFO │ ✓ Created filtered metadata: metadata.json (4 files, confidence=HIGH)
+11:49:14 │ quotes:src.services.file.file_utils  │ INFO │ [B2B] Processing B2B file variants (confidence: HIGH)...
+11:49:14 │ quotes:src.services.file.file_utils  │ INFO │ ✓ Saved ALL variant for RERUN: ALL_B2B-0_200002-20260404114803.txt
+11:49:14 │ quotes:src.services.file.file_utils  │ INFO │ ✓ Selected B2BH → renamed to B2B-0_200002-20260404114803.txt
+11:49:14 │ quotes:src.services.file.file_utils  │ INFO │ Copied to TO_SEND: 20260404_084743__FW_ TEST111_TO_SEND (9 files)
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ Merging files from all folders...
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ Merging drawing_results files...
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ Read 1 rows from drawing_results_20260404_084743__FW__TEST111.xlsx
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ Read 2 PL items from drawing_results_20260404_084743__FW__TEST111.xlsx
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ Adding PL Items to summary file from sub-folders...
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ Copied 2 rows from drawing_results_20260404_084743__FW__TEST111.xlsx
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ Added PL Items sheet with 2 rows to SUMMARY
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ ✅ Combined drawing analysis: SUMMARY_all_results_20260404114803.xlsx (1 drawings)
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ Includes 2 combined PL items
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ 📄 Creating summary text file...
+11:49:14 │ quotes:src.services.reporting.b2b_export │ INFO │ Creating 3 B2B text file variants...
+11:49:14 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2B file saved: B2B-0_200002-20260404114803.txt (1 rows, 165 bytes)
+11:49:14 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2BH file saved: B2BH-0_200002-20260404114803.txt (1 rows, 165 bytes)
+11:49:14 │ quotes:src.services.reporting.b2b_export │ INFO │ ✓ B2BM file saved: B2BM-0_200002-20260404114803.txt (1 rows, 165 bytes)
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ Merging file_classification files...
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ Found 5 file classifications from current run
+11:49:14 │ quotes:src.services.reporting.excel_export │ INFO │ Classification report saved: C:\dev DrawingAI\NEW FILES\SUMMARY_all_classifications_20260404114803.xlsx
+11:49:14 │ quotes:src.services.reporting.excel_export │ INFO │ 9 files classified
+11:49:14 │ quotes:src.services.reporting.excel_export │ INFO │ Metadata included: file names, titles, sizes, dates
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ Combined file mapping: SUMMARY_all_classifications_20260404114803.xlsx (9 files)
+[11:49:14] ======================================================================
+11:49:14 │ quotes:src.core.cost_tracker         │ INFO │ ======================================================================
+[11:49:14] Cost Summary
+11:49:14 │ quotes:src.core.cost_tracker         │ INFO │ Cost Summary
+[11:49:14] ======================================================================
+11:49:14 │ quotes:src.core.cost_tracker         │ INFO │ ======================================================================
+[11:49:14] Total files processed: 1
+11:49:14 │ quotes:src.core.cost_tracker         │ INFO │ Total files processed: 1
+[11:49:14] Successful: 1
+11:49:14 │ quotes:src.core.cost_tracker         │ INFO │ Successful: 1
+[11:49:14] Tokens:
+11:49:14 │ quotes:src.core.cost_tracker         │ INFO │ Tokens:
+[11:49:14] Input:  15,537 tokens
+11:49:14 │ quotes:src.core.cost_tracker         │ INFO │ Input:  15,537 tokens
+[11:49:14] Output: 1,410 tokens
+11:49:14 │ quotes:src.core.cost_tracker         │ INFO │ Output: 1,410 tokens
+[11:49:14] Costs (Current Model):
+11:49:14 │ quotes:src.core.cost_tracker         │ INFO │ Costs (Current Model):
+[11:49:14] Input:  $0.0388 USD (0.14)
+11:49:14 │ quotes:src.core.cost_tracker         │ INFO │ Input:  $0.0388 USD (0.14)
+[11:49:14] Output: $0.0141 USD (0.05)
+11:49:14 │ quotes:src.core.cost_tracker         │ INFO │ Output: $0.0141 USD (0.05)
+11:49:14 │ quotes:src.core.cost_tracker         │ INFO │
+[11:49:14] Total:  $0.0446 USD (0.16)
+11:49:14 │ quotes:src.core.cost_tracker         │ INFO │ Total:  $0.0446 USD (0.16)
+[11:49:14] Average per drawing: $0.044578 USD (0.1649)
+11:49:14 │ quotes:src.core.cost_tracker         │ INFO │ Average per drawing: $0.044578 USD (0.1649)
+[11:49:14] ======================================================================
+11:49:14 │ quotes:src.core.cost_tracker         │ INFO │ ======================================================================
+11:49:14 │ quotes:customer_extractor_v3_dual    │ INFO │ OCR cache: 2 hits, 2 misses (50% hit rate, ~16s saved)
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ The following files were saved successfully:
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ SUMMARY_all_results_20260404114803.xlsx
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ - 1 drawings combined
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ SUMMARY_all_classifications_20260404114803.xlsx
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ - 5 files combined
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ Additional files in each subfolder:
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ - drawing_results_[subfolder].xlsx
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ - file_classification_[subfolder].xlsx
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ Final Summary Excel file: C:\dev DrawingAI\NEW FILES\SUMMARY_all_results_20260404114803.xlsx
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ Total files processed: 1
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ Folders processed: 1
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ Field Extraction Statistics:
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ - customer_name: 1/1
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ - part_number: 1/1
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ - item_name: 1/1
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ - drawing_number: 1/1
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ - revision: 1/1
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ Confidence Levels:
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ -  Full: 0  High: 1  Medium: 0  Low: 0
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ - material: 0/1
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ - coating_processes: 0/1
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ - painting_processes: 0/1
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ - colors: 0/1
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ - part_area: 1/1
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ - specifications: 1/1
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ - parts_list_page: 1/1
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ - process_summary_hebrew: 1/1
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ - notes_full_text: 1/1
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ Total execution time: 1m 11s
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ Average per drawing: 71.7s
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ API Costs: $0.0446
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ ======================================================================
+11:49:14 │ quotes:src.pipeline.results_merger   │ INFO │ All files saved in: C:\dev DrawingAI\NEW FILES
+11:49:14 │ quotes:automation_runner             │ INFO │ Found TO_SEND folder: 20260404_084743__FW_ TEST111_TO_SEND
+11:49:14 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'PL_MD-C1324-2090-E_A 	MD-C1324-2090-E 	A 	.PDF' WAS SENT
+11:49:14 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.pdf' WAS SENT
+11:49:14 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.jt' WAS SENT
+11:49:14 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.stp' WAS SENT
+[11:49:14] שולח מייל... (tal@chrom.co.il)
+11:49:14 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'PL_MD-C1324-2090-E_A 	MD-C1324-2090-E 	A 	.PDF' WAS SENT
+11:49:14 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.pdf' WAS SENT
+11:49:14 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.jt' WAS SENT
+11:49:14 │ quotes:automation_runner             │ INFO │ FILE WITH DISPLAY NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.stp' WAS SENT
+11:49:14 │ quotes:src.services.email.graph_mailbox │ INFO │ 📎 Replacing DISPLAY_NAME 'PL_MD-C1324-2090-E_A 	MD-C1324-2090-E 	A 	.PDF' with FILE_NAME 'B2BDoc_PL_MD-C1324-2090-E_A_99.PDF'
+11:49:14 │ quotes:src.services.email.graph_mailbox │ INFO │ 📎 Replacing DISPLAY_NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.pdf' with FILE_NAME 'B2BDraw_md-c1324-2090-e_sheet1_a_30.pdf'
+11:49:14 │ quotes:src.services.email.graph_mailbox │ INFO │ 📎 Replacing DISPLAY_NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.jt' with FILE_NAME 'B2BModel_c1324-2090-0e1_a_25.jt'
+11:49:14 │ quotes:src.services.email.graph_mailbox │ INFO │ 📎 Replacing DISPLAY_NAME 'MD-C1324-2090-E 	MD-C1324-2090-E 	A 	.stp' with FILE_NAME 'B2BModel_c1324-2090-0e1_a_25.stp'
+11:49:16 │ quotes:src.services.email.graph_mailbox │ INFO │ ✅ Email sent successfully to quotes_check@algat.co.il
+[11:49:16] מסמן מייל כמעובד... (tal@chrom.co.il)
+11:49:16 │ quotes:src.services.email.graph_mailbox │ INFO │ 🔍 Checking category 'AI Processed' in mailbox tal@chrom.co.il
+11:49:16 │ quotes:src.services.email.graph_mailbox │ INFO │ ✓ Category 'AI Processed' exists (color: preset0)
+11:49:17 │ quotes:automation_runner             │ INFO │ ✅ Marked as 'AI Processed'
+11:49:17 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2815 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2400}
+11:49:17 │ quotes:automation_runner             │ INFO │ 📧 Mail processed & saved: AAMkADU1OTQ5YzdmLWQ5... (total: 2400)
+11:49:36 │ quotes:automation_runner             │ INFO │ 💾 State saved: 2815 total IDs, mailboxes: {'galina@algat.co.il': 2427, 'quotes_check@algat.co.il': 385, 'tal@chrom.co.il': 2400}
+[11:49:36] הסבב הושלם בהצלחה
+11:49:38 │ quotes:automation_runner             │ INFO │ 📊 Scheduler report saved: C:\dev DrawingAI\reports\schedule_report_latest.xlsx
+[11:49:38] 📊 דוח נשמר: C:\dev DrawingAI\reports\schedule_report_latest.xlsx

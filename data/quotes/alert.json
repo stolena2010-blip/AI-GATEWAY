@@ -1,0 +1,6 @@
+{
+  "type": "failure",
+  "message": "Mail AAMkADU1 failed: cannot import name '_build_drawing_part_map' from 'customer_extractor_v3_dual' (C:\\dev DrawingAI\\customer_extractor_v3_dual.py)",
+  "timestamp": "2026-04-03T16:06:34.950329",
+  "pid": 14880
+}

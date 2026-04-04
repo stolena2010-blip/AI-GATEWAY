@@ -36,6 +36,38 @@ from src.utils.prompt_loader import load_prompt
 logger = get_logger(__name__)
 
 
+def _extract_contextual_quantities(text: str) -> List[str]:
+    """Extract quantities only when they appear in quantity-like context.
+
+    This avoids splitting part numbers like 9408B384-01 into fake quantities.
+    """
+    if not text:
+        return []
+
+    found: List[str] = []
+    seen = set()
+
+    patterns = [
+        # Hebrew quantity units: 17 יח / 17 יח' / 17 יחידות
+        r"(?<![A-Za-z0-9\-])(\d{1,6})(?![A-Za-z0-9\-])\s*(?:יח(?:ידות)?['\"׳]?)",
+        # English quantity units: 17 qty / 17 pcs / 17 units
+        r"(?<![A-Za-z0-9\-])(\d{1,6})(?![A-Za-z0-9\-])\s*(?:qty|pcs?|units?)\b",
+        # Marker before number: כמות: 17 / qty=17 / quantity 17
+        r"(?:כמות|qty|quantity)\s*[:=\-]?\s*(\d{1,6})\b",
+        # Total markers that are often quantity defaults: סהכ 30
+        r'(?:סה["\u0027׳]?כ|total)\s*[:=\-]?\s*(\d{1,6})\b',
+    ]
+
+    for pat in patterns:
+        for m in re.finditer(pat, text, flags=re.IGNORECASE):
+            q = m.group(1).lstrip('0') or '0'
+            if q not in seen:
+                seen.add(q)
+                found.append(q)
+
+    return found
+
+
 # ── public API ──────────────────────────────────────────────────────────
 __all__ = [
     "_read_email_content",
@@ -407,7 +439,8 @@ def _read_email_content(folder_path: Path, client: Optional[AzureOpenAI] = None)
 
                         # General quantity: can be number ("50"), range ("10-20"),
                         # or comma-separated ("3, 5, 10").
-                        # If it contains Hebrew/English words → extract just numbers.
+                        # If it contains words, only extract numbers with quantity context
+                        # (יח/כמות/qty) to avoid pulling digits from part numbers.
                         if general_quantity:
                             gq_str = str(general_quantity).strip()
                             # Check if it's a "quantity expression" (digits + separators only)
@@ -417,11 +450,11 @@ def _read_email_content(folder_path: Path, client: Optional[AzureOpenAI] = None)
                                 # Pure quantity expression → keep as-is
                                 result['general_quantities'] = [gq_str]
                             else:
-                                # Text with numbers — extract all numeric values
-                                nums = re.findall(r'\d+', gq_str)
+                                # Text with mixed content — keep only quantity-like numbers
+                                nums = _extract_contextual_quantities(gq_str)
                                 if nums:
                                     result['general_quantities'] = nums
-                                    logger.debug(f"ℹ️ general_quantity was text '{gq_str}' → extracted numbers: {nums}")
+                                    logger.debug(f"ℹ️ general_quantity was text '{gq_str}' → extracted contextual quantities: {nums}")
                                 else:
                                     result['general_quantities'] = []
                                 # Move the text to quantity_summary
@@ -430,15 +463,13 @@ def _read_email_content(folder_path: Path, client: Optional[AzureOpenAI] = None)
                                 else:
                                     quantity_summary = gq_str
                         else:
-                            # Fallback: if general_quantity is null but quantity_summary has numbers,
-                            # extract them so they reach the quantity field
+                            # Fallback: if general_quantity is null but quantity_summary exists,
+                            # extract only contextual quantities (not part-number fragments).
                             if quantity_summary:
-                                fallback_nums = re.findall(r'\d+', quantity_summary)
-                                # Filter out small numbers that are likely counts ("2 פריטים")
-                                qty_nums = [n for n in fallback_nums if int(n) >= 3 or len(fallback_nums) == 1]
+                                qty_nums = _extract_contextual_quantities(quantity_summary)
                                 if qty_nums:
                                     result['general_quantities'] = qty_nums
-                                    logger.debug(f"ℹ️ Extracted quantities from summary '{quantity_summary}': {qty_nums}")
+                                    logger.debug(f"ℹ️ Extracted contextual quantities from summary '{quantity_summary}': {qty_nums}")
                                 else:
                                     result['general_quantities'] = []
                             else:

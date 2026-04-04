@@ -1,0 +1,101 @@
+{
+  "profile_name": "complaints",
+  "display_name": "תלונות לקוח",
+  "description": "Customer complaints processing",
+  "email": {
+    "shared_mailbox": "",
+    "shared_mailboxes": [],
+    "inbox_folder": "Inbox",
+    "rerun_folder_name": "",
+    "rerun_mailbox": "",
+    "skip_senders": [],
+    "skip_categories": [
+      "AI CMP DONE",
+      "AI CMP ERROR"
+    ],
+    "scan_from_date": "",
+    "category_processed": "AI CMP DONE",
+    "category_processed_color": "preset20",
+    "category_error": "AI CMP ERROR",
+    "category_error_color": "preset1",
+    "category_heavy": "",
+    "category_heavy_color": "",
+    "max_messages_per_cycle": 10,
+    "max_files_per_email": 10,
+    "max_file_size_mb": 100,
+    "scan_interval_minutes": 5
+  },
+  "folders": {
+    "download": "./data/complaints/downloads",
+    "output": "./data/complaints/output",
+    "archive": "./data/complaints/archive",
+    "to_send": "./data/complaints/TO_SEND"
+  },
+  "ai_engine": {
+    "type": "vision",
+    "classify_model": "gpt-4o-vision",
+    "extract_model": "gpt-5.4",
+    "stages": [
+      0,
+      1,
+      2
+    ],
+    "stage_models": {
+      "0": "gpt-4o-vision",
+      "1": "gpt-5.4",
+      "2": "gpt-4o-vision",
+      "3": "gpt-4o-vision",
+      "4": "gpt-4o-vision",
+      "5": "gpt-4o-mini-email",
+      "6": "gpt-4o-mini-email",
+      "7": "o4-mini",
+      "8": "gpt-4o-vision",
+      "9": "o4-mini"
+    },
+    "prompts_folder": "prompts/complaints",
+    "enable_ocr": true,
+    "enable_image_retry": false,
+    "customer_variants": [
+      "generic"
+    ],
+    "max_image_dimension": 4096,
+    "stage1_skip_retry_resolution_px": 8000,
+    "scan_dpi": 200,
+    "max_retries": 3,
+    "iai_top_red_fallback": false
+  },
+  "output": {
+    "method": "b2b",
+    "b2b_confidence_level": "MEDIUM",
+    "send_email": true,
+    "auto_send": true,
+    "send_to": "",
+    "send_cc": "",
+    "generate_excel": true,
+    "generate_interface": false,
+    "interface_format": null
+  },
+  "validation": {
+    "type": "internal",
+    "use_sql_server": false,
+    "pn_voting": false,
+    "sanity_checks": true
+  },
+  "processing": {
+    "recursive": true,
+    "archive_full": false,
+    "cleanup_download": true,
+    "mark_as_processed": true,
+    "debug_mode": false
+  },
+  "scheduler": {
+    "enabled": false,
+    "regular_from": "07:00",
+    "regular_to": "20:15",
+    "heavy_from": "20:30",
+    "heavy_to": "07:00",
+    "interval_minutes": 5,
+    "report_folder": ""
+  },
+  "log_file": "logs/complaints_log.jsonl"
+}

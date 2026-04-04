@@ -1,5 +1,5 @@
 """
-DrawingAI Pro — Streamlit Web UI
+AI GATEWAY KITARON — Streamlit Web UI
 Entry point: streamlit run streamlit_app/app.py
 """
 import streamlit as st
@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 load_dotenv(PROJECT_ROOT / ".env")
 
 st.set_page_config(
-    page_title="GREEN COAT ALGAT — DrawingAI Pro",
+    page_title="GREEN COAT ALGAT — AI GATEWAY KITARON",
     page_icon="🌿",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -31,10 +31,10 @@ st.markdown(BRAND_CSS, unsafe_allow_html=True)
 sidebar_logo()
 
 # Branded header
-st.html(brand_header("DrawingAI Pro", "מערכת אוטומטית לחילוץ נתונים משרטוטים הנדסיים"))
+st.html(brand_header("AI GATEWAY KITARON", "מערכת אוטומטית לחילוץ נתונים משרטוטים הנדסיים"))
 
 # Hero navigation cards
-col1, col2, col3 = st.columns(3, gap="medium")
+col1, col2, col3, col4 = st.columns(4, gap="medium")
 with col1:
     st.markdown(hero_card(
         "🚀", "אוטומציה", "הפעלה וניהול",
@@ -56,6 +56,13 @@ with col3:
         subtitle="חיבור • שליפה • שליחה"
     ), unsafe_allow_html=True)
     st.page_link("pages/3_📧_Email.py", label="פתח אימייל →", icon="📧")
+with col4:
+    st.markdown(hero_card(
+        "📋", "סקירה", "אישור מסמכים DI",
+        color=BLUE,
+        subtitle="חשבוניות • תעודות קליטה"
+    ), unsafe_allow_html=True)
+    st.page_link("pages/4_📋_Review.py", label="פתח סקירה →", icon="📋")
 
 st.markdown("")
 
@@ -63,7 +70,7 @@ st.markdown("")
 st.markdown(
     f'<div style="text-align:center; padding:20px; color:{TEXT_MUTED}; font-size:12px; '
     f'letter-spacing:1px; text-transform:uppercase;">'
-    f'Green Coat Algat &bull; DrawingAI Pro &bull; Powered by AI'
+    f'Green Coat Algat &bull; AI GATEWAY KITARON &bull; Powered by AI'
     f'</div>',
     unsafe_allow_html=True,
 )

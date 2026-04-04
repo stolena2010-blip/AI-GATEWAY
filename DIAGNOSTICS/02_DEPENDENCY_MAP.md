@@ -1,24 +1,24 @@
-# DrawingAI Pro — מפת תלויות בין מודולים
+# AI GATEWAY KITARON — מפת תלויות בין מודולים
 
-> עדכון אחרון: 25/03/2026 — **כולל Streamlit Web UI layer**
+> עדכון אחרון: 03/04/2026 — **Multi-Profile Engine (v4.1) — Pipeline Decomposition + Profile-Aware**
 
 ## 📊 תרשים תלויות כללי
 
 ```
                     ┌─────────────────────────────────────┐
                     │  customer_extractor_v3_dual.py      │
-                    │  (2,160 שורות — Orchestrator)        │
+                    │  (987 שורות — Orchestrator)           │
                     │  extract_customer_name() thin wrap  │
-                    │  scan_folder() main loop            │
+                    │  scan_folder() main loop (650 ln)   │
                     └──────────────┬──────────────────────┘
                                    │ imports from ↓
-       ┌──────────┬──────────┬─────┼─────┬──────────┬──────────┐
-       ▼          ▼          ▼     ▼     ▼          ▼          ▼
-  ┌─────────┐┌─────────┐┌────────┐┌───────┐┌──────────┐┌─────────┐
-  │extraction││ image/  ││  ai/   ││ file/ ││reporting/││  core/  │
-  │ 16 mods ││process. ││vision_││file_u.││excel_exp  ││constants│
-  │         ││ 812 ln  ││api    ││classif││pl_gen    ││  90 ln  │
-  └─────────┘└─────────┘└────────┘└───────┘└──────────┘└────┬────┘
+       ┌──────────┬──────────┬─────┼─────┬──────────┬──────────┬──────────┐
+       ▼          ▼          ▼     ▼     ▼          ▼          ▼          ▼
+  ┌─────────┐┌─────────┐┌────────┐┌───────┐┌──────────┐┌─────────┐┌──────────┐
+  │extraction││ image/  ││  ai/   ││ file/ ││reporting/││  core/  ││pipeline/ │
+  │ 16 mods ││process. ││vision_││file_u.││excel_exp  ││constants││ 5 mods   │
+  │         ││ 812 ln  ││api    ││classif││pl_gen    ││  90 ln  ││1,351 ln  │
+  └─────────┘└─────────┘└────────┘└───────┘└──────────┘└────┬────┘└──────────┘
                                                             │
                     imported by ALL service modules ────────┘
 ```
@@ -27,27 +27,29 @@
 
 ```
   ┌──────────────────────────────────────────────────────┐
-  │  streamlit_app/pages/                                │
-  │  ├── 1_🚀_Automation.py ──→ config_manager           │
-  │  │                        ──→ runner_bridge           │
-  │  │                        ──→ log_reader              │
-  │  │                        ──→ email_helpers            │
-  │  │                        ──→ brand                   │
-  │  ├── 2_📊_Dashboard.py   ──→ log_reader              │
-  │  │                        ──→ brand                   │
-  │  └── 3_📧_Email.py       ──→ config_manager           │
-  │                            ──→ email_helpers            │
-  │                            ──→ brand                   │
+  │  streamlit_app/pages/ (per-profile tabs)                │
+  │  ├── 1_🚀_Automation.py ──→ config_manager               │
+  │  │                        ──→ pipeline_bridge (5 runners)  │
+  │  │                        ──→ runner_bridge (quotes compat)│
+  │  │                        ──→ log_reader                  │
+  │  │                        ──→ email_helpers               │
+  │  │                        ──→ brand (profile_banner, etc) │
+  │  ├── 2_📊_Dashboard.py   ──→ log_reader (per-profile)    │
+  │  │                        ──→ brand (profile_banner)      │
+  │  └── 3_📧_Email.py       ──→ config_manager              │
+  │                            ──→ email_helpers               │
+  │                            ──→ brand (profile_banner)      │
   └──────────────────────────────────────────────────────┘
           │                         │
   ┌───────▼─────────┐      ┌───────▼────────────┐
   │ backend/        │      │ brand.py            │
   │ config_manager  │──→   │ sidebar_logo()      │
-  │   automation_   │      │ brand_header()      │
-  │   config.json   │      │ BRAND_CSS           │
-  │ runner_bridge   │──→   └─────────────────────┘
-  │   Automation    │
-  │   Runner.py     │
+  │   configs/      │      │ brand_header()      │
+  │   {profile}.json│      │ BRAND_CSS           │
+  │ pipeline_bridge │──→   │ profile_banner()    │
+  │   5× Automation │      │ profile_tab_css()   │
+  │   Runner.py     │      │ PROFILE_COLORS      │
+  │ runner_bridge   │      └─────────────────────┘
   │ log_reader      │──→ automation_log.jsonl + status_log.txt
   │ email_helpers   │──→ src.services.email.graph_helper
   └─────────────────┘
@@ -85,6 +87,20 @@
        └─→ insert_price_lookup.py
 ```
 
+### ★ src/pipeline/ — 5 מודולי pipeline מחולצים מ-scan_folder
+
+```
+  scan_folder() (650 שורות)
+       │
+       ├─→ archive_extractor.extract_archives_in_folders()    ← 121 שורות
+       ├─→ drawing_processor.process_drawings()               ← 202 שורות
+       ├─→ pl_processor.{update,extract,propagate}_pl()       ← 404 שורות
+       ├─→ folder_saver.save_folder_output()                  ← 290 שורות
+       │     └─→ src.services.file.file_utils._build_drawing_part_map
+       └─→ results_merger.{merge,copy,print}_*()              ← 334 שורות
+             └─→ src.services.file.file_utils._build_drawing_part_map
+```
+
 ---
 
 ## 🔗 תלויות פנימיות — Core
@@ -97,9 +113,11 @@ exports: debug_print, MODEL_RUNTIME, DRAWING_EXTS, STAGE_*, MAX_FILE_SIZE_MB, et
                stages_generic, stages_rafael, stages_iai, ocr_engine
 ```
 
-### `src/utils/prompt_loader.py`
+### `src/utils/prompt_loader.py` (57 שורות — ★ profile-aware)
 ```
-exports: load_prompt(name: str) → str   (cached @lru_cache)
+exports: load_prompt(name, prompts_folder=None), set_prompts_context(folder)
+  - Thread-local context: scan_folder sets it once, all callers pick it up
+  - Resolution: explicit arg → thread context → root prompts/
 ← imported by: stages_generic, stages_rafael, document_reader,
                classifier, processing, pl_generator
 ```

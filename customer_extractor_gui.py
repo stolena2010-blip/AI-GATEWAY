@@ -1257,7 +1257,7 @@ class ExtractorGUI:
             return
 
         try:
-            config_path = Path.cwd() / "automation_config.json"
+            config_path = Path(__file__).resolve().parent / "automation_config.json"
             if not config_path.exists():
                 return
 
@@ -1268,7 +1268,7 @@ class ExtractorGUI:
             if not cfg.get("auto_start", False):
                 return
 
-            state_path = Path.cwd() / "automation_state.json"
+            state_path = Path(__file__).resolve().parent / "automation_state.json"
             self.automation_runner = AutomationRunner(config_path, state_path, self._set_status_from_automation)
             self.automation_runner.start()
             self.status_label.config(text="אוטומציה פעילה ✓", foreground="green")

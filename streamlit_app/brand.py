@@ -1,5 +1,5 @@
 """
-Brand — Shared theming, logo, and CSS for all DrawingAI Pro Streamlit pages.
+Brand — Shared theming, logo, and CSS for all AI GATEWAY KITARON Streamlit pages.
 Color palette based on the Green Coat / Algat app (orange-green gradient).
 Futuristic glassmorphism design with animated accents.
 """
@@ -40,6 +40,81 @@ TEXT_MUTED = "#94a3b8"
 ACCENT_GRADIENT = f"linear-gradient(135deg, {ORANGE} 0%, {GREEN} 100%)"
 GLOW_ORANGE = "rgba(255, 140, 0, 0.15)"
 GLOW_GREEN = "rgba(76, 175, 80, 0.12)"
+
+# ── Per-profile colors ───────────────────────────────────────────
+PROFILE_COLORS = {
+    "quotes":     {"accent": "#3b82f6", "bg": "rgba(59,130,246,0.08)",  "border": "rgba(59,130,246,0.35)",  "glow": "rgba(59,130,246,0.15)",  "icon": "📐", "label": "הצעות מחיר"},
+    "orders":     {"accent": "#f59e0b", "bg": "rgba(245,158,11,0.08)", "border": "rgba(245,158,11,0.35)", "glow": "rgba(245,158,11,0.15)", "icon": "📦", "label": "הזמנות"},
+    "invoices":   {"accent": "#10b981", "bg": "rgba(16,185,129,0.08)", "border": "rgba(16,185,129,0.35)", "glow": "rgba(16,185,129,0.15)", "icon": "🧾", "label": "חשבוניות"},
+    "delivery":   {"accent": "#8b5cf6", "bg": "rgba(139,92,246,0.08)", "border": "rgba(139,92,246,0.35)", "glow": "rgba(139,92,246,0.15)", "icon": "🚚", "label": "תעודות קליטה"},
+    "complaints": {"accent": "#ef4444", "bg": "rgba(239,68,68,0.08)",  "border": "rgba(239,68,68,0.35)",  "glow": "rgba(239,68,68,0.15)",  "icon": "📣", "label": "תלונות"},
+}
+
+
+def get_profile_color(profile_name: str) -> dict:
+    """Return the color dict for a profile, with safe defaults."""
+    return PROFILE_COLORS.get(profile_name, {
+        "accent": ORANGE, "bg": GLOW_ORANGE, "border": "rgba(255,140,0,0.35)",
+        "glow": GLOW_ORANGE, "icon": "📄", "label": profile_name,
+    })
+
+
+def profile_banner(profile_name: str, title: str = "", subtitle: str = "") -> str:
+    """Return HTML for a prominent profile banner with unique color."""
+    pc = get_profile_color(profile_name)
+    display_title = title or f'{pc["icon"]}  {pc["label"]}'
+    sub_html = ""
+    if subtitle:
+        sub_html = f'<div style="font-size:12px; color:rgba(255,255,255,0.6); margin-top:3px; letter-spacing:0.5px;">{subtitle}</div>'
+    return f"""
+    <div style="
+        background: linear-gradient(135deg, {pc['bg']} 0%, rgba(13,17,23,0.4) 100%);
+        border: 1.5px solid {pc['border']};
+        border-right: 5px solid {pc['accent']};
+        border-radius: 12px;
+        padding: 16px 22px;
+        margin-bottom: 16px;
+        direction: rtl;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 0 25px {pc['glow']}, inset 0 0 40px rgba(0,0,0,0.2);
+    ">
+        <div style="
+            position: absolute; top: -30%; left: -10%;
+            width: 200px; height: 200px;
+            background: radial-gradient(circle, {pc['glow']} 0%, transparent 70%);
+            border-radius: 50%;
+        "></div>
+        <div style="position: relative; z-index: 1;">
+            <div style="font-size:24px; font-weight:800; color:{pc['accent']};
+                        text-shadow: 0 0 15px {pc['glow']}; letter-spacing: 0.5px;">
+                {display_title}
+            </div>
+            {sub_html}
+        </div>
+    </div>
+    """
+
+
+def profile_tab_css() -> str:
+    """Return CSS that colors each profile tab distinctly using :nth-child selectors."""
+    rules = []
+    for i, (pname, pc) in enumerate(PROFILE_COLORS.items(), 1):
+        rules.append(f"""
+        .stTabs [data-baseweb="tab-list"] button:nth-child({i})[aria-selected="true"] {{
+            background: {pc['bg']} !important;
+            border-bottom: 3px solid {pc['accent']} !important;
+            color: {pc['accent']} !important;
+            font-weight: 800 !important;
+            font-size: 15px !important;
+            box-shadow: 0 0 15px {pc['glow']} !important;
+        }}
+        .stTabs [data-baseweb="tab-list"] button:nth-child({i}):hover {{
+            color: {pc['accent']} !important;
+            background: {pc['bg']} !important;
+        }}
+        """)
+    return "<style>" + "\n".join(rules) + "</style>"
 
 
 def sidebar_logo() -> None:
@@ -85,7 +160,7 @@ def sidebar_logo() -> None:
                     letter-spacing: 3px;
                     text-transform: uppercase;
                     margin-top: 2px;
-                ">DrawingAI Pro</div>
+                ">AI GATEWAY KITARON</div>
             </div>
             """,
             unsafe_allow_html=True,
@@ -102,7 +177,7 @@ def sidebar_logo() -> None:
     st.sidebar.markdown("---")
 
 
-def brand_header(title: str = "DrawingAI Pro", subtitle: str = "") -> str:
+def brand_header(title: str = "AI GATEWAY KITARON", subtitle: str = "") -> str:
     """Return HTML for a branded header with animated gradient background."""
 
     sub_html = ""

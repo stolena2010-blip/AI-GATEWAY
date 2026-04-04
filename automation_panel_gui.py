@@ -11,7 +11,7 @@ from typing import Dict, Any, List
 from datetime import datetime, timezone, timedelta
 import customtkinter as ctk
 
-from automation_runner import AutomationRunner
+from automation_runner import AutomationRunner, _normalize_profile_config
 from src.services.email.graph_helper import GraphAPIHelper
 from dashboard_gui import DashboardWindow
 
@@ -82,8 +82,11 @@ class AutomationPanel(ttk.Frame):
     def __init__(self, parent: tk.Toplevel) -> None:
         super().__init__(parent)
         self.parent = parent
-        self.config_path = Path.cwd() / "automation_config.json"
-        self.state_path = Path.cwd() / "automation_state.json"
+        _app_dir = Path(__file__).resolve().parent
+        self.config_path = _app_dir / "automation_config.json"
+        self.state_path = _app_dir / "automation_state.json"
+        self._configs_dir = _app_dir / "configs"
+        self._active_profile = tk.StringVar(value="")
 
         # ── Variables ──────────────────────────────────────────────
         self.shared_mailbox_var = tk.StringVar()
@@ -93,7 +96,7 @@ class AutomationPanel(ttk.Frame):
         self.rerun_mailbox_var = tk.StringVar(value="")
         self.scan_from_date_var = tk.StringVar(value="")
         self.recipient_email_var = tk.StringVar()
-        self.download_root_var = tk.StringVar(value=str(Path.cwd() / "email_downloads"))
+        self.download_root_var = tk.StringVar(value=str(_app_dir / "email_downloads"))
         self.tosend_folder_var = tk.StringVar()
         self.output_copy_folder_var = tk.StringVar()
         self.interval_var = tk.StringVar(value="10")
@@ -319,7 +322,7 @@ class AutomationPanel(ttk.Frame):
     def _discover_available_models() -> List[str]:
         """Read distinct model names from .env STAGE_N_MODEL + MODEL_*_ENDPOINT entries."""
         models: set = set()
-        env_path = Path.cwd() / ".env"
+        env_path = Path(__file__).resolve().parent / ".env"
         if env_path.exists():
             try:
                 with open(env_path, "r", encoding="utf-8") as f:
@@ -347,7 +350,7 @@ class AutomationPanel(ttk.Frame):
     def _get_env_stage_defaults() -> Dict[int, str]:
         """Read per-stage default model names from .env (STAGE_N_MODEL keys)."""
         defaults: Dict[int, str] = {}
-        env_path = Path.cwd() / ".env"
+        env_path = Path(__file__).resolve().parent / ".env"
         fallback = "gpt-4o-vision"
         if env_path.exists():
             try:
@@ -690,6 +693,48 @@ class AutomationPanel(ttk.Frame):
         else:
             messagebox.showwarning("שגיאה", "התיקייה לא קיימת")
 
+    # ── Profile switching ─────────────────────────────────────────
+    def _discover_profiles(self) -> List[str]:
+        """Return sorted list of profile names from configs/ directory."""
+        if not self._configs_dir.exists():
+            return []
+        return sorted(
+            p.stem for p in self._configs_dir.glob("*.json")
+        )
+
+    def _on_profile_changed(self, *_args) -> None:
+        """Called when the user selects a different profile from the dropdown."""
+        profile = self._active_profile.get()
+        if not profile:
+            return
+        profile_path = self._configs_dir / f"{profile}.json"
+        if not profile_path.exists():
+            return
+
+        try:
+            with open(profile_path, "r", encoding="utf-8") as f:
+                nested = json.load(f)
+        except Exception as e:
+            messagebox.showerror("שגיאה", f"שגיאה בטעינת פרופיל {profile}: {e}")
+            return
+
+        flat = _normalize_profile_config(nested)
+
+        # Save flat config so the runner picks it up
+        try:
+            with open(self.config_path, "w", encoding="utf-8") as f:
+                json.dump(flat, f, ensure_ascii=False, indent=2)
+        except Exception as e:
+            messagebox.showerror("שגיאה", f"שגיאה בשמירת הגדרות: {e}")
+            return
+
+        # Recreate runner with current paths
+        self.runner = AutomationRunner(self.config_path, self.state_path, self._set_status)
+
+        # Reload GUI fields from the (now flat) config
+        self._load_config()
+        self._set_status(f"פרופיל: {profile}")
+
     def _build_ui(self) -> None:
         self.configure(padding=8)
 
@@ -782,6 +827,25 @@ class AutomationPanel(ttk.Frame):
             text_color="#00d4aa",
         )
         header.pack(side=tk.RIGHT)
+
+        # ── Profile selector ──────────────────────────────────────
+        profile_frame = ttk.Frame(settings_frame)
+        profile_frame.pack(fill=tk.X, pady=(0, 4))
+
+        profiles = self._discover_profiles()
+        self._profile_combo = ctk.CTkComboBox(
+            profile_frame,
+            variable=self._active_profile,
+            values=profiles,
+            width=160,
+            state="readonly",
+            command=lambda _v: self._on_profile_changed(),
+        )
+        self._profile_combo.pack(side=tk.RIGHT, padx=(0, 8))
+        ctk.CTkLabel(
+            profile_frame, text="פרופיל:",
+            font=("Arial", 11, "bold"), text_color="#0984e3",
+        ).pack(side=tk.RIGHT)
 
         # ═══════════════════════════════════════════════════════════
         # STATUS BAR

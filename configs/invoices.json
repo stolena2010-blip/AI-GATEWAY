@@ -1,0 +1,89 @@
+{
+  "profile_name": "invoices",
+  "display_name": "חשבוניות ספק",
+  "description": "Supplier invoices - extraction + Kitaron interface",
+  "email": {
+    "shared_mailbox": "",
+    "shared_mailboxes": [],
+    "inbox_folder": "Inbox",
+    "rerun_folder_name": "",
+    "rerun_mailbox": "",
+    "skip_senders": [],
+    "skip_categories": ["AI INV DONE", "AI INV ERROR"],
+    "scan_from_date": "",
+    "category_processed": "AI INV DONE",
+    "category_processed_color": "preset20",
+    "category_error": "AI INV ERROR",
+    "category_error_color": "preset1",
+    "category_heavy": "",
+    "category_heavy_color": "",
+    "max_messages_per_cycle": 15,
+    "max_files_per_email": 5,
+    "max_file_size_mb": 100,
+    "scan_interval_minutes": 5
+  },
+  "folders": {
+    "download": "./data/invoices/downloads",
+    "output": "./data/invoices/output",
+    "archive": "./data/invoices/archive",
+    "to_send": ""
+  },
+  "ai_engine": {
+    "type": "document_intelligence",
+    "di_model": "prebuilt-invoice",
+    "validate_model": "gpt-4o-mini",
+    "stages": ["classify", "extract", "validate"],
+    "stage_models": {},
+    "prompts_folder": "prompts/invoices",
+    "enable_ocr": false,
+    "enable_image_retry": false,
+    "customer_variants": [],
+    "max_image_dimension": 4096,
+    "stage1_skip_retry_resolution_px": 0,
+    "scan_dpi": 200,
+    "max_retries": 3,
+    "iai_top_red_fallback": false
+  },
+  "output": {
+    "method": "interface",
+    "b2b_confidence_level": null,
+    "send_email": false,
+    "auto_send": false,
+    "send_to": "",
+    "send_cc": "",
+    "generate_excel": true,
+    "generate_interface": true,
+    "interface_format": "kitaron_invoice"
+  },
+  "validation": {
+    "type": "sql_server",
+    "use_sql_server": true,
+    "pn_voting": false,
+    "sanity_checks": false,
+    "supplier_lookup": true,
+    "po_matching": true,
+    "price_tolerance_percent": 5
+  },
+  "review": {
+    "enabled": true,
+    "auto_approve_confidence": "FULL",
+    "auto_approve_enabled": false
+  },
+  "processing": {
+    "recursive": false,
+    "archive_full": false,
+    "cleanup_download": true,
+    "mark_as_processed": true,
+    "debug_mode": false
+  },
+  "scheduler": {
+    "enabled": false,
+    "regular_from": "07:00",
+    "regular_to": "19:45",
+    "heavy_from": "",
+    "heavy_to": "",
+    "interval_minutes": 5,
+    "report_folder": ""
+  },
+  "log_file": "logs/invoices_log.jsonl"
+}

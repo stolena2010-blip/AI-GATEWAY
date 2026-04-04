@@ -1,6 +1,6 @@
-# DrawingAI Pro — Models & Costs
+# AI GATEWAY KITARON — Models & Costs
 
-> עדכון אחרון: 25/03/2026
+> עדכון אחרון: 04/04/2026 — **v4.1: prompts profile-aware (`prompts/{profile}/`), pipeline decomposition**
 
 ---
 
@@ -51,6 +51,10 @@
 ---
 
 ## 📄 קבצי Prompt ← מיפוי שלבים
+
+> **v4.1**: Prompts נטענים לפי פרופיל מ-`prompts/{profile}/` (thread-local context).
+> כש-folder לא קיים → fallback ל-`prompts/` (root).
+> כרגע `prompts/quotes/` מכיל 15 prompts זהים ל-root; שאר הפרופילים ריקים.
 
 | קובץ Prompt | Stage |
 |-------------|:-----:|

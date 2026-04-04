@@ -1,10 +1,12 @@
 """
-🚀 Automation — DrawingAI Pro
-Full automation control panel with tabs: Email, Stages, Run Settings, Live Log
+🚀 Automation — AI GATEWAY KITARON
+Per-profile automation control panel — each document type has its own tab
+with dedicated settings (email, AI engine, run, log).
 """
 import streamlit as st
 import sys
 from pathlib import Path
+from datetime import time as dt_time, datetime as _dt
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 if str(PROJECT_ROOT) not in sys.path:
@@ -13,25 +15,28 @@ if str(PROJECT_ROOT) not in sys.path:
 from dotenv import load_dotenv
 load_dotenv(PROJECT_ROOT / ".env")
 
-from streamlit_app.backend.config_manager import load_config, save_config, reset_state
+from streamlit_app.backend.config_manager import (
+    load_config, save_config, reset_state,
+    load_all_profiles, load_profile_config, save_profile_config,
+    reset_profile_state,
+)
 from streamlit_app.backend.email_helpers import (
     parse_mailboxes_text, test_all_mailboxes,
     load_folders_for_mailbox, format_folder_label,
 )
-from streamlit_app.backend.runner_bridge import RunnerBridge, get_runner_bridge
+from streamlit_app.backend.runner_bridge import get_runner_bridge, get_pipeline_bridge
 from streamlit_app.backend.log_reader import read_log_tail, get_countdown, detect_active_run
-from streamlit_app.brand import BRAND_CSS, brand_header, sidebar_logo
+from streamlit_app.brand import BRAND_CSS, brand_header, sidebar_logo, profile_banner, profile_tab_css
 
 
 def _is_time_in_range(now_time, start_time, end_time) -> bool:
-    """Check if now_time is within [start_time, end_time). Supports overnight ranges (e.g. 19:00→07:00)."""
     if start_time <= end_time:
         return start_time <= now_time < end_time
-    else:  # overnight
+    else:
         return now_time >= start_time or now_time < end_time
 
 
-st.set_page_config(page_title="🚀 אוטומציה — DrawingAI Pro", page_icon="🌿", layout="wide")
+st.set_page_config(page_title="🚀 אוטומציה — AI GATEWAY KITARON", page_icon="🌿", layout="wide")
 st.markdown(BRAND_CSS, unsafe_allow_html=True)
 sidebar_logo()
 
@@ -40,14 +45,23 @@ sidebar_logo()
 # ═══════════════════════════════════════════════════════════════════
 for _k, _d in [
     ("runner", None), ("is_running", False),
-    ("folders_loaded", []), ("folders_mailbox", ""),
     ("status_msg", "מוכן"), ("log_lines", []),
-    ("confirm_reset", False),
+    ("confirm_reset", False), ("pipeline_bridge", None),
 ]:
     if _k not in st.session_state:
         st.session_state[_k] = _d
 
-cfg = load_config()
+# Per-profile folder state
+_all_profiles = load_all_profiles()
+for _p in _all_profiles:
+    _pn = _p["profile_name"]
+    for _sk, _sd in [
+        (f"folders_loaded_{_pn}", []),
+        (f"folders_mailbox_{_pn}", ""),
+        (f"confirm_reset_{_pn}", False),
+    ]:
+        if _sk not in st.session_state:
+            st.session_state[_sk] = _sd
 
 # ═══════════════════════════════════════════════════════════════════
 # MODULE-LEVEL CONSTANTS
@@ -77,6 +91,9 @@ _REVERSE_RES_MAP = {v: k for k, v in _RESOLUTION_MAP.items()}
 _AVAILABLE_MODELS = sorted({
     "gpt-4o-vision", "gpt-4o-mini-email", "o4-mini", "gpt-5.2", "gpt-5.4"
 })
+_DI_MODELS = ["prebuilt-invoice", "prebuilt-layout", "prebuilt-receipt", "prebuilt-document"]
+_VALIDATE_MODELS = ["gpt-4o-mini", "gpt-4o", "o4-mini"]
+
 _env_path = PROJECT_ROOT / ".env"
 if _env_path.exists():
     try:
@@ -115,687 +132,736 @@ for _n in range(10):
     if _n not in _ENV_STAGE_DEFAULTS:
         _ENV_STAGE_DEFAULTS[_n] = "gpt-4o-vision"
 
+
 # ═══════════════════════════════════════════════════════════════════
-# BRANDED HEADER + STATUS
+# PIPELINE BRIDGE HELPER
 # ═══════════════════════════════════════════════════════════════════
-st.html(brand_header("אוטומציה — DrawingAI Pro"))
+def _get_bridge():
+    if st.session_state.pipeline_bridge is None:
+        st.session_state.pipeline_bridge = get_pipeline_bridge()
+    return st.session_state.pipeline_bridge
+
+
+# ═══════════════════════════════════════════════════════════════════
+# BRANDED HEADER + GLOBAL STATUS
+# ═══════════════════════════════════════════════════════════════════
+st.html(brand_header("אוטומציה — AI GATEWAY KITARON"))
+st.html(profile_tab_css())
 
 @st.fragment(run_every=5)
-def _header_status_fragment():
-    """Auto-refreshing header status — reruns every 5s independently."""
-    # Sync is_running with actual thread state
-    _r = st.session_state.runner
-    if _r and hasattr(_r, 'is_loop_alive'):
-        if _r.is_loop_alive and not st.session_state.is_running:
-            st.session_state.is_running = True
-        elif not _r.is_loop_alive and st.session_state.is_running:
-            st.session_state.is_running = False
-    _runner = st.session_state.runner
-    _log_detect = detect_active_run()
-
-    # ── Determine run states ──
-    _regular_busy = _runner and _runner.is_busy and _runner._busy_run_type == "regular"
-    _log_regular = _log_detect["active"] and _log_detect["run_type"] == "regular"
-    _heavy_busy = _runner and _runner.is_busy and _runner._busy_run_type == "heavy"
-    _log_heavy = _log_detect["active"] and _log_detect["run_type"] == "heavy"
-    _is_regular_active = st.session_state.is_running or _regular_busy or _log_regular
-    _is_heavy_active = _heavy_busy or _log_heavy
-
-    # ── Get email progress ──
-    _email_cur, _email_total = 0, 0
-    _active_run_type = ""
-    if _is_heavy_active:
-        _active_run_type = "heavy"
-        if _heavy_busy and _runner:
-            _s = _runner.get_run_status()
-            if _s and _s["total_emails"] > 0:
-                _email_cur, _email_total = _s["current_email"], _s["total_emails"]
-        elif _log_heavy and _log_detect["email_progress"]:
-            _parts = _log_detect["email_progress"].split("/")
-            if len(_parts) == 2:
-                _email_cur, _email_total = int(_parts[0]), int(_parts[1])
-    elif _is_regular_active:
-        _active_run_type = "regular"
-        if _regular_busy and _runner:
-            _s = _runner.get_run_status()
-            if _s and _s["total_emails"] > 0:
-                _email_cur, _email_total = _s["current_email"], _s["total_emails"]
-        elif _log_regular and _log_detect["email_progress"]:
-            _parts = _log_detect["email_progress"].split("/")
-            if len(_parts) == 2:
-                _email_cur, _email_total = int(_parts[0]), int(_parts[1])
-
-    # ── Build progress pill ──
-    _progress_html = ""
-    if _email_total > 0 and (_is_regular_active or _is_heavy_active):
-        _progress_html = f'<span class="email-progress">📧 {_email_cur}/{_email_total}</span>'
-
-    _cols = st.columns([3, 1, 1])
-    with _cols[0]:
-        # ── Regular automation badge ──
-        if st.session_state.is_running:
-            _hdr_cd = get_countdown()
-            _cd_text = f' — ⏱ סבב הבא: {_hdr_cd["remaining_text"]}' if _hdr_cd["remaining_text"] else ""
-            _reg_progress = _progress_html if _active_run_type == "regular" else ""
-            st.markdown(f'<span class="run-badge run-badge-active">🟢 אוטומציה רגילה: פעילה{_cd_text}</span> {_reg_progress}', unsafe_allow_html=True)
-        elif _regular_busy or _log_regular:
-            st.markdown(f'<span class="run-badge run-badge-active">🟢 ריצה רגילה: פעילה</span> {_progress_html if _active_run_type == "regular" else ""}', unsafe_allow_html=True)
-        else:
-            st.markdown('<span class="run-badge run-badge-inactive">🔴 אוטומציה רגילה: כבויה</span>', unsafe_allow_html=True)
-
-        # ── Heavy run badge ──
-        if _is_heavy_active:
-            st.markdown(f'<span class="run-badge run-badge-heavy">🏋️ ריצה כבדה: פעילה</span> {_progress_html if _active_run_type == "heavy" else ""}', unsafe_allow_html=True)
-        else:
-            st.markdown('<span class="run-badge run-badge-inactive">⚪ ריצה כבדה: לא פעילה</span>', unsafe_allow_html=True)
-
-        # ── Scheduler status ──
-        _sched_runner = st.session_state.runner
-        if _sched_runner and _sched_runner.scheduler_active:
-            st.markdown('<span class="status-running">🕐 תזמון: פעיל</span>', unsafe_allow_html=True)
-        elif cfg.get("scheduler_enabled", False):
-            st.markdown('<span class="status-stopped" style="opacity:0.5;">🕐 תזמון: מוגדר (לא פעיל)</span>', unsafe_allow_html=True)
-
-    # ── Cost display ──
-    with _cols[1]:
-        _cost_text = "—"
-        try:
-            from streamlit_app.backend.log_reader import load_log_entries, filter_by_period
-            _today_entries = filter_by_period(load_log_entries(500), "היום")
-            _today_cost = sum(float(e.get("cost_usd", 0) or 0) for e in _today_entries)
-            if _today_cost > 0:
-                _ils_rate = float(cfg.get("usd_to_ils_rate", 3.7))
-                _cost_text = f'${_today_cost:.3f} (₪{_today_cost * _ils_rate:.2f})'
-        except Exception:
-            pass
-        st.markdown(f'<div style="text-align:center;font-size:13px;">💰 היום: {_cost_text}</div>', unsafe_allow_html=True)
-
-_header_status_fragment()
-
-# ═══════════════════════════════════════════════════════════════════
-# ACTION BUTTONS (always visible above tabs)
-# ═══════════════════════════════════════════════════════════════════
-btn_cols = st.columns(7)
-with btn_cols[0]:
-    save_btn = st.button("💾 שמור", width='stretch')
-with btn_cols[1]:
-    test_btn = st.button("🔌 בדוק חיבור", width='stretch')
-with btn_cols[2]:
-    run_once_btn = st.button("▶️ הרץ סבב", width='stretch')
-with btn_cols[3]:
-    run_heavy_btn = st.button("🏋️ הרץ כבדים", width='stretch')
-with btn_cols[4]:
-    start_btn = st.button("🚀 הפעל", width='stretch')
-with btn_cols[5]:
-    stop_btn = st.button("⏹ עצור", width='stretch')
-with btn_cols[6]:
-    if st.session_state.confirm_reset:
-        reset_btn = st.button("⚠️ לחץ שוב לאישור", width='stretch', type="primary")
+def _global_status_fragment():
+    """Shows running status for all profiles."""
+    bridge = _get_bridge()
+    statuses = bridge.get_all_status()
+    running = [s["display_name"] for s in statuses.values() if s["running"]]
+    scheduled = [s["display_name"] for s in statuses.values() if s.get("scheduler")]
+    parts = []
+    if running:
+        parts.append(f'<span class="run-badge run-badge-active">🟢 פעיל: {", ".join(running)}</span>')
+    if scheduled:
+        parts.append(f'<span class="run-badge" style="background:#2d5a27;color:#7fff00;padding:4px 12px;border-radius:12px;">🕐 תזמון: {", ".join(scheduled)}</span>')
+    if parts:
+        st.markdown(" ".join(parts), unsafe_allow_html=True)
     else:
-        reset_btn = st.button("🔄 Reset", width='stretch')
-
-# Local save button for scheduler section (set later inside tab_run)
-save_scheduler_btn = False
-
-# ═══════════════════════════════════════════════════════════════════
-# TABS
-# ═══════════════════════════════════════════════════════════════════
-tab_email, tab_stages, tab_run, tab_log = st.tabs([
-    "📧 מייל ותיקיות", "🔬 שלבים ומודלים", "⏱ הגדרות ריצה", "📋 לוג ריצה"
-])
-
-# ╔═══════════════════════════════════════════════════════════╗
-# ║  TAB 1 — EMAIL + FOLDERS                                 ║
-# ╚═══════════════════════════════════════════════════════════╝
-with tab_email:
-    col_mail, col_folders = st.columns([1, 1])
-
-    with col_mail:
-        st.subheader("📧 הגדרות מייל")
-
-        shared_mailboxes_str = st.text_input(
-            "תיבות משותפות (מופרדות בפסיק):",
-            value=", ".join(cfg.get("shared_mailboxes", [])) or cfg.get("shared_mailbox", ""),
-            help="כתובות תיבות משותפות, מופרדות בפסיקים. ניתן להזין מספר תיבות.",
-            key="shared_mailboxes_input",
+        st.markdown(
+            '<span class="run-badge run-badge-inactive">🔴 אין פרופילים פעילים</span>',
+            unsafe_allow_html=True,
         )
-        parsed_mailboxes = parse_mailboxes_text(shared_mailboxes_str)
 
-        mail_c1, mail_c2 = st.columns([3, 1])
-        with mail_c1:
-            selected_mailbox = st.selectbox(
-                "תיבה להצגה:", options=parsed_mailboxes if parsed_mailboxes else [""],
-                index=0, key="selected_mailbox",
+_global_status_fragment()
+
+# ═══════════════════════════════════════════════════════════════════
+# PROFILE TABS — one per document type
+# ═══════════════════════════════════════════════════════════════════
+_PROFILE_ICONS = {
+    "quotes": "📐", "orders": "📦", "invoices": "🧾",
+    "delivery": "🚚", "complaints": "📣",
+}
+
+profiles = load_all_profiles()
+if not profiles:
+    st.warning("לא נמצאו פרופילים בתיקיית configs/")
+    st.stop()
+
+tab_labels = [f'{_PROFILE_ICONS.get(p["profile_name"], "📄")} {p["display_name"]}' for p in profiles]
+profile_tabs = st.tabs(tab_labels)
+
+
+def _render_profile_tab(profile: dict, tab_index: int):
+    """Render settings & controls for a single profile inside its tab."""
+    pn = profile["profile_name"]
+    cfg = load_profile_config(pn)
+    if not cfg:
+        st.error(f"לא נמצא קובץ הגדרות עבור {pn}")
+        return
+
+    # ── Profile banner ──
+    st.html(profile_banner(pn))
+
+    engine_type = cfg.get("ai_engine", {}).get("type", "vision")
+    email_cfg = cfg.get("email", {})
+    folders_cfg = cfg.get("folders", {})
+    ai_cfg = cfg.get("ai_engine", {})
+    output_cfg = cfg.get("output", {})
+    processing_cfg = cfg.get("processing", {})
+    scheduler_cfg = cfg.get("scheduler", {})
+    validation_cfg = cfg.get("validation", {})
+    review_cfg = cfg.get("review", {})
+
+    # ── Action buttons per profile ──
+    btn = st.columns(7)
+    with btn[0]:
+        save_btn = st.button("💾 שמור", key=f"save_{pn}", width="stretch")
+    with btn[1]:
+        test_btn = st.button("🔌 בדוק חיבור", key=f"test_{pn}", width="stretch")
+    with btn[2]:
+        run_btn = st.button("▶️ הרץ סבב", key=f"run_{pn}", width="stretch")
+    with btn[3]:
+        run_heavy_btn = st.button("🏋️ הרץ כבדים", key=f"heavy_{pn}", width="stretch")
+    with btn[4]:
+        start_btn = st.button("🚀 הפעל", key=f"start_{pn}", width="stretch")
+    with btn[5]:
+        stop_btn = st.button("⏹ עצור הכל", key=f"stop_{pn}", width="stretch")
+    with btn[6]:
+        if st.session_state.get(f"confirm_reset_{pn}", False):
+            reset_btn = st.button("⚠️ לחץ שוב לאישור", key=f"reset_{pn}", width="stretch", type="primary")
+        else:
+            reset_btn = st.button("🔄 Reset", key=f"reset_{pn}", width="stretch")
+
+    # Running / scheduler indicator
+    bridge = _get_bridge()
+    _badges = []
+    if bridge.is_running(pn):
+        _badges.append(f'<span class="run-badge run-badge-active">🟢 {profile["display_name"]}: פעיל</span>')
+    if bridge.is_scheduler_active(pn):
+        _badges.append(f'<span class="run-badge" style="background:#2d5a27;color:#7fff00;padding:4px 12px;border-radius:12px;">🕐 תזמון: פעיל</span>')
+    if _badges:
+        st.markdown(" ".join(_badges), unsafe_allow_html=True)
+
+    # ── Inner tabs: settings sections ──
+    if engine_type == "vision":
+        inner_tabs = st.tabs(["📧 מייל ותיקיות", "🔬 שלבים ומודלים", "⏱ הגדרות ריצה", "📋 לוג"])
+    else:
+        inner_tabs = st.tabs(["📧 מייל ותיקיות", "🤖 מנוע AI", "⏱ הגדרות ריצה", "📋 לוג"])
+
+    # ╔════════════════════════════════════════════════╗
+    # ║  INNER TAB 1 — EMAIL + FOLDERS                ║
+    # ╚════════════════════════════════════════════════╝
+    with inner_tabs[0]:
+        col_mail, col_folders = st.columns([1, 1])
+
+        with col_mail:
+            st.subheader("📧 הגדרות מייל")
+
+            mailboxes_str = st.text_input(
+                "תיבות משותפות (מופרדות בפסיק):",
+                value=", ".join(email_cfg.get("shared_mailboxes", [])) or email_cfg.get("shared_mailbox", ""),
+                key=f"mailboxes_{pn}",
             )
-        with mail_c2:
-            st.markdown("<br>", unsafe_allow_html=True)
-            load_folders_btn = st.button("📂 טען תיקיות", width='stretch', key="load_folders_btn")
+            parsed_mboxes = parse_mailboxes_text(mailboxes_str)
 
-        if load_folders_btn and selected_mailbox:
-            with st.spinner(f"טוען תיקיות עבור {selected_mailbox}..."):
-                folders, err = load_folders_for_mailbox(selected_mailbox)
-                if err:
-                    st.error(err)
+            mc1, mc2 = st.columns([3, 1])
+            with mc1:
+                sel_mbox = st.selectbox(
+                    "תיבה להצגה:", options=parsed_mboxes if parsed_mboxes else [""],
+                    index=0, key=f"sel_mbox_{pn}",
+                )
+            with mc2:
+                st.markdown("<br>", unsafe_allow_html=True)
+                load_f_btn = st.button("📂 טען תיקיות", key=f"load_folders_{pn}", width="stretch")
+
+            if load_f_btn and sel_mbox:
+                with st.spinner(f"טוען תיקיות עבור {sel_mbox}..."):
+                    _folders, _err = load_folders_for_mailbox(sel_mbox)
+                    if _err:
+                        st.error(_err)
+                    else:
+                        st.session_state[f"folders_loaded_{pn}"] = _folders
+                        st.session_state[f"folders_mailbox_{pn}"] = sel_mbox
+                        st.success(f"נטענו {len(_folders)} תיקיות עבור {sel_mbox}")
+
+            folder_options = []
+            folder_path_map = {}
+            loaded_folders = st.session_state.get(f"folders_loaded_{pn}", [])
+            if loaded_folders:
+                for f in loaded_folders:
+                    label = format_folder_label(f["path"], f.get("totalItemCount"))
+                    folder_options.append(label)
+                    folder_path_map[label] = f["path"]
+
+            current_folder = email_cfg.get("inbox_folder", "Inbox")
+            if folder_options:
+                default_idx = 0
+                for i, opt in enumerate(folder_options):
+                    raw_path = folder_path_map.get(opt, opt)
+                    if raw_path == current_folder or opt.startswith(current_folder):
+                        default_idx = i
+                        break
+                sel_folder_label = st.selectbox("תת-תיקייה:", options=folder_options, index=default_idx, key=f"folder_sel_{pn}")
+                sel_folder = folder_path_map.get(sel_folder_label, sel_folder_label)
+            else:
+                sel_folder = st.text_input("תת-תיקייה:", value=current_folder, key=f"folder_txt_{pn}")
+
+            rc1, rc2 = st.columns(2)
+            with rc1:
+                rerun_folder = st.text_input("תיקיית RERUN:", value=email_cfg.get("rerun_folder_name", ""), key=f"rerun_folder_{pn}")
+            with rc2:
+                rerun_mailbox = st.text_input("תיבת RERUN:", value=email_cfg.get("rerun_mailbox", ""), key=f"rerun_mbox_{pn}")
+
+            scan_from = st.text_input("סרוק מתאריך (DD/MM/YYYY HH:MM):", value=email_cfg.get("scan_from_date", ""), key=f"scan_from_{pn}")
+
+            cat_c1, cat_c2 = st.columns(2)
+            with cat_c1:
+                cat_processed = st.text_input("קטגוריה מעובד:", value=email_cfg.get("category_processed", "AI Processed"), key=f"cat_proc_{pn}")
+            with cat_c2:
+                stored_color = email_cfg.get("category_processed_color", "preset20")
+                cat_proc_color = st.selectbox(
+                    "צבע:", options=_COLOR_NAMES,
+                    index=_COLOR_NAMES.index(_REVERSE_COLOR_MAP.get(stored_color, "None")),
+                    key=f"cat_proc_color_{pn}",
+                )
+            cat_c3, cat_c4 = st.columns(2)
+            with cat_c3:
+                cat_error = st.text_input("קטגוריה שגיאה:", value=email_cfg.get("category_error", "NO DRAW"), key=f"cat_err_{pn}")
+            with cat_c4:
+                stored_err_color = email_cfg.get("category_error_color", "preset1")
+                cat_err_color = st.selectbox(
+                    "צבע שגיאה:", options=_COLOR_NAMES,
+                    index=_COLOR_NAMES.index(_REVERSE_COLOR_MAP.get(stored_err_color, "None")),
+                    key=f"cat_err_color_{pn}",
+                )
+
+            skip_senders = st.text_area(
+                "דלג על שולחים (כתובת בכל שורה):",
+                value="\n".join(email_cfg.get("skip_senders", [])), height=60, key=f"skip_senders_{pn}",
+            )
+            skip_categories = st.text_area(
+                "דלג על קטגוריות (שם בכל שורה):",
+                value="\n".join(email_cfg.get("skip_categories", [])), height=60, key=f"skip_cats_{pn}",
+            )
+
+        with col_folders:
+            st.subheader("📁 תיקיות")
+            download_dir = st.text_input("תיקיית הורדה:", value=folders_cfg.get("download", ""), key=f"dl_dir_{pn}")
+            if download_dir and not Path(download_dir).exists():
+                st.warning("⚠️ התיקייה לא קיימת")
+            output_dir = st.text_input("תיקיית פלט:", value=folders_cfg.get("output", ""), key=f"out_dir_{pn}")
+            archive_dir = st.text_input("תיקיית ארכיב:", value=folders_cfg.get("archive", ""), key=f"arc_dir_{pn}")
+            tosend_dir = st.text_input("TO_SEND:", value=folders_cfg.get("to_send", ""), key=f"tosend_dir_{pn}")
+
+            if engine_type == "vision":
+                st.divider()
+                st.subheader("📤 פלט")
+                send_to = st.text_input("נמען לשליחה:", value=output_cfg.get("send_to", ""), key=f"send_to_{pn}")
+                send_cc = st.text_input("CC:", value=output_cfg.get("send_cc", ""), key=f"send_cc_{pn}")
+                b2b_conf = st.radio(
+                    "רמת ביטחון B2B:", options=["LOW", "MEDIUM", "HIGH"],
+                    index=["LOW", "MEDIUM", "HIGH"].index(output_cfg.get("b2b_confidence_level", "LOW") or "LOW"),
+                    horizontal=True, key=f"b2b_conf_{pn}",
+                )
+            else:
+                st.divider()
+                st.subheader("📤 פלט")
+                send_to = st.text_input("נמען לשליחה:", value=output_cfg.get("send_to", ""), key=f"send_to_{pn}")
+                send_cc = st.text_input("CC:", value=output_cfg.get("send_cc", ""), key=f"send_cc_{pn}")
+                b2b_conf = None
+
+    # ╔════════════════════════════════════════════════╗
+    # ║  INNER TAB 2 — AI ENGINE SETTINGS             ║
+    # ╚════════════════════════════════════════════════╝
+    with inner_tabs[1]:
+        if engine_type == "vision":
+            # ── Vision stages + models (like original) ──
+            st.subheader("🔬 שלבי חילוץ ומודלים")
+
+            stage_defs = [
+                (0, "0: זיהוי", False), (1, "1: בסיסי", True),
+                (2, "2: תהליכים", True), (3, "3: NOTES", True),
+                (4, "4: שטח", True), (5, "5: Fallback", True),
+                (6, "6: PL", True), (7, "7: email", True),
+                (8, "8: הזמנות", True), (9, "9: מיזוג", True),
+            ]
+            saved_stages = {str(s): True for s in ai_cfg.get("stages", [])}
+            saved_models = ai_cfg.get("stage_models", {})
+            stage_enabled = {}
+            stage_models = {}
+
+            cols_r1 = st.columns(5)
+            for i, (sn, label, has_cb) in enumerate(stage_defs[:5]):
+                with cols_r1[i]:
+                    if has_cb:
+                        stage_enabled[sn] = st.checkbox(label, value=bool(saved_stages.get(str(sn), False)), key=f"stg_{sn}_{pn}")
+                    else:
+                        st.markdown(f"**{label}**")
+                        stage_enabled[sn] = True
+                    md = saved_models.get(str(sn), _ENV_STAGE_DEFAULTS.get(sn, "gpt-4o-vision"))
+                    mi = _AVAILABLE_MODELS.index(md) if md in _AVAILABLE_MODELS else 0
+                    stage_models[sn] = st.selectbox("מודל", options=_AVAILABLE_MODELS, index=mi, key=f"mdl_{sn}_{pn}", label_visibility="collapsed")
+
+            cols_r2 = st.columns(5)
+            for i, (sn, label, has_cb) in enumerate(stage_defs[5:]):
+                with cols_r2[i]:
+                    if has_cb:
+                        stage_enabled[sn] = st.checkbox(label, value=bool(saved_stages.get(str(sn), False)), key=f"stg_{sn}_{pn}")
+                    md = saved_models.get(str(sn), _ENV_STAGE_DEFAULTS.get(sn, "gpt-4o-vision"))
+                    mi = _AVAILABLE_MODELS.index(md) if md in _AVAILABLE_MODELS else 0
+                    stage_models[sn] = st.selectbox("מודל", options=_AVAILABLE_MODELS, index=mi, key=f"mdl_{sn}_{pn}", label_visibility="collapsed")
+
+            with st.expander("⚙️ הגדרות מתקדמות"):
+                ac1, ac2 = st.columns(2)
+                with ac1:
+                    stored_dim = ai_cfg.get("max_image_dimension", 4096)
+                    dim_label = _REVERSE_RES_MAP.get(stored_dim, "4096 (איכות - OCR מושלם)")
+                    max_img_dim = st.selectbox(
+                        "מקסימום רזולוציה:", options=list(_RESOLUTION_MAP.keys()),
+                        index=list(_RESOLUTION_MAP.keys()).index(dim_label) if dim_label in _RESOLUTION_MAP else 2,
+                        key=f"max_dim_{pn}",
+                    )
+                    s1_skip = st.number_input("דילוג Retry שלב 1 (px):", value=int(ai_cfg.get("stage1_skip_retry_resolution_px", 8000)), min_value=0, key=f"s1skip_{pn}")
+                    scan_dpi = st.selectbox("DPI:", options=[150, 200, 300], index=[150, 200, 300].index(int(ai_cfg.get("scan_dpi", 200))), key=f"dpi_{pn}")
+                with ac2:
+                    max_retries = st.number_input("ניסיונות חוזרים:", value=int(ai_cfg.get("max_retries", 3)), min_value=1, max_value=5, key=f"retries_{pn}")
+                    iai_top_red = st.checkbox("IAI top-red fallback", value=ai_cfg.get("iai_top_red_fallback", False), key=f"iai_{pn}")
+                    enable_ocr = st.checkbox("OCR", value=ai_cfg.get("enable_ocr", True), key=f"ocr_{pn}")
+
+        else:
+            # ── Document Intelligence settings ──
+            st.subheader("🤖 מנוע Document Intelligence")
+
+            di_c1, di_c2 = st.columns(2)
+            with di_c1:
+                cur_di = ai_cfg.get("di_model", "prebuilt-invoice")
+                di_model = st.selectbox(
+                    "מודל DI:", options=_DI_MODELS,
+                    index=_DI_MODELS.index(cur_di) if cur_di in _DI_MODELS else 0,
+                    key=f"di_model_{pn}",
+                )
+            with di_c2:
+                cur_val = ai_cfg.get("validate_model", "gpt-4o-mini")
+                validate_model = st.selectbox(
+                    "מודל אימות GPT:", options=_VALIDATE_MODELS,
+                    index=_VALIDATE_MODELS.index(cur_val) if cur_val in _VALIDATE_MODELS else 0,
+                    key=f"val_model_{pn}",
+                )
+
+            st.divider()
+            st.subheader("✅ ולידציה")
+            val_c1, val_c2 = st.columns(2)
+            with val_c1:
+                use_sql = st.checkbox("SQL Server lookup", value=validation_cfg.get("use_sql_server", False), key=f"use_sql_{pn}")
+                supplier_lookup = st.checkbox("חיפוש ספק", value=validation_cfg.get("supplier_lookup", False), key=f"sup_lookup_{pn}")
+                po_matching = st.checkbox("התאמת הזמנה", value=validation_cfg.get("po_matching", False), key=f"po_match_{pn}")
+            with val_c2:
+                price_tol = st.number_input("סטיית מחיר (%):", value=int(validation_cfg.get("price_tolerance_percent", 5)), min_value=0, max_value=50, key=f"price_tol_{pn}")
+
+            if review_cfg:
+                st.divider()
+                st.subheader("👁 סקירה")
+                review_enabled = st.checkbox("דרוש אישור ידני", value=review_cfg.get("enabled", True), key=f"review_en_{pn}")
+                auto_approve = st.checkbox("אישור אוטומטי", value=review_cfg.get("auto_approve_enabled", False), key=f"auto_appr_{pn}")
+
+            # Keep variables for save — not used by vision
+            stage_enabled = {}
+            stage_models = {}
+            max_img_dim = None
+            s1_skip = 0
+            scan_dpi = 200
+            max_retries = int(ai_cfg.get("max_retries", 3))
+            iai_top_red = False
+            enable_ocr = False
+
+    # ╔════════════════════════════════════════════════╗
+    # ║  INNER TAB 3 — RUN SETTINGS                   ║
+    # ╚════════════════════════════════════════════════╝
+    with inner_tabs[2]:
+        st.subheader("⏱ הגדרות ריצה")
+
+        r1, r2, r3 = st.columns(3)
+        with r1:
+            scan_interval = st.number_input("דקות בין סבבים:", value=int(email_cfg.get("scan_interval_minutes", 5)), min_value=1, max_value=120, key=f"interval_{pn}")
+        with r2:
+            max_msgs = st.number_input("כמות מיילים לסבב:", value=int(email_cfg.get("max_messages_per_cycle", 200)), min_value=1, max_value=5000, key=f"max_msgs_{pn}")
+        with r3:
+            max_files = st.number_input("מקסימום קבצים למייל:", value=int(email_cfg.get("max_files_per_email", 15)), min_value=0, max_value=100, key=f"max_files_{pn}")
+
+        chk = st.columns(4)
+        with chk[0]:
+            recursive = st.checkbox("כולל תת-תיקיות", value=processing_cfg.get("recursive", True), key=f"recursive_{pn}")
+        with chk[1]:
+            cleanup = st.checkbox("מחק אחרי העברה", value=processing_cfg.get("cleanup_download", True), key=f"cleanup_{pn}")
+        with chk[2]:
+            mark_proc = st.checkbox("סמן מעובד", value=processing_cfg.get("mark_as_processed", True), key=f"mark_proc_{pn}")
+        with chk[3]:
+            debug_mode = st.checkbox("Debug mode", value=processing_cfg.get("debug_mode", False), key=f"debug_{pn}")
+
+        auto_chk = st.columns(3)
+        with auto_chk[0]:
+            auto_send = st.checkbox("שלח אוטומטית", value=output_cfg.get("auto_send", False), key=f"auto_send_{pn}")
+        with auto_chk[1]:
+            archive_full = st.checkbox("שמור עותק מלא", value=processing_cfg.get("archive_full", False), key=f"archive_{pn}")
+        with auto_chk[2]:
+            gen_excel = st.checkbox("הפק Excel", value=output_cfg.get("generate_excel", True), key=f"gen_excel_{pn}")
+
+        with st.expander("🕐 תזמון אוטומטי (Scheduler)", expanded=scheduler_cfg.get("enabled", False)):
+            sched_enabled = st.checkbox("הפעל תזמון אוטומטי", value=scheduler_cfg.get("enabled", False), key=f"sched_en_{pn}")
+
+            sc1, sc2 = st.columns(2)
+            with sc1:
+                st.markdown("**▶️ רגילה**")
+                _reg_from = scheduler_cfg.get("regular_from", "07:00") or "07:00"
+                _reg_to = scheduler_cfg.get("regular_to", "19:00") or "19:00"
+                sched_reg_from = st.time_input("משעה:", value=dt_time(*map(int, _reg_from.split(":"))), key=f"sched_rf_{pn}")
+                sched_reg_to = st.time_input("עד שעה:", value=dt_time(*map(int, _reg_to.split(":"))), key=f"sched_rt_{pn}")
+            with sc2:
+                st.markdown("**🏋️ כבדה**")
+                _hvy_from = scheduler_cfg.get("heavy_from", "19:00") or "19:00"
+                _hvy_to = scheduler_cfg.get("heavy_to", "07:00") or "07:00"
+                sched_hvy_from = st.time_input("משעה:", value=dt_time(*map(int, _hvy_from.split(":"))), key=f"sched_hf_{pn}")
+                sched_hvy_to = st.time_input("עד שעה:", value=dt_time(*map(int, _hvy_to.split(":"))), key=f"sched_ht_{pn}")
+
+            sched_interval = st.number_input("דקות בין סבבים מתוזמנים:", value=int(scheduler_cfg.get("interval_minutes", 5)),
+                                              min_value=1, max_value=120, key=f"sched_int_{pn}")
+            sched_report = st.text_input("📊 תיקיית דוחות Excel:", value=scheduler_cfg.get("report_folder", ""), key=f"sched_rpt_{pn}")
+
+            if sched_enabled:
+                _now = _dt.now().time()
+                _in_reg = _is_time_in_range(_now, sched_reg_from, sched_reg_to)
+                _in_hvy = _is_time_in_range(_now, sched_hvy_from, sched_hvy_to)
+                if _in_reg:
+                    st.success(f"⏰ כרגע בטווח ריצה **רגילה** (שעה: {_now.strftime('%H:%M')})")
+                elif _in_hvy:
+                    st.success(f"⏰ כרגע בטווח ריצה **כבדה** (שעה: {_now.strftime('%H:%M')})")
                 else:
-                    st.session_state.folders_loaded = folders
-                    st.session_state.folders_mailbox = selected_mailbox
-                    st.success(f"נטענו {len(folders)} תיקיות עבור {selected_mailbox}")
+                    st.warning(f"⏰ כרגע לא בטווח ריצה (שעה: {_now.strftime('%H:%M')})")
 
-        folder_options = []
-        folder_path_map = {}
-        if st.session_state.folders_loaded:
-            for f in st.session_state.folders_loaded:
-                label = format_folder_label(f["path"], f.get("totalItemCount"))
-                folder_options.append(label)
-                folder_path_map[label] = f["path"]
+    # ╔════════════════════════════════════════════════╗
+    # ║  INNER TAB 4 — LIVE LOG                       ║
+    # ╚════════════════════════════════════════════════╝
+    with inner_tabs[3]:
+        st.subheader(f"📋 לוג — {profile['display_name']}")
 
-        current_folder = cfg.get("folder_name", "Inbox")
-        default_index = 0
-        if folder_options:
-            for i, opt in enumerate(folder_options):
-                raw_path = folder_path_map.get(opt, opt)
-                if raw_path == current_folder or opt.startswith(current_folder):
-                    default_index = i
-                    break
-            selected_folder_label = st.selectbox(
-                "תת-תיקייה:", options=folder_options, index=default_index, key="folder_select",
-            )
-            selected_folder = folder_path_map.get(selected_folder_label, selected_folder_label)
-        else:
-            selected_folder = st.text_input("תת-תיקייה:", value=current_folder, key="folder_text")
-
-        rerun_c1, rerun_c2 = st.columns(2)
-        with rerun_c1:
-            rerun_folder = st.text_input("תיקיית RERUN:", value=cfg.get("rerun_folder_name", ""), key="rerun_folder",
-                                          help="שם תיקייה ב-Outlook להרצה חוזרת. גררי מייל לכאן כדי לשלוח שוב עם כל הפריטים.")
-        with rerun_c2:
-            rerun_mailbox = st.text_input("תיבת RERUN:", value=cfg.get("rerun_mailbox", ""), key="rerun_mailbox",
-                                           help="תיבה בה נמצאת תיקיית RERUN. השאירי ריק אם היא באותה תיבה ראשית.")
-
-        scan_from_date = st.text_input(
-            "סרוק מתאריך (DD/MM/YYYY HH:MM):", value=cfg.get("scan_from_date", ""), key="scan_from_date",
-            help="מיילים שהתקבלו לפני תאריך זה יתעלמו. השאירי ריק לסריקה רגילה.",
-        )
-        recipient_email = st.text_input("נמען לשליחה:", value=cfg.get("recipient_email", ""), key="recipient_email",
-                                         help="כתובת המייל שאליה יישלחו קבצי B2B.")
-
-        cat_c1, cat_c2 = st.columns(2)
-        with cat_c1:
-            mark_cat_name = st.text_input("קטגוריה לסימון:", value=cfg.get("mark_category_name", "AI Processed"), key="mark_cat_name")
-        with cat_c2:
-            stored_color = cfg.get("mark_category_color", "preset20")
-            mark_cat_color = st.selectbox(
-                "צבע:", options=_COLOR_NAMES,
-                index=_COLOR_NAMES.index(_REVERSE_COLOR_MAP.get(stored_color, "None")), key="mark_cat_color",
-            )
-        cat_c3, cat_c4 = st.columns(2)
-        with cat_c3:
-            nodraw_cat_name = st.text_input("קטגוריה NO DRAW:", value=cfg.get("nodraw_category_name", "NO DRAW"), key="nodraw_cat_name")
-        with cat_c4:
-            stored_nodraw_color = cfg.get("nodraw_category_color", "preset1")
-            nodraw_cat_color = st.selectbox(
-                "צבע NO DRAW:", options=_COLOR_NAMES,
-                index=_COLOR_NAMES.index(_REVERSE_COLOR_MAP.get(stored_nodraw_color, "None")), key="nodraw_cat_color",
-            )
-
-        skip_senders = st.text_area(
-            "דלג על שולחים (כתובת בכל שורה):",
-            value="\n".join(cfg.get("skip_senders", [])), height=80, key="skip_senders",
-            help="כתובות מייל שמהן לא לעבד. כתובת אחת בכל שורה.",
-        )
-        skip_categories = st.text_area(
-            "דלג על קטגוריות (שם בכל שורה):",
-            value="\n".join(cfg.get("skip_categories", [])), height=60, key="skip_categories",
-            help="מיילים עם קטגוריות אלו ב-Outlook ידולגו.",
-        )
-
-    with col_folders:
-        st.subheader("📁 תיקיות")
-        download_root = st.text_input("תיקיית הורדה:", value=cfg.get("download_root", ""), key="download_root",
-                                        help="תיקייה להורדת קבצים מצורפים ממיילים.")
-        if download_root and not Path(download_root).exists():
-            st.warning("⚠️ התיקייה לא קיימת")
-        tosend_folder = st.text_input("TO_SEND:", value=cfg.get("tosend_folder", ""), key="tosend_folder",
-                                        help="תיקייה שבה יישמרו קבצי B2B המוכנים לשליחה.")
-        if tosend_folder and not Path(tosend_folder).exists():
-            st.warning("⚠️ התיקייה לא קיימת")
-        output_copy_folder = st.text_input("תיקיית שמירה:", value=cfg.get("output_copy_folder", ""), key="output_copy_folder",
-                                             help="תיקייה לשמירת עותק מלא של הקבצים המעובדים.")
-
-# ╔═══════════════════════════════════════════════════════════╗
-# ║  TAB 2 — STAGES + MODELS                                 ║
-# ╚═══════════════════════════════════════════════════════════╝
-with tab_stages:
-    st.subheader("🔬 שלבי חילוץ ומודלים")
-
-    stage_defs = [
-        (0, "0: זיהוי", False), (1, "1: בסיסי", True),
-        (2, "2: תהליכים", True), (3, "3: NOTES", True),
-        (4, "4: שטח", True), (5, "5: Fallback", True),
-        (6, "6: PL", True), (7, "7: email", True),
-        (8, "8: הזמנות", True), (9, "9: מיזוג", True),
-    ]
-    saved_stages = cfg.get("selected_stages", {})
-    saved_models = cfg.get("stage_models", {})
-    stage_enabled = {}
-    stage_models = {}
-
-    cols_r1 = st.columns(5)
-    for i, (sn, label, has_cb) in enumerate(stage_defs[:5]):
-        with cols_r1[i]:
-            if has_cb:
-                stage_enabled[sn] = st.checkbox(label, value=bool(saved_stages.get(str(sn), True)), key=f"stage_{sn}_on")
+        @st.fragment(run_every=5)
+        def _log_fragment():
+            _bridge = _get_bridge()
+            lines = _bridge.get_log_lines(pn, 200)
+            if pn == "quotes":
+                log_text = read_log_tail(2000, profile_name="quotes")
+            elif lines:
+                log_text = "\n".join(lines)
             else:
-                st.markdown(f"**{label}**")
-                stage_enabled[sn] = True
-            md = saved_models.get(str(sn), _ENV_STAGE_DEFAULTS.get(sn, "gpt-4o-vision"))
-            mi = _AVAILABLE_MODELS.index(md) if md in _AVAILABLE_MODELS else 0
-            stage_models[sn] = st.selectbox("מודל", options=_AVAILABLE_MODELS, index=mi, key=f"model_{sn}", label_visibility="collapsed")
+                log_text = "אין הודעות לוג"
 
-    cols_r2 = st.columns(5)
-    for i, (sn, label, has_cb) in enumerate(stage_defs[5:]):
-        with cols_r2[i]:
-            if has_cb:
-                stage_enabled[sn] = st.checkbox(label, value=bool(saved_stages.get(str(sn), True)), key=f"stage_{sn}_on")
-            md = saved_models.get(str(sn), _ENV_STAGE_DEFAULTS.get(sn, "gpt-4o-vision"))
-            mi = _AVAILABLE_MODELS.index(md) if md in _AVAILABLE_MODELS else 0
-            stage_models[sn] = st.selectbox("מודל", options=_AVAILABLE_MODELS, index=mi, key=f"model_{sn}", label_visibility="collapsed")
+            # ── Status (two separate lines) ──
+            _rstatus = _bridge.get_run_status(pn)
+            _running = _bridge.is_running(pn)
+            _sched = _bridge.is_scheduler_active(pn)
+            _phase = _rstatus.get("phase", "idle")
+            _active = _running or _phase in ("processing", "scanning", "sending")
 
-# ╔═══════════════════════════════════════════════════════════╗
-# ║  TAB 3 — RUN SETTINGS                                    ║
-# ╚═══════════════════════════════════════════════════════════╝
-with tab_run:
-    st.subheader("⏱ הגדרות ריצה")
+            # ── Line 1: run status ──
+            _run_info = ""
+            _rt = _rstatus.get("run_type", "")
+            if _rt == "heavy":
+                _run_info += " | 🏋️ כבד"
+            elif _rt == "regular":
+                _run_info += " | 📨 רגיל"
+            _ce = _rstatus.get("current_email", 0)
+            _te = _rstatus.get("total_emails", 0)
+            if _ce and _te:
+                _run_info += f" | מייל {_ce}/{_te}"
+            elif _te:
+                _run_info += f" | {_te} מיילים"
+            _phase_labels = {"scanning": "🔍 סורק", "processing": "⚙️ מעבד", "sending": "📤 שולח", "done": "✅ הושלם"}
+            _pl = _phase_labels.get(_phase, "")
+            if _pl:
+                _run_info += f" | {_pl}"
 
-    rc1, rc2, rc3 = st.columns(3)
-    with rc1:
-        poll_interval = st.number_input("דקות בין סבבים:", value=int(cfg.get("poll_interval_minutes", 10)), min_value=1, max_value=120, key="poll_interval",
-                                        help="כל כמה דקות לבדוק מיילים חדשים.")
-    with rc2:
-        max_messages = st.number_input("כמות מיילים לסבב:", value=int(cfg.get("max_messages", 200)), min_value=1, max_value=5000, key="max_messages",
-                                        help="כמה מיילים לעבד בסבב אחד (מקסימום).")
-    with rc3:
-        max_files = st.number_input("מקסימום קבצים למייל (0=ללא):", value=int(cfg.get("max_files_per_email", 15)), min_value=0, max_value=100, key="max_files",
-                                     help="מיילים עם יותר קבצים מהסף יסומנו AI HEAVY וידלגו. 0=ללא הגבלה.")
-
-    chk = st.columns(5)
-    with chk[0]:
-        auto_start = st.checkbox("הפעל בעת פתיחה", value=cfg.get("auto_start", False), key="auto_start",
-                                  help="התחל ריצה אוטומטית כשפותחים את האפליקציה.")
-    with chk[1]:
-        auto_send = st.checkbox("שלח אוטומטית", value=cfg.get("auto_send", False), key="auto_send",
-                                 help="שלח את קבצי B2B במייל אוטומטית לאחר עיבוד.")
-    with chk[2]:
-        archive_full = st.checkbox("שמור עותק מלא", value=cfg.get("archive_full", False), key="archive_full",
-                                    help="שמור עותק מלא של כל הקבצים בתיקיית שמירה.")
-    with chk[3]:
-        cleanup_download = st.checkbox("מחק אחרי העברה", value=cfg.get("cleanup_download", True), key="cleanup_download",
-                                        help="נקה קבצים שהורדו לאחר העברתם לתיקיית הפלט.")
-    with chk[4]:
-        mark_processed = st.checkbox("סמן מעובד", value=cfg.get("mark_as_processed", True), key="mark_processed",
-                                      help="סמן מיילים כ'מעובד' ב-Outlook כדי לא לעבד שוב.")
-
-    with st.expander("🕐 תזמון אוטומטי (Scheduler)", expanded=cfg.get("scheduler_enabled", False)):
-        st.caption("הגדר שעות ריצה אוטומטית — רגילה וכבדה ישלבו לפי טווח השעות. כשהתזמון פועל, המערכת מריצה סבבים לפי הזמן ללא צורך בלחיצה ידנית.")
-
-        sched_enabled = st.checkbox("הפעל תזמון אוטומטי", value=cfg.get("scheduler_enabled", False), key="sched_enabled",
-                                     help="כשמופעל, המערכת תריץ סבבים אוטומטית בטווח השעות שנקבע.")
-
-        sc1, sc2 = st.columns(2)
-        with sc1:
-            st.markdown("**▶️ רגילה**")
-            from datetime import time as dt_time
-            _reg_from = cfg.get("scheduler_regular_from", "07:00")
-            _reg_to = cfg.get("scheduler_regular_to", "19:00")
-            sched_regular_from = st.time_input("משעה:", value=dt_time(*map(int, _reg_from.split(":"))), key="sched_reg_from")
-            sched_regular_to = st.time_input("עד שעה:", value=dt_time(*map(int, _reg_to.split(":"))), key="sched_reg_to")
-        with sc2:
-            st.markdown("**🏋️ כבדה**")
-            _hvy_from = cfg.get("scheduler_heavy_from", "19:00")
-            _hvy_to = cfg.get("scheduler_heavy_to", "07:00")
-            sched_heavy_from = st.time_input("משעה:", value=dt_time(*map(int, _hvy_from.split(":"))), key="sched_hvy_from")
-            sched_heavy_to = st.time_input("עד שעה:", value=dt_time(*map(int, _hvy_to.split(":"))), key="sched_hvy_to")
-
-        sched_interval = st.number_input("דקות בין סבבים מתוזמנים:", value=int(cfg.get("scheduler_interval_minutes", 10)),
-                                          min_value=1, max_value=120, key="sched_interval",
-                                          help="כל כמה דקות לבדוק ולהריץ בטווח המתוזמן.")
-
-        sched_report_folder = st.text_input(
-            "📊 תיקיית דוחות Excel (אופציונלי):",
-            value=cfg.get("scheduler_report_folder", ""),
-            key="sched_report_folder",
-            placeholder=r"לדוגמה: C:\Reports\scheduler",
-            help="אם מוגדר, יישמר דוח Excel סיכומי בתיקייה זו בתום כל סבב מתוזמן. ריק = ללא דוח.",
-        )
-
-        save_scheduler_btn = st.button(
-            "💾 שמור הגדרות תזמון",
-            key="save_scheduler_btn",
-            width='stretch',
-            help="שומר מיד את שעות התזמון ונתיב דוח ה-Excel",
-        )
-
-        if sched_enabled:
-            from datetime import datetime as _dt
-            _now = _dt.now().time()
-            _in_regular = _is_time_in_range(_now, sched_regular_from, sched_regular_to)
-            _in_heavy = _is_time_in_range(_now, sched_heavy_from, sched_heavy_to)
-            if _in_regular:
-                st.success(f"⏰ כרגע בטווח ריצה **רגילה** (שעה: {_now.strftime('%H:%M')})")
-            elif _in_heavy:
-                st.success(f"⏰ כרגע בטווח ריצה **כבדה** (שעה: {_now.strftime('%H:%M')})")
+            if _active:
+                st.markdown(f'<div class="status-bar"><span class="phase">🟢 פעיל{_run_info}</span></div>', unsafe_allow_html=True)
+            elif _run_info:
+                st.markdown(f'<div class="status-bar"><span class="phase">⏸ לא פעיל{_run_info}</span></div>', unsafe_allow_html=True)
             else:
-                st.warning(f"⏰ כרגע לא בטווח ריצה (שעה: {_now.strftime('%H:%M')})")
+                st.markdown(f'<div class="status-bar"><span class="phase">⏸ לא פעיל</span></div>', unsafe_allow_html=True)
 
-    with st.expander("⚙️ הגדרות מתקדמות"):
-        ac1, ac2 = st.columns(2)
-        with ac1:
-            stored_dim = cfg.get("max_image_dimension", 4096)
-            dim_label = _REVERSE_RES_MAP.get(stored_dim, "4096 (איכות - OCR מושלם)")
-            max_image_dim = st.selectbox(
-                "מקסימום רזולוציה:", options=list(_RESOLUTION_MAP.keys()),
-                index=list(_RESOLUTION_MAP.keys()).index(dim_label) if dim_label in _RESOLUTION_MAP else 2,
-                key="max_image_dim",
-                help="רזולוציה גבוהה יותר = דיוק טוב יותר אך עלות גבוהה יותר.",
+            # ── Line 2: scheduler / next run (always shown if scheduler active) ──
+            if _sched:
+                from datetime import datetime as _dt
+                _nrt = _bridge.get_next_run_time(pn)
+                if _nrt and not _active:
+                    _remaining = (_nrt - _dt.now()).total_seconds()
+                    if _remaining > 0:
+                        _m, _s = divmod(int(_remaining), 60)
+                        st.markdown(f'<div class="status-bar"><span class="phase">🕐 מתוזמן | ⏱ סבב הבא בעוד {_m}:{_s:02d}</span></div>', unsafe_allow_html=True)
+                    else:
+                        st.markdown(f'<div class="status-bar"><span class="phase">🕐 מתוזמן | ממתין לתחילת סבב</span></div>', unsafe_allow_html=True)
+                elif _active:
+                    st.markdown(f'<div class="status-bar"><span class="phase">🕐 מתוזמן | סבב רץ כעת</span></div>', unsafe_allow_html=True)
+                else:
+                    st.markdown(f'<div class="status-bar"><span class="phase">🕐 מתוזמן</span></div>', unsafe_allow_html=True)
+
+            st.html(
+                f'<div class="log-container" id="logBox_{pn}" style="'
+                f'background:#1a1a2e;color:#00ff00;font-family:Consolas,monospace;'
+                f'font-size:12px;padding:12px;border-radius:8px;height:450px;'
+                f'overflow-y:scroll;direction:ltr;text-align:left;white-space:pre-wrap;'
+                f'border:1px solid #FF8C0033;">{log_text}</div>'
+                f'<script>var lb=document.getElementById("logBox_{pn}");if(lb)lb.scrollTop=lb.scrollHeight;</script>'
             )
-            max_file_size = st.number_input("מקסימום גודל קובץ (MB):", value=int(cfg.get("max_file_size_mb", 100)), min_value=1, max_value=500, key="max_file_size",
-                                             help="קבצים גדולים מהסף ידלגו.")
-            stage1_skip = st.number_input("דילוג Retry שלב 1 (px):", value=int(cfg.get("stage1_skip_retry_resolution_px", 8000)), min_value=0, key="s1_skip",
-                                           help="תמונות עם רזולוציה גבוהה מהסף לא עוברות ניסיון חוזר בשלב 1.")
-            confidence = st.radio(
-                "רמת ביטחון B2B:", options=["LOW", "MEDIUM", "HIGH"],
-                index=["LOW", "MEDIUM", "HIGH"].index(cfg.get("confidence_level", "LOW")),
-                horizontal=True, key="confidence",
-                help="LOW=מקבל גם מסמכים לא ברורים, HIGH=רק בטוחים.",
-            )
-            recursive = st.checkbox("כולל תת-תיקיות", value=cfg.get("recursive", True), key="recursive",
-                                     help="סרוק גם תיקיות פנימיות.")
-            enable_retry = st.checkbox("ניסיונות נוספים", value=cfg.get("enable_retry", True), key="enable_retry",
-                                        help="אפשר ניסיונות חוזרים כשהעיבוד נכשל.")
-        with ac2:
-            debug_mode = st.checkbox("Debug mode", value=cfg.get("debug_mode", False), key="debug_mode",
-                                      help="הדפסות מפורטות בלוג לצורך ניפוי בעיות.")
-            iai_top_red = st.checkbox("IAI top-red fallback", value=cfg.get("iai_top_red_fallback", True), key="iai_top_red",
-                                      help="נסה חלופת top-red כאשר זיהוי רגיל נכשל.")
-            max_retries = st.number_input("ניסיונות חוזרים:", value=int(cfg.get("max_retries", 3)), min_value=1, max_value=5, key="max_retries",
-                                           help="מספר ניסיונות חוזרים לפני דילוג על קובץ.")
-            scan_dpi = st.selectbox("DPI:", options=[150, 200, 300], index=[150, 200, 300].index(int(cfg.get("scan_dpi", 200))), key="scan_dpi",
-                                     help="רזולוציית סריקה. 300=מומלץ ל-OCR.")
-            log_max = st.number_input("לוג מקס (MB):", value=int(cfg.get("log_max_size_mb", 1)), min_value=1, max_value=50, key="log_max",
-                                       help="גודל מקסימלי של קובץ לוג לפני רוטציה.")
-            usd_to_ils = st.number_input("$/₪:", value=float(cfg.get("usd_to_ils_rate", 3.7)), min_value=0.1, max_value=10.0, step=0.1, key="usd_ils",
-                                          help="שער המרה לתצוגת עלות בשקלים.")
 
-# ╔═══════════════════════════════════════════════════════════╗
-# ║  TAB 4 — LIVE LOG                                        ║
-# ╚═══════════════════════════════════════════════════════════╝
-with tab_log:
-    st.subheader("📋 לוג ריצה")
+            _log_btns = st.columns([1, 1, 6])
+            with _log_btns[0]:
+                if st.button("🗑 נקה לוג", key=f"clear_log_{pn}"):
+                    # Clear per-profile status_log.txt
+                    _profile_log = PROJECT_ROOT / "data" / pn / "status_log.txt"
+                    try:
+                        if _profile_log.exists():
+                            _profile_log.write_text("", encoding="utf-8")
+                    except Exception:
+                        pass
+                    # Clear in-memory lines
+                    if pn == "quotes":
+                        _qr = st.session_state.get("runner")
+                        if _qr and hasattr(_qr, "clear_log"):
+                            _qr.clear_log()
+                    else:
+                        with _bridge._lock:
+                            _bridge._log_lines[pn] = []
+                    st.rerun()
+            with _log_btns[1]:
+                if st.button("🔄 רענן", key=f"refresh_log_{pn}"):
+                    st.rerun()
 
-    @st.fragment(run_every=5)
-    def _live_log_fragment():
-        """Auto-refreshing log fragment — reruns every 5s independently."""
-        _is_active = st.session_state.is_running or (st.session_state.runner and st.session_state.runner.is_busy)
-        _countdown = get_countdown()
-        _runner_status = None
-        if st.session_state.runner:
-            _runner_status = st.session_state.runner.get_run_status()
+        _log_fragment()
 
-        _phase_map = {
-            "idle": "⏸ ממתין",
-            "scanning": "🔍 סורק מיילים...",
-            "processing": "⚙️ מעבד...",
-            "sending": "📤 שולח מייל...",
-            "done": "✅ הסבב הושלם",
-            "waiting": "⏳ ממתין לסבב הבא",
+    # ═════════════════════════════════════════════════
+    # BUTTON HANDLERS — per profile
+    # ═════════════════════════════════════════════════
+
+    def _gather_profile_config() -> dict:
+        """Collect all widgets into the profile config dict."""
+        pm = parse_mailboxes_text(mailboxes_str)
+        primary = pm[0] if pm else ""
+        fv = sel_folder
+        if fv and "(" in fv:
+            fv = folder_path_map.get(fv, fv)
+
+        new_cfg = dict(cfg)  # start from existing
+        new_cfg["email"] = {
+            "shared_mailbox": primary,
+            "shared_mailboxes": pm,
+            "inbox_folder": fv.strip() if fv else "Inbox",
+            "rerun_folder_name": rerun_folder.strip(),
+            "rerun_mailbox": rerun_mailbox.strip(),
+            "skip_senders": [s.strip().lower() for s in skip_senders.strip().splitlines() if s.strip()],
+            "skip_categories": [c.strip() for c in skip_categories.strip().splitlines() if c.strip()],
+            "scan_from_date": scan_from.strip(),
+            "category_processed": cat_processed.strip(),
+            "category_processed_color": _CATEGORY_COLOR_MAP.get(cat_proc_color, "preset20"),
+            "category_error": cat_error.strip(),
+            "category_error_color": _CATEGORY_COLOR_MAP.get(cat_err_color, "preset1"),
+            "category_heavy": email_cfg.get("category_heavy", ""),
+            "category_heavy_color": email_cfg.get("category_heavy_color", ""),
+            "max_messages_per_cycle": max_msgs,
+            "max_files_per_email": max_files,
+            "max_file_size_mb": int(email_cfg.get("max_file_size_mb", 100)),
+            "scan_interval_minutes": scan_interval,
         }
-        _run_type_labels = {
-            "regular": "🔄 ריצה רגילה",
-            "heavy": "🏋️ ריצת כבדים",
+        new_cfg["folders"] = {
+            "download": download_dir.strip(),
+            "output": output_dir.strip(),
+            "archive": archive_dir.strip(),
+            "to_send": tosend_dir.strip(),
         }
-        _phase_text = ""
-        _progress_text = ""
-        _timer_text = ""
-        _run_type_text = ""
+        new_cfg["output"] = dict(output_cfg)
+        new_cfg["output"]["send_to"] = send_to.strip()
+        new_cfg["output"]["send_cc"] = send_cc.strip()
+        new_cfg["output"]["auto_send"] = auto_send
+        new_cfg["output"]["generate_excel"] = gen_excel
+        if b2b_conf is not None:
+            new_cfg["output"]["b2b_confidence_level"] = b2b_conf
 
-        if _runner_status:
-            _phase = _runner_status["phase"]
-            _run_type_text = _run_type_labels.get(_runner_status.get("run_type", ""), "")
+        new_cfg["processing"] = {
+            "recursive": recursive,
+            "archive_full": archive_full,
+            "cleanup_download": cleanup,
+            "mark_as_processed": mark_proc,
+            "debug_mode": debug_mode,
+        }
+        new_cfg["scheduler"] = {
+            "enabled": sched_enabled,
+            "regular_from": sched_reg_from.strftime("%H:%M"),
+            "regular_to": sched_reg_to.strftime("%H:%M"),
+            "heavy_from": sched_hvy_from.strftime("%H:%M"),
+            "heavy_to": sched_hvy_to.strftime("%H:%M"),
+            "interval_minutes": sched_interval,
+            "report_folder": sched_report.strip(),
+        }
 
-            if _phase in ("processing", "scanning", "sending"):
-                _phase_text = _phase_map.get(_phase, "")
-                if _runner_status["total_emails"] > 0:
-                    _progress_text = f"📧 מייל {_runner_status['current_email']}/{_runner_status['total_emails']}"
-            elif _phase == "done":
-                _phase_text = _phase_map["done"]
-            elif _runner_status["next_run"]:
-                _phase_text = _phase_map["waiting"]
-
-            if _runner_status["next_run"]:
-                _timer_text = f"⏱ סבב הבא: {_runner_status['next_run']}"
-
-        # Only show countdown timer if NOT actively processing
-        _active_log_phases = ("processing", "scanning", "sending")
-        _is_log_active = _runner_status and _runner_status["phase"] in _active_log_phases
-        if not _timer_text and _countdown["remaining_text"] and not _is_log_active and not _is_active:
-            _timer_text = f"⏱ סבב הבא: {_countdown['remaining_text']}"
-            if not _phase_text:
-                _phase_text = _phase_map["waiting"]
-
-        # Show "running" in status bar when is_busy even if log hasn't detected it yet
-        if _is_active and not _phase_text:
-            _phase_text = _phase_map["scanning"]
-            if st.session_state.runner and st.session_state.runner._busy_run_type == "heavy":
-                _run_type_text = _run_type_labels["heavy"]
-            elif st.session_state.runner and st.session_state.runner._busy_run_type == "regular":
-                _run_type_text = _run_type_labels["regular"]
-
-        # Always show status bar
-        if _phase_text or _timer_text or _progress_text or _run_type_text:
-            _bar_parts = []
-            if _phase_text:
-                _bar_parts.append(f'<span class="phase">{_phase_text}</span>')
-            if _run_type_text:
-                _bar_parts.append(f'<span class="progress">{_run_type_text}</span>')
-            if _progress_text:
-                _bar_parts.append(f'<span class="progress">{_progress_text}</span>')
-            if _timer_text:
-                _bar_parts.append(f'<span class="timer">{_timer_text}</span>')
-            st.markdown(
-                f'<div class="status-bar">{"".join(_bar_parts)}</div>',
-                unsafe_allow_html=True,
-            )
+        # AI engine
+        new_ai = dict(ai_cfg)
+        if engine_type == "vision":
+            new_ai["stages"] = [sn for sn in range(10) if stage_enabled.get(sn, False)]
+            new_ai["stage_models"] = {str(sn): stage_models.get(sn, "") for sn in range(10) if stage_models.get(sn)}
+            if max_img_dim is not None:
+                new_ai["max_image_dimension"] = _RESOLUTION_MAP.get(max_img_dim, 4096)
+            new_ai["stage1_skip_retry_resolution_px"] = s1_skip
+            new_ai["scan_dpi"] = scan_dpi
+            new_ai["max_retries"] = max_retries
+            new_ai["iai_top_red_fallback"] = iai_top_red
+            new_ai["enable_ocr"] = enable_ocr
         else:
-            st.markdown(
-                '<div class="status-bar"><span class="phase">⏸ לא פעיל</span></div>',
-                unsafe_allow_html=True,
-            )
+            new_ai["di_model"] = di_model
+            new_ai["validate_model"] = validate_model
+            new_ai["max_retries"] = max_retries
+        new_cfg["ai_engine"] = new_ai
 
-        # Merged log: status_log.txt + drawingai_*.log for full Tkinter-level detail
-        log_text = read_log_tail(2000)
+        # Validation (DI profiles)
+        if engine_type != "vision":
+            new_cfg["validation"] = dict(validation_cfg)
+            new_cfg["validation"]["use_sql_server"] = use_sql
+            new_cfg["validation"]["supplier_lookup"] = supplier_lookup
+            new_cfg["validation"]["po_matching"] = po_matching
+            new_cfg["validation"]["price_tolerance_percent"] = price_tol
+            if review_cfg:
+                new_cfg["review"] = dict(review_cfg)
+                new_cfg["review"]["enabled"] = review_enabled
+                new_cfg["review"]["auto_approve_enabled"] = auto_approve
 
-        st.html(
-            f'<div class="log-container" id="logBox" style="'
-            f'background:#1a1a2e;color:#00ff00;font-family:Consolas,monospace;'
-            f'font-size:12px;padding:12px;border-radius:8px;height:550px;'
-            f'overflow-y:scroll;direction:ltr;text-align:left;white-space:pre-wrap;'
-            f'border:1px solid #FF8C0033;">{log_text}</div>'
-            '<script>var lb=document.getElementById("logBox");if(lb)lb.scrollTop=lb.scrollHeight;</script>'
-        )
+        return new_cfg
 
-        btn_cols = st.columns([1, 1, 6])
-        with btn_cols[0]:
-            if st.button("🗑 נקה לוג", key="clear_log"):
-                _status_log = PROJECT_ROOT / "status_log.txt"
-                try:
-                    _status_log.write_text("", encoding="utf-8")
-                except Exception:
-                    pass
-                if st.session_state.runner:
-                    st.session_state.runner.clear_log()
-                st.rerun()
-        with btn_cols[1]:
-            if st.button("🔄 רענן", key="refresh_log"):
-                st.rerun()
+    def _save_quotes_legacy(new_cfg: dict) -> None:
+        """Write all relevant fields back to automation_config.json for quotes backward compat."""
+        if pn != "quotes":
+            return
+        _sched = new_cfg.get("scheduler", {})
+        save_config(load_config() | {
+            "shared_mailbox": new_cfg["email"]["shared_mailbox"],
+            "shared_mailboxes": new_cfg["email"]["shared_mailboxes"],
+            "folder_name": new_cfg["email"]["inbox_folder"],
+            "rerun_folder_name": new_cfg["email"].get("rerun_folder_name", "RERUN"),
+            "rerun_mailbox": new_cfg["email"].get("rerun_mailbox", ""),
+            "skip_senders": new_cfg["email"].get("skip_senders", []),
+            "skip_categories": new_cfg["email"].get("skip_categories", []),
+            "scan_from_date": new_cfg["email"].get("scan_from_date", ""),
+            "recipient_email": new_cfg["output"].get("send_to", ""),
+            "poll_interval_minutes": new_cfg["email"].get("scan_interval_minutes", 5),
+            "max_messages": new_cfg["email"].get("max_messages_per_cycle", 700),
+            "max_files_per_email": new_cfg["email"].get("max_files_per_email", 12),
+            "auto_send": new_cfg["output"].get("auto_send", True),
+            "recursive": new_cfg["processing"].get("recursive", True),
+            "archive_full": new_cfg["processing"].get("archive_full", False),
+            "cleanup_download": new_cfg["processing"].get("cleanup_download", True),
+            "mark_as_processed": new_cfg["processing"].get("mark_as_processed", True),
+            "mark_category_name": new_cfg["email"].get("category_processed", "AI Processed"),
+            "mark_category_color": new_cfg["email"].get("category_processed_color", "preset20"),
+            "debug_mode": new_cfg["processing"].get("debug_mode", False),
+            "scheduler_enabled": _sched.get("enabled", False),
+            "scheduler_regular_from": _sched.get("regular_from", "07:00"),
+            "scheduler_regular_to": _sched.get("regular_to", "19:00"),
+            "scheduler_heavy_from": _sched.get("heavy_from", "19:00"),
+            "scheduler_heavy_to": _sched.get("heavy_to", "07:00"),
+            "scheduler_interval_minutes": _sched.get("interval_minutes", 5),
+            "scheduler_report_folder": _sched.get("report_folder", ""),
+        })
 
-    _live_log_fragment()
+    # ── Save ──
+    if save_btn:
+        new_cfg = _gather_profile_config()
+        save_profile_config(pn, new_cfg)
+        _save_quotes_legacy(new_cfg)
+        st.toast(f"💾 הגדרות {profile['display_name']} נשמרו!", icon="✅")
+
+    # ── Test connection ──
+    if test_btn:
+        pm = parse_mailboxes_text(mailboxes_str)
+        if not pm:
+            st.error("לא הוגדרה אף תיבה לבדיקה")
+        else:
+            with st.spinner("בודק חיבור לתיבות..."):
+                results = test_all_mailboxes(pm)
+                ok = [m for m, s in results.items() if s]
+                fail = [m for m, s in results.items() if not s]
+            if ok:
+                st.success(f"✅ תיבות תקינות ({len(ok)}): " + ", ".join(ok))
+            if fail:
+                st.error(f"❌ תיבות שנכשלו ({len(fail)}): " + ", ".join(fail))
+
+    # ── Run once ──
+    if run_btn:
+        new_cfg = _gather_profile_config()
+        save_profile_config(pn, new_cfg)
+        _save_quotes_legacy(new_cfg)
+        _bridge = _get_bridge()
+        if _bridge.is_running(pn):
+            st.toast("⚠️ ריצה כבר פעילה", icon="⚠️")
+        elif _bridge.run_once(pn):
+            st.toast(f"▶️ מריץ סבב — {profile['display_name']}...", icon="▶️")
+        else:
+            st.toast("⚠️ ריצה כבר פעילה", icon="⚠️")
+        st.rerun()
+
+    # ── Run heavy ──
+    if run_heavy_btn:
+        new_cfg = _gather_profile_config()
+        save_profile_config(pn, new_cfg)
+        _save_quotes_legacy(new_cfg)
+        _bridge = _get_bridge()
+        if _bridge.is_running(pn):
+            st.toast("⚠️ ריצה כבר פעילה", icon="⚠️")
+        elif _bridge.run_heavy(pn):
+            st.toast(f"🏋️ מריץ כבדים — {profile['display_name']}...", icon="🏋️")
+        else:
+            st.toast("⚠️ ריצה כבר פעילה", icon="⚠️")
+        st.rerun()
+
+    # ── Start ──
+    if start_btn:
+        new_cfg = _gather_profile_config()
+        save_profile_config(pn, new_cfg)
+        _save_quotes_legacy(new_cfg)
+        _bridge = _get_bridge()
+        if _bridge.start(pn):
+            st.toast(f"🚀 {profile['display_name']} הופעל!", icon="🚀")
+        st.rerun()
+
+    # ── Stop (loop + scheduler) ──
+    if stop_btn:
+        _bridge = _get_bridge()
+        _bridge.stop(pn)
+        _bridge.stop_scheduler(pn)
+        st.toast(f"⏹ {profile['display_name']} נעצר", icon="⏹")
+        st.rerun()
+
+    # ── Reset ──
+    if reset_btn:
+        if st.session_state.get(f"confirm_reset_{pn}", False):
+            reset_profile_state(pn)
+            if pn == "quotes":
+                reset_state()
+            st.session_state[f"confirm_reset_{pn}"] = False
+            st.toast(f"🔄 State {profile['display_name']} אופס", icon="🔄")
+            st.rerun()
+        else:
+            st.session_state[f"confirm_reset_{pn}"] = True
+            st.warning("⚠️ פעולה זו תאפס את המצב — כל המיילים יעובדו מחדש. לחץ שוב לאישור.")
+            st.rerun()
+
+    # ── Auto-start/stop scheduler based on checkbox ──
+    _bridge_sched = _get_bridge()
+    if sched_enabled:
+        if not _bridge_sched.is_scheduler_active(pn):
+            new_cfg = _gather_profile_config()
+            save_profile_config(pn, new_cfg)
+            _save_quotes_legacy(new_cfg)
+            _bridge_sched.start_scheduler(pn)
+    else:
+        if _bridge_sched.is_scheduler_active(pn):
+            _bridge_sched.stop_scheduler(pn)
+
 
 # ═══════════════════════════════════════════════════════════════════
-# BUTTON HANDLERS (outside tabs)
+# RENDER ALL PROFILE TABS
 # ═══════════════════════════════════════════════════════════════════
-
-def _gather_config() -> dict:
-    pm = parse_mailboxes_text(shared_mailboxes_str)
-    primary = pm[0] if pm else ""
-    fv = selected_folder
-    if fv and "(" in fv:
-        fv = folder_path_map.get(fv, fv)
-    return {
-        "shared_mailbox": primary,
-        "shared_mailboxes": pm,
-        "folder_name": fv.strip() if fv else "Inbox",
-        "rerun_folder_name": rerun_folder.strip(),
-        "rerun_mailbox": rerun_mailbox.strip(),
-        "skip_senders": [s.strip().lower() for s in skip_senders.strip().splitlines() if s.strip()],
-        "skip_categories": [c.strip() for c in skip_categories.strip().splitlines() if c.strip()],
-        "scan_from_date": scan_from_date.strip(),
-        "recipient_email": recipient_email.strip(),
-        "download_root": download_root.strip(),
-        "tosend_folder": tosend_folder.strip(),
-        "output_copy_folder": output_copy_folder.strip(),
-        "poll_interval_minutes": poll_interval,
-        "max_messages": max_messages,
-        "max_files_per_email": max_files,
-        "max_file_size_mb": max_file_size,
-        "stage1_skip_retry_resolution_px": stage1_skip,
-        "max_image_dimension": _RESOLUTION_MAP.get(max_image_dim, 4096),
-        "recursive": recursive,
-        "enable_retry": enable_retry,
-        "auto_start": auto_start,
-        "auto_send": auto_send,
-        "archive_full": archive_full,
-        "cleanup_download": cleanup_download,
-        "mark_as_processed": mark_processed,
-        "mark_category_name": mark_cat_name.strip() or "AI Processed",
-        "mark_category_color": _CATEGORY_COLOR_MAP.get(mark_cat_color, "preset0"),
-        "nodraw_category_name": nodraw_cat_name.strip() or "NO DRAW",
-        "nodraw_category_color": _CATEGORY_COLOR_MAP.get(nodraw_cat_color, "preset1"),
-        "heavy_category_name": "AI HEAVY",
-        "heavy_category_color": "preset4",
-        "confidence_level": confidence,
-        "debug_mode": debug_mode,
-        "iai_top_red_fallback": iai_top_red,
-        "max_retries": max_retries,
-        "scan_dpi": scan_dpi,
-        "log_max_size_mb": log_max,
-        "usd_to_ils_rate": usd_to_ils,
-        "selected_stages": {str(n): stage_enabled.get(n, True) for n in range(1, 10)},
-        "stage_models": {str(n): stage_models.get(n, "") for n in range(10) if stage_models.get(n)},
-        "scheduler_enabled": sched_enabled,
-        "scheduler_regular_from": sched_regular_from.strftime("%H:%M"),
-        "scheduler_regular_to": sched_regular_to.strftime("%H:%M"),
-        "scheduler_heavy_from": sched_heavy_from.strftime("%H:%M"),
-        "scheduler_heavy_to": sched_heavy_to.strftime("%H:%M"),
-        "scheduler_interval_minutes": sched_interval,
-        "scheduler_report_folder": sched_report_folder.strip(),
-    }
-
-
-if save_btn or save_scheduler_btn:
-    new_cfg = _gather_config()
-    save_config(new_cfg)
-    st.toast("💾 ההגדרות נשמרו בהצלחה!", icon="✅")
-
-if test_btn:
-    if not parsed_mailboxes:
-        st.error("לא הוגדרה אף תיבה לבדיקה")
-    else:
-        with st.spinner("בודק חיבור לתיבות..."):
-            results = test_all_mailboxes(parsed_mailboxes)
-            ok = [m for m, s in results.items() if s]
-            fail = [m for m, s in results.items() if not s]
-        if ok:
-            st.success(f"✅ תיבות תקינות ({len(ok)}): " + ", ".join(ok))
-        if fail:
-            st.error(f"❌ תיבות שנכשלו ({len(fail)}): " + ", ".join(fail))
-
-if run_once_btn:
-    new_cfg = _gather_config()
-    save_config(new_cfg)
-    if st.session_state.runner is None:
-        st.session_state.runner = get_runner_bridge()
-    _runner = st.session_state.runner
-    if _runner.is_busy or _runner.is_running:
-        st.toast("⚠️ ריצה כבר פעילה — לא ניתן להריץ במקביל", icon="⚠️")
-    elif _runner.run_once():
-        st.toast("▶️ מריץ סבב אחד...", icon="▶️")
-    else:
-        st.toast("⚠️ ריצה כבר פעילה — לא ניתן להריץ במקביל", icon="⚠️")
-    st.rerun()
-
-if run_heavy_btn:
-    new_cfg = _gather_config()
-    save_config(new_cfg)
-    if st.session_state.runner is None:
-        st.session_state.runner = get_runner_bridge()
-    _runner = st.session_state.runner
-    if _runner.is_busy or _runner.is_running:
-        st.toast("⚠️ ריצה כבר פעילה — לא ניתן להריץ במקביל", icon="⚠️")
-    elif _runner.run_heavy():
-        st.toast("🏋️ מריץ כבדים...", icon="🏋️")
-    else:
-        st.toast("⚠️ ריצה כבר פעילה — לא ניתן להריץ במקביל", icon="⚠️")
-    st.rerun()
-
-# Show progress indicator when a one-shot run is active
-_r = st.session_state.runner
-if _r and _r.is_busy:
-    _type_label = "סבב רגיל" if _r._busy_run_type == "regular" else "ריצת כבדים"
-    with st.status(f"⏳ מריץ {_type_label}...", expanded=False):
-        st.write("הריצה פעילה. עקוב אחרי הלוג לפרטים.")
-
-if start_btn:
-    new_cfg = _gather_config()
-    save_config(new_cfg)
-    if st.session_state.runner is None:
-        st.session_state.runner = get_runner_bridge()
-    _runner = st.session_state.runner
-    if _runner.is_busy:
-        st.toast("⚠️ ריצה חד-פעמית עדיין פעילה — לא ניתן להפעיל לולאה", icon="⚠️")
-    elif _runner.start():
-        st.session_state.is_running = True
-        st.toast("🚀 אוטומציה הופעלה!", icon="🚀")
-    st.rerun()
-
-if stop_btn:
-    if st.session_state.runner:
-        st.session_state.runner.stop()
-        st.session_state.runner.stop_scheduler()
-    st.session_state.is_running = False
-    st.toast("⏹ אוטומציה נעצרה", icon="⏹")
-    st.rerun()
-
-# ── Auto-start/stop scheduler based on checkbox ──
-if sched_enabled:
-    if st.session_state.runner is None:
-        st.session_state.runner = get_runner_bridge()
-    _sched_runner = st.session_state.runner
-    if not _sched_runner.scheduler_active:
-        new_cfg = _gather_config()
-        save_config(new_cfg)
-        _sched_runner.start_scheduler()
-else:
-    _sched_runner = st.session_state.runner
-    if _sched_runner and _sched_runner.scheduler_active:
-        _sched_runner.stop_scheduler()
-
-if reset_btn:
-    if st.session_state.confirm_reset:
-        reset_state()
-        st.session_state.confirm_reset = False
-        st.toast("🔄 State אופס — כל המיילים יתחשבו כחדשים", icon="🔄")
-        st.rerun()
-    else:
-        st.session_state.confirm_reset = True
-        st.warning("⚠️ פעולה זו תאפס את המצב — כל המיילים יעובדו מחדש. לחץ שוב לאישור.")
-        st.rerun()
+for _i, _profile in enumerate(profiles):
+    with profile_tabs[_i]:
+        _render_profile_tab(_profile, _i)

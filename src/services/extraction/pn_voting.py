@@ -298,11 +298,23 @@ def vote_best_pn(vision_pn: str, pdfplumber_pn: str, tesseract_pn: str,
                         break
                 return candidates[src1], f"consensus ({src1}+{src2})"
 
-    # Strategy 2: Filename match
+    # Strategy 2: Filename match — prefer the LONGEST matching candidate
+    # (most specific). A truncated substring like "N01165-00-" should not beat
+    # the full number "N01165-00-03-01-005" just because pdfplumber is checked first.
+    fn_matches = []
     for src in ['pdfplumber', 'vision', 'tesseract']:
         val = candidates[src]
         if val and val != 'N/A' and matches_filename(val):
-            return val, f"filename match ({src})"
+            fn_matches.append((src, val))
+    if fn_matches:
+        # Pick the longest normalized candidate; on tie keep original order (pdfplumber first)
+        best_src, best_val = max(fn_matches, key=lambda sv: len(norm(sv[1])))
+        if len(fn_matches) > 1:
+            logger.debug(
+                f"🗳️ Strategy 2: {len(fn_matches)} candidates matched filename — "
+                f"picked longest: '{best_val}' ({best_src})"
+            )
+        return best_val, f"filename match ({best_src})"
 
     # ─── Strategy 2.5: Filename extraction when no candidate matches ───
     # If NO candidate matched the filename, but the filename itself contains

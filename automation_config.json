@@ -13,11 +13,11 @@
     "ירדנה",
     "נועם"
   ],
-  "scan_from_date": "26/03/2026 03:00",
+  "scan_from_date": "02/04/2026 20:40",
   "recipient_email": "quotes_check@algat.co.il",
-  "download_root": "C:\\DrawingAI\\NEW FILES\\automation\\from",
-  "tosend_folder": "C:\\DrawingAI\\NEW FILES\\automation\\to",
-  "output_copy_folder": "C:\\DrawingAI\\NEW FILES\\automation\\archive",
+  "download_root": "C:\\dev DrawingAI\\NEW FILES\\automation\\from",
+  "tosend_folder": "C:\\dev DrawingAI\\NEW FILES\\automation\\to",
+  "output_copy_folder": "C:\\dev DrawingAI\\NEW FILES\\automation\\archive",
   "poll_interval_minutes": 5,
   "max_messages": 700,
   "max_files_per_email": 12,
@@ -67,11 +67,11 @@
     "8": "gpt-5.4",
     "9": "o4-mini"
   },
-  "scheduler_enabled": false,
+  "scheduler_enabled": true,
   "scheduler_regular_from": "07:00",
-  "scheduler_regular_to": "19:45",
-  "scheduler_heavy_from": "20:00",
+  "scheduler_regular_to": "22:00",
+  "scheduler_heavy_from": "22:00",
   "scheduler_heavy_to": "06:30",
   "scheduler_interval_minutes": 5,
-  "scheduler_report_folder": "C:/DrawingAI/reports"
+  "scheduler_report_folder": "C:\\dev DrawingAI\\reports"
 }

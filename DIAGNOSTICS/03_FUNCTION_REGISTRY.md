@@ -1,6 +1,6 @@
-# DrawingAI Pro — Function Registry
+# AI GATEWAY KITARON — Function Registry
 
-> עדכון אחרון: 25/03/2026 — **כולל Streamlit Web UI functions**
+> עדכון אחרון: 03/04/2026 — **Multi-Profile Engine (v4.1) — Pipeline Decomposition**
 > Total files: **111 Python** · Total lines: **~31,600**
 
 ---
@@ -22,17 +22,19 @@ Cost tracking utilities (CostTracker class).
 ### src/core/exceptions.py (65 lines)
 10 custom exception classes.
 
-### src/utils/prompt_loader.py (39 lines)
+### src/utils/prompt_loader.py (57 lines)
 | Line | Name | Description |
 |------|------|-------------|
-| 20 | `load_prompt` | Load prompt from `prompts/<name>.txt` (LRU-cached) |
+| 30 | `set_prompts_context` | Set thread-local prompts folder (called by scan_folder) |
+| 38 | `load_prompt` | Load prompt from profile folder → fallback to root prompts/ |
 
-### src/utils/logger.py (141 lines)
+### src/utils/logger.py
 | Line | Name | Description |
 |------|------|-------------|
 | 12 | `ColoredFormatter` | ANSI color formatter |
 | 31 | `GUICallbackHandler` | Forward logs to GUI callback |
-| 43 | `setup_logging` | Root logging: console, rotating file, GUI |
+| 43 | `setup_logging` | Root logging: console, rotating file, GUI (with `_ProfileFilter`) |
+| — | `_ProfileFilter` | ★ Injects `{profile_name}:{module}` prefix into log records (thread-aware) |
 | 117 | `get_logger` | Get named Logger |
 | 130 | `create_log_file` | Create log file path |
 
@@ -74,6 +76,39 @@ Cost tracking utilities (CostTracker class).
 | 71 | `_log_stage_completion` | Print per-stage stats |
 | 93 | `_chat_create_with_token_compat` | Completion with auto-retry |
 | 153 | `_call_vision_api_with_retry` | Vision API + content-filter retry |
+
+---
+
+## 2b. Pipeline Modules (extracted from scan_folder)
+
+### src/pipeline/archive_extractor.py (121 lines)
+| Line | Name | Description |
+|------|------|-------------|
+| 15 | `extract_archives_in_folders` | Extract ZIP/RAR archives in subfolders |
+
+### src/pipeline/drawing_processor.py (202 lines)
+| Line | Name | Description |
+|------|------|-------------|
+| 20 | `process_drawings` | Process all drawings in a subfolder (stages 0-9) |
+
+### src/pipeline/pl_processor.py (404 lines)
+| Line | Name | Description |
+|------|------|-------------|
+| 18 | `update_pl_associations` | Match PL pages to drawings |
+| 45 | `extract_and_process_pl` | Extract PL data for a subfolder |
+| 120 | `propagate_pl_data` | Propagate PL overrides to drawing results |
+
+### src/pipeline/folder_saver.py (290 lines)
+| Line | Name | Description |
+|------|------|-------------|
+| 22 | `save_folder_output` | Save Excel + B2B + TO_SEND for a processed subfolder |
+
+### src/pipeline/results_merger.py (334 lines)
+| Line | Name | Description |
+|------|------|-------------|
+| 18 | `merge_all_results` | Merge all subfolder results into final output |
+| 65 | `copy_folders_to_tosend` | Copy TO_SEND folders to output |
+| 120 | `print_final_summary` | Print final processing summary with costs |
 
 ---
 

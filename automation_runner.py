@@ -21,15 +21,52 @@ from src.utils.logger import get_logger
 logger = get_logger(__name__)
 
 # ─── Stdout redirector (mirrors Tkinter LogRedirector) ────────────────
-_STATUS_LOG_PATH = Path.cwd() / "status_log.txt"
+_STATUS_LOG_PATH = Path.cwd() / "data" / "status_log.txt"
+_STATUS_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
 _ANSI_RE = re.compile(r'\x1b\[[0-9;]*m')
+
+# ── Thread → log-path / profile-name mapping for multi-profile support ──
+_thread_log_paths: dict = {}  # thread_id -> Path
+_thread_profile_names: dict = {}  # thread_id -> str (e.g. "quotes")
+_thread_log_lock = threading.Lock()
+
+
+def _register_thread_log_path(log_path: Path, profile_name: str = "") -> None:
+    """Register the status log path and profile name for the current thread."""
+    with _thread_log_lock:
+        tid = threading.get_ident()
+        _thread_log_paths[tid] = log_path
+        if profile_name:
+            _thread_profile_names[tid] = profile_name
+
+
+def _unregister_thread_log_path() -> None:
+    """Unregister the status log path for the current thread."""
+    with _thread_log_lock:
+        tid = threading.get_ident()
+        _thread_log_paths.pop(tid, None)
+        _thread_profile_names.pop(tid, None)
+
+
+def _get_current_log_path() -> Path:
+    """Return the log path for the current thread, fallback to global."""
+    with _thread_log_lock:
+        return _thread_log_paths.get(threading.get_ident(), _STATUS_LOG_PATH)
+
+
+def _get_current_profile_name() -> str:
+    """Return the profile name for the current thread, or empty string."""
+    with _thread_log_lock:
+        return _thread_profile_names.get(threading.get_ident(), "")
 
 
 class _StatusLogRedirector:
-    """Redirects stdout to both the original console AND status_log.txt.
-    This gives the Streamlit log panel the same detailed output that
-    Tkinter showed via its LogRedirector (print-based stage costs,
-    dimensions, rotation checks, etc.)."""
+    """Redirects stdout to both the original console AND per-thread status_log.txt.
+    Each thread writes to its own log file based on _thread_log_paths mapping,
+    enabling safe concurrent multi-profile operation."""
+
+    _instance_lock = threading.Lock()
+    _active_count = 0  # number of profiles currently using the redirector
 
     def __init__(self, original_stdout):
         self.original = original_stdout
@@ -43,8 +80,9 @@ class _StatusLogRedirector:
         if message and message.strip():
             try:
                 clean = _ANSI_RE.sub('', message.rstrip())
+                log_path = _get_current_log_path()
                 with self._lock:
-                    with open(_STATUS_LOG_PATH, "a", encoding="utf-8") as f:
+                    with open(log_path, "a", encoding="utf-8") as f:
                         # Logger lines already have HH:MM:SS timestamp — write as-is
                         if (
                             len(clean) > 8
@@ -66,12 +104,13 @@ class _StatusLogRedirector:
 
 
 def _trim_status_log() -> None:
-    """Keep status_log.txt under 5000 lines."""
+    """Keep status_log.txt under 5000 lines (uses current thread's log path)."""
     try:
-        if _STATUS_LOG_PATH.exists():
-            lines = _STATUS_LOG_PATH.read_text(encoding="utf-8").splitlines()
+        log_path = _get_current_log_path()
+        if log_path.exists():
+            lines = log_path.read_text(encoding="utf-8").splitlines()
             if len(lines) > 5500:
-                _STATUS_LOG_PATH.write_text(
+                log_path.write_text(
                     "\n".join(lines[-5000:]) + "\n", encoding="utf-8"
                 )
     except Exception:
@@ -275,6 +314,101 @@ def _load_json(path: Path, default: Dict[str, Any]) -> Dict[str, Any]:
         return default
 
 
+def _normalize_profile_config(raw: Dict[str, Any]) -> Dict[str, Any]:
+    """Convert nested profile config (configs/*.json) → flat legacy format.
+
+    If the config already uses flat keys (legacy automation_config.json),
+    it is returned as-is — full backward compatibility.
+    """
+    if "profile_name" not in raw:
+        return raw  # already flat / legacy format
+
+    email = raw.get("email", {})
+    folders = raw.get("folders", {})
+    ai = raw.get("ai_engine", {})
+    output = raw.get("output", {})
+    proc = raw.get("processing", {})
+    sched = raw.get("scheduler", {})
+    val = raw.get("validation", {})
+
+    flat: Dict[str, Any] = {}
+
+    # Email settings
+    flat["shared_mailbox"] = email.get("shared_mailbox", "")
+    flat["shared_mailboxes"] = email.get("shared_mailboxes", [])
+    flat["folder_name"] = email.get("inbox_folder", "Inbox")
+    flat["rerun_folder_name"] = email.get("rerun_folder_name") or None
+    flat["rerun_mailbox"] = email.get("rerun_mailbox", "")
+    flat["skip_senders"] = email.get("skip_senders", [])
+    flat["skip_categories"] = email.get("skip_categories", [])
+    flat["scan_from_date"] = email.get("scan_from_date", "")
+    flat["max_messages"] = email.get("max_messages_per_cycle", 200)
+    flat["max_files_per_email"] = email.get("max_files_per_email", 0)
+
+    # Folders
+    flat["download_root"] = folders.get("download", "")
+    flat["tosend_folder"] = folders.get("to_send") or folders.get("output", "")
+    flat["output_copy_folder"] = folders.get("archive", "")
+
+    # Output / recipient
+    flat["recipient_email"] = output.get("send_to", "")
+    flat["auto_send"] = output.get("auto_send", False)
+    flat["confidence_level"] = output.get("b2b_confidence_level", "LOW")
+
+    # AI engine
+    flat["stage_models"] = ai.get("stage_models", {})
+    flat["max_image_dimension"] = ai.get("max_image_dimension", 3072)
+    flat["stage1_skip_retry_resolution_px"] = ai.get("stage1_skip_retry_resolution_px", 8000)
+    flat["max_file_size_mb"] = ai.get("max_file_size_mb") or email.get("max_file_size_mb", 100)
+    flat["scan_dpi"] = ai.get("scan_dpi", 200)
+    flat["max_retries"] = ai.get("max_retries", 3)
+    flat["enable_retry"] = ai.get("enable_image_retry", False)
+    flat["iai_top_red_fallback"] = ai.get("iai_top_red_fallback", True)
+
+    # Convert stages list [0,1,2,...] → selected_stages dict {"1": true, ...}
+    stages_list = ai.get("stages")
+    if isinstance(stages_list, list):
+        flat["selected_stages"] = {str(s): True for s in stages_list}
+    else:
+        flat["selected_stages"] = ai.get("selected_stages", {})
+
+    # Processing
+    flat["recursive"] = proc.get("recursive", True)
+    flat["archive_full"] = proc.get("archive_full", False)
+    flat["cleanup_download"] = proc.get("cleanup_download", True)
+    flat["mark_as_processed"] = proc.get("mark_as_processed", True)
+    flat["debug_mode"] = proc.get("debug_mode", False)
+
+    # Categories
+    flat["mark_category_name"] = email.get("category_processed", "AI Processed")
+    flat["mark_category_color"] = email.get("category_processed_color", "preset0")
+    flat["nodraw_category_name"] = email.get("category_error", "NO DRAW")
+    flat["nodraw_category_color"] = email.get("category_error_color", "preset1")
+    flat["heavy_category_name"] = email.get("category_heavy", "AI HEAVY")
+    flat["heavy_category_color"] = email.get("category_heavy_color", "preset4")
+
+    # Scheduler
+    flat["poll_interval_minutes"] = sched.get("interval_minutes") or email.get("scan_interval_minutes", 10)
+    flat["scheduler_enabled"] = sched.get("enabled", False)
+    flat["scheduler_regular_from"] = sched.get("regular_from", "07:00")
+    flat["scheduler_regular_to"] = sched.get("regular_to", "19:00")
+    flat["scheduler_heavy_from"] = sched.get("heavy_from", "19:00")
+    flat["scheduler_heavy_to"] = sched.get("heavy_to", "07:00")
+    flat["scheduler_interval_minutes"] = sched.get("interval_minutes", 10)
+    flat["scheduler_report_folder"] = sched.get("report_folder", "")
+
+    # Misc defaults
+    flat["log_max_size_mb"] = raw.get("log_max_size_mb", 1)
+    flat["usd_to_ils_rate"] = raw.get("usd_to_ils_rate", 3.7)
+
+    # Profile-aware fields (needed by scan_folder / pipeline routing)
+    flat["ai_engine_type"] = ai.get("type", "vision")
+    flat["prompts_folder"] = ai.get("prompts_folder", "")
+    flat["profile_name"] = raw.get("profile_name", "")
+
+    return flat
+
+
 class _SetEncoder(json.JSONEncoder):
     """JSON encoder that converts sets to sorted lists."""
     def default(self, obj):
@@ -366,6 +500,7 @@ def _scan_folder_compat(
     stage1_skip_retry_resolution_px: int,
     max_file_size_mb: int,
     max_image_dimension: int,
+    profile_config: Optional[Dict[str, Any]] = None,
 ):
     kwargs = {
         "recursive": recursive,
@@ -374,6 +509,9 @@ def _scan_folder_compat(
         "tosend_folder": tosend_folder,
         "confidence_level": confidence_level,
     }
+
+    if profile_config is not None:
+        kwargs["profile_config"] = profile_config
 
     try:
         sig = inspect.signature(scan_folder)
@@ -402,20 +540,23 @@ class AutomationRunner:
         self.status_callback = status_callback
         self._stop_event = threading.Event()
         self._thread: Optional[threading.Thread] = None
+        # Per-profile paths derived from state_path
+        self._profile_dir = state_path.parent
+        self._profile_dir.mkdir(parents=True, exist_ok=True)
+        self._status_log_path = self._profile_dir / "status_log.txt"
+        self._event_log_path = self._profile_dir / "automation_log.jsonl"
 
     def _status(self, message: str) -> None:
-        # Write to status_log.txt so Streamlit (and any other UI) can read it
+        # Write to per-profile status_log.txt
         try:
             from datetime import datetime as _dt
             ts = _dt.now().strftime("%H:%M:%S")
-            log_path = Path.cwd() / "status_log.txt"
-            with open(log_path, "a", encoding="utf-8") as f:
+            with open(self._status_log_path, "a", encoding="utf-8") as f:
                 f.write(f"[{ts}] {message}\n")
-            # Trim to last 5000 lines periodically
             try:
-                lines = log_path.read_text(encoding="utf-8").splitlines()
+                lines = self._status_log_path.read_text(encoding="utf-8").splitlines()
                 if len(lines) > 5500:
-                    log_path.write_text("\n".join(lines[-5000:]) + "\n", encoding="utf-8")
+                    self._status_log_path.write_text("\n".join(lines[-5000:]) + "\n", encoding="utf-8")
             except Exception:
                 pass
         except Exception:
@@ -578,7 +719,24 @@ class AutomationRunner:
             logger.error(f"RERUN: Send failed: {e}")
             return False
         
-        # Step 9: Log
+        # Step 9: Copy to TO_SEND folder (like regular processing)
+        tosend_folder = config.get("tosend_folder") or None
+        if tosend_folder:
+            try:
+                tosend_root = Path(tosend_folder)
+                tosend_root.mkdir(parents=True, exist_ok=True)
+                dest_name = f"{run_dir.name}_TO_SEND"
+                dest_path = tosend_root / dest_name
+                if dest_path.exists():
+                    shutil.rmtree(dest_path)
+                def _ignore_zips(directory, contents):
+                    return [f for f in contents if f.lower().endswith('.zip')]
+                shutil.copytree(search_dir, dest_path, ignore=_ignore_zips)
+                logger.info(f"RERUN: Copied to TO_SEND: {dest_name}")
+            except Exception as e:
+                logger.warning(f"RERUN: Failed to copy to TO_SEND: {e}")
+
+        # Step 10: Log
         _append_log(
             self.state_path.parent / "automation_log.jsonl",
             {
@@ -762,6 +920,16 @@ class AutomationRunner:
                         pass
 
                 _mark_message_processed(mailbox_processed_ids, rmsg)
+
+                # Cleanup rerun_ folder from download_root
+                cleanup_download = bool(config.get("cleanup_download", True))
+                if cleanup_download:
+                    try:
+                        for d in download_root.glob(f"rerun_*_{rmsg_id[:8]}"):
+                            if d.is_dir():
+                                shutil.rmtree(d, ignore_errors=True)
+                    except Exception:
+                        pass
         except Exception as e:
             logger.debug(f"RERUN folder scan error (non-critical): {e}")
 
@@ -785,28 +953,38 @@ class AutomationRunner:
             self._deactivate_stdout_redirect()
 
     def _activate_stdout_redirect(self) -> None:
-        """Redirect stdout → status_log.txt and point logging StreamHandlers
-        through the redirector so ALL output (print + logger) lands in the file."""
+        """Register this thread's log path and install the shared redirector.
+        Multiple profiles can run concurrently — each thread writes to its own log."""
         import sys, logging
         from logging.handlers import RotatingFileHandler as _RFH
-        if not isinstance(sys.stdout, _StatusLogRedirector):
-            self._original_stdout = sys.stdout
-            sys.stdout = _StatusLogRedirector(sys.stdout)
+        _register_thread_log_path(self._status_log_path, self._profile_dir.name)
+        with _StatusLogRedirector._instance_lock:
+            if not isinstance(sys.stdout, _StatusLogRedirector):
+                self._original_stdout = sys.stdout
+                sys.stdout = _StatusLogRedirector(sys.stdout)
+            else:
+                self._original_stdout = None
+            _StatusLogRedirector._active_count += 1
         # Re-point console StreamHandlers through the redirector
         for h in logging.getLogger().handlers[:]:
             if isinstance(h, logging.StreamHandler) and not isinstance(h, (logging.FileHandler, _RFH)):
                 h.stream = sys.stdout
 
     def _deactivate_stdout_redirect(self) -> None:
-        """Restore original stdout and StreamHandler streams."""
+        """Unregister this thread's log path. Restore stdout only when no profiles are active."""
         import sys, logging
         from logging.handlers import RotatingFileHandler as _RFH
-        if hasattr(self, '_original_stdout') and self._original_stdout:
-            for h in logging.getLogger().handlers[:]:
-                if isinstance(h, logging.StreamHandler) and not isinstance(h, (logging.FileHandler, _RFH)):
-                    h.stream = self._original_stdout
-            sys.stdout = self._original_stdout
-            self._original_stdout = None
+        _unregister_thread_log_path()
+        with _StatusLogRedirector._instance_lock:
+            _StatusLogRedirector._active_count = max(0, _StatusLogRedirector._active_count - 1)
+            if _StatusLogRedirector._active_count == 0:
+                orig = getattr(self, '_original_stdout', None)
+                if orig:
+                    for h in logging.getLogger().handlers[:]:
+                        if isinstance(h, logging.StreamHandler) and not isinstance(h, (logging.FileHandler, _RFH)):
+                            h.stream = orig
+                    sys.stdout = orig
+        self._original_stdout = None
 
     def _loop(self) -> None:
         self._activate_stdout_redirect()
@@ -818,7 +996,7 @@ class AutomationRunner:
                 self._run_once_internal()
                 _trim_status_log()
                 self._write_health("waiting")
-                config = _load_json(self.config_path, {})
+                config = _normalize_profile_config(_load_json(self.config_path, {}))
                 interval_minutes = max(int(config.get("poll_interval_minutes", 10)), 1)
                 for _ in range(interval_minutes * 60):
                     if self._stop_event.is_set():
@@ -931,6 +1109,252 @@ class AutomationRunner:
 
         return result
 
+    # ── Extracted helpers for _run_once_internal_locked ──────────────────
+
+    @staticmethod
+    def _build_email_body_html(
+        output_path,
+        source_web_link: str,
+        original_body_html: str,
+        msg_categories: list,
+        category_colors: dict,
+    ) -> str:
+        """Build the HTML email body with results table, color table, source link and banner."""
+        email_body_html = original_body_html or ""
+
+        if output_path and Path(output_path).exists():
+            try:
+                import pandas as pd
+                df = pd.read_excel(output_path)
+
+                display_columns = ['file_name', 'customer_name', 'merged_description', 'quantity', 'merged_bom', 'merged_notes', 'part_number', 'revision', 'drawing_number']
+                html_table = '<table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse:collapse; direction: rtl; text-align: right;">'
+
+                header_mapping = {
+                    'file_name': 'שם קובץ',
+                    'customer_name': 'שם לקוח',
+                    'merged_description': 'תיאור מורחב',
+                    'quantity': 'כמות',
+                    'merged_bom': 'עץ מוצר',
+                    'merged_notes': 'הערות מיוחדות של לקוח',
+                    'part_number': 'מספר פריט',
+                    'revision': 'מספר גירסא',
+                    'drawing_number': 'מספר שרטוט'
+                }
+
+                html_table += '<tr style="background-color: #4472C4; color: white; font-weight: bold;">\n'
+                for col in display_columns:
+                    header_name = header_mapping.get(col, col)
+                    html_table += f'<th>{header_name}</th>\n'
+                html_table += '</tr>\n'
+
+                df = df.fillna('')
+                ltr_columns = {'part_number', 'revision', 'drawing_number'}
+
+                # Ensure merged/summary columns exist
+                for col in ('merged_description', 'color_prices', 'merged_bom', 'merged_notes', 'quantity'):
+                    if col not in df.columns:
+                        df[col] = ''
+                    else:
+                        df[col] = df[col].astype(str).str.strip()
+                        df.loc[df[col] == 'nan', col] = ''
+
+                has_pl_override_col = 'part_number_ocr_original' in df.columns
+
+                for _, row in df.iterrows():
+                    confidence = str(row.get('confidence_level', '')).strip().upper()
+
+                    if confidence in ['HIGH', 'FULL']:
+                        row_color = '#C6E0B4'
+                    elif confidence == 'MEDIUM':
+                        row_color = '#FFE699'
+                    else:
+                        row_color = '#F4B084'
+
+                    is_pl_override = False
+                    is_pl_confirmed = False
+                    if has_pl_override_col:
+                        ocr_orig = str(row.get('part_number_ocr_original', '')).strip()
+                        if ocr_orig and ocr_orig != 'nan':
+                            is_pl_override = True
+                    # Check for AS PL (PL confirmed, no override)
+                    if 'pl_override_note' in df.columns:
+                        pl_note = str(row.get('pl_override_note', '')).strip()
+                        if pl_note == 'AS PL':
+                            is_pl_confirmed = True
+
+                    html_table += f'<tr style="background-color: {row_color};">\n'
+                    for col in display_columns:
+                        value = row.get(col, "")
+                        if col == 'part_number' and is_pl_override:
+                            html_table += (
+                                '<td dir="ltr" style="text-align:left; background-color: #DAEEF3; unicode-bidi:bidi-override;">'
+                                f'<font color="#00008B"><b><span dir="ltr" style="unicode-bidi:bidi-override;">&lrm;{value}</span></b></font>'
+                                ' <font size="1" color="#00008B">(PL)</font>'
+                                '</td>\n'
+                            )
+                        elif col == 'part_number' and is_pl_confirmed:
+                            html_table += (
+                                '<td dir="ltr" style="text-align:left; background-color: #E2EFDA; unicode-bidi:bidi-override;">'
+                                f'<span dir="ltr" style="unicode-bidi:bidi-override;">&lrm;{value}</span>'
+                                ' <font size="1" color="#2E7D32">(AS PL)</font>'
+                                '</td>\n'
+                            )
+                        elif col in ltr_columns:
+                            value = f'&lrm;{value}'
+                            html_table += (
+                                '<td dir="ltr" style="text-align:left; unicode-bidi:bidi-override;">'
+                                f'<span dir="ltr" style="unicode-bidi:bidi-override;">{value}</span>'
+                                '</td>\n'
+                            )
+                        elif col in ('merged_bom', 'merged_description'):
+                            # Multi-line fields: newlines → <br>, alternates → italic
+                            cell = str(value or '')
+                            # Italicise individual (חלופי) items
+                            cell = re.sub(
+                                r'([^|,<\n]+\(חלופי\)[^|,<\n]*)',
+                                r'<i>\1</i>',
+                                cell,
+                            )
+                            cell = cell.replace('\n', '<br>')
+                            html_table += f'<td>{cell}</td>\n'
+                        else:
+                            html_table += f'<td>{value}</td>\n'
+                    html_table += '</tr>\n'
+
+                html_table += '</table>\n<br>\n'
+
+                # טבלה נוספת: מספר פריט + מפרט צבע + צבעים עם מחירים/ספקים
+                color_table = ''
+                color_rows = []
+
+                def _pick_first_value(_row, _candidates):
+                    for _col_name in _candidates:
+                        if _col_name in df.columns:
+                            _val = str(_row.get(_col_name, '')).strip()
+                            if _val and _val.lower() != 'nan':
+                                return _val
+                    return ''
+
+                for _, row in df.iterrows():
+                    part_num = str(row.get('part_number', '')).strip()
+                    if part_num.lower() == 'nan':
+                        part_num = ''
+
+                    color_spec = _pick_first_value(
+                        row,
+                        ['PL Paint', 'merged_specs', 'specifications', 'pl_paint']
+                    )
+                    color_prices = _pick_first_value(
+                        row,
+                        ['color_prices', 'colors']
+                    )
+
+                    if not any([part_num, color_spec, color_prices]):
+                        continue
+                    if not any([color_spec, color_prices]):
+                        continue
+
+                    color_rows.append((part_num, color_spec, color_prices))
+
+                if color_rows:
+                    color_table += '<div dir="rtl" style="margin:12px 0 6px 0; font-size:14px; font-weight:bold;">מפרטי צבעים ומחירים</div>'
+                    color_table += '<table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse:collapse; direction: rtl; text-align: right;">'
+                    color_table += '<tr style="background-color: #2F75B5; color: white; font-weight: bold;">\n'
+                    color_table += '<th>מספר פריט</th>\n'
+                    color_table += '<th>מפרטים</th>\n'
+                    color_table += '<th>צבעים עם מחירים</th>\n'
+                    color_table += '</tr>\n'
+
+                    for part_num, color_spec, color_prices in color_rows:
+                        spec_cell = str(color_spec).replace('\n', '<br>')
+                        prices_cell = str(color_prices).replace('\n', '<br>')
+                        color_table += '<tr style="background-color: #F8FBFF;">\n'
+                        color_table += (
+                            '<td dir="ltr" style="text-align:left; unicode-bidi:bidi-override;">'
+                            f'<span dir="ltr" style="unicode-bidi:bidi-override;">&lrm;{part_num}</span>'
+                            '</td>\n'
+                        )
+                        color_table += f'<td>{spec_cell}</td>\n'
+                        color_table += f'<td>{prices_cell}</td>\n'
+                        color_table += '</tr>\n'
+
+                    color_table += '</table>\n<br>\n'
+
+                # הוסף לינק למייל מקור
+                source_link_html = ""
+                if source_web_link:
+                    source_link_html = (
+                        '<p style="margin-top:10px;">'
+                        f'<a href="{source_web_link}" style="color:#0078D4;text-decoration:none;font-size:13px;">'
+                        '\U0001f4e7 פתח מייל מקור ב-Outlook</a></p>'
+                    )
+
+                email_body_html = html_table + color_table + source_link_html + email_body_html
+
+            except Exception as e:
+                logger.debug(f"Error building email HTML: {e}")
+                import traceback
+                traceback.print_exc()
+
+        # Fallback: הוסף לינק למייל מקור גם אם לא נבנתה טבלה
+        if source_web_link and 'פתח מייל מקור' not in email_body_html:
+            source_link_html = (
+                '<p style="margin-top:10px;">'
+                f'<a href="{source_web_link}" style="color:#0078D4;text-decoration:none;font-size:13px;">'
+                '\U0001f4e7 פתח מייל מקור ב-Outlook</a></p>'
+            )
+            email_body_html = source_link_html + email_body_html
+
+        # Add category banner from original email
+        if msg_categories:
+            cat_banner = _build_category_banner(msg_categories, category_colors)
+            email_body_html = cat_banner + email_body_html
+
+        return email_body_html
+
+    @staticmethod
+    def _collect_accuracy_data(output_path) -> tuple:
+        """Read Excel results and collect accuracy statistics.
+
+        Returns:
+            (accuracy_data, customers, pl_overrides, error_types)
+        """
+        accuracy_data = {"full": 0, "high": 0, "medium": 0, "low": 0, "none": 0, "total": 0}
+        customers = []
+        pl_overrides = 0
+        error_types = []
+        try:
+            acc_path = output_path if output_path and Path(output_path).exists() else None
+            if acc_path:
+                import pandas as pd
+                df_acc = pd.read_excel(acc_path)
+                if 'confidence_level' in df_acc.columns:
+                    for _, _acc_row in df_acc.iterrows():
+                        conf = str(_acc_row.get('confidence_level', '')).strip().lower()
+                        pn = str(_acc_row.get('part_number', '')).strip()
+                        accuracy_data["total"] += 1
+                        if not pn or pn == 'nan' or pn == '':
+                            accuracy_data["none"] += 1
+                            error_types.append("missing_part_number")
+                        elif conf in ('full', 'high', 'medium', 'low'):
+                            accuracy_data[conf] += 1
+                            if conf == 'low':
+                                error_types.append("low_confidence")
+                        else:
+                            accuracy_data["none"] += 1
+
+                        cust = str(_acc_row.get('customer_name', '')).strip()
+                        if cust and cust != 'nan':
+                            customers.append(cust)
+
+                        ocr_orig = str(_acc_row.get('part_number_ocr_original', '')).strip()
+                        if ocr_orig and ocr_orig != 'nan':
+                            pl_overrides += 1
+        except Exception as e:
+            logger.debug(f"Ignored accuracy collection: {e}")
+        return accuracy_data, customers, pl_overrides, error_types
+
     def _run_once_internal(self, heavy_only: bool = False) -> None:
         # ═══ Cross-process file lock: prevent parallel runners ═══
         lock_path = self.state_path.with_suffix(".lock")
@@ -948,7 +1372,7 @@ class AutomationRunner:
 
     def _run_once_internal_locked(self, heavy_only: bool = False) -> None:
         cycle_start = datetime.now()
-        config = _load_json(self.config_path, {})
+        config = _normalize_profile_config(_load_json(self.config_path, {}))
         if not hasattr(self, "_config_validated"):
             errors = self.validate_config()
             if errors:
@@ -1012,7 +1436,7 @@ class AutomationRunner:
 
         legacy_processed_ids = set(state.get("processed_ids", []))
         legacy_last_checked = state.get("last_checked")
-        log_path = Path.cwd() / "automation_log.jsonl"
+        log_path = self._event_log_path
 
         # Apply advanced settings to environment
         os.environ["AI_DRAW_DEBUG"] = "true" if config.get("debug_mode", False) else "false"
@@ -1379,12 +1803,21 @@ class AutomationRunner:
 
                     # ═══ SKIP NO ATTACHMENTS (pre-download) ═══
                     if msg.get("hasAttachments") is False:
-                        logger.info(f"📭 SKIP: mail {msg_idx}/{len(new_messages)} has no attachments — marking NO DRAW")
+                        _nodraw_subject = str(msg.get("subject") or "").strip()
+                        _nodraw_sender = (msg.get("from", {}).get("emailAddress", {}).get("address", "") or "").strip()
+                        _nodraw_received = str(msg.get("receivedDateTime") or "").strip()
+                        logger.info(
+                            f"📭 SKIP: mail {msg_idx}/{len(new_messages)} has no attachments — marking NO DRAW | "
+                            f"subject='{_nodraw_subject}' | from='{_nodraw_sender}' | received={_nodraw_received}"
+                        )
                         self._status(f"📭 דילוג על מייל {msg_idx}/{len(new_messages)} — ללא קבצים מצורפים")
                         _append_log(log_path, {
                             "event": "no_attachment_skipped",
                             "message_id": msg_id,
                             "mailbox": mailbox,
+                            "subject": _nodraw_subject,
+                            "sender": _nodraw_sender,
+                            "received": _nodraw_received,
                             "timestamp": _now_iso()
                         })
                         if mark_as_processed:
@@ -1482,6 +1915,17 @@ class AutomationRunner:
                     self._status(f"מריץ ניתוח [{msg_idx}/{len(new_messages)}] | {mailbox}...")
                     _scan_start = time.time()
                     try:
+                        # ── Route by AI engine type ──
+                        _ai_engine_type = config.get("ai_engine_type", "vision")
+                        if _ai_engine_type == "document_intelligence":
+                            # DI profiles (invoices, delivery) — not yet implemented
+                            _profile = config.get("profile_name", "unknown")
+                            logger.warning(
+                                f"⚠️ Document Intelligence engine not yet implemented "
+                                f"for profile '{_profile}' — skipping mail {msg_id[:8]}"
+                            )
+                            self._status(f"⚠️ DI engine לא מומש — דילוג על מייל {msg_id[:8]}")
+                            continue
                         results, output_folder, output_path, cost_summary, file_classifications = _scan_folder_compat(
                             message_dir=message_dir,
                             recursive=recursive,
@@ -1492,6 +1936,7 @@ class AutomationRunner:
                             stage1_skip_retry_resolution_px=stage1_skip_retry_resolution_px,
                             max_file_size_mb=max_file_size_mb,
                             max_image_dimension=max_image_dimension,
+                            profile_config=config,
                         )
                     except Exception as process_error:
                         logger.error(f"❌ scan_folder FAILED for mail {msg_id[:8]}: {process_error}", exc_info=True)
@@ -1601,8 +2046,6 @@ class AutomationRunner:
                                         all_files_to_send.append(file_path)
 
                         if all_files_to_send:
-                            email_body_html = original_body_html or ""
-
                             # קרא webLink מ-email.txt אם אין לנו אותו
                             if not source_web_link and message_dir:
                                 _email_txt = message_dir / "email.txt"
@@ -1616,137 +2059,10 @@ class AutomationRunner:
                                     except Exception:
                                         pass
 
-                            if output_path and Path(output_path).exists():
-                                try:
-                                    import pandas as pd
-                                    df = pd.read_excel(output_path)
-
-                                    display_columns = ['file_name', 'customer_name', 'merged_description', 'quantity', 'merged_bom', 'merged_notes', 'part_number', 'revision', 'drawing_number']
-                                    html_table = '<table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse:collapse; direction: rtl; text-align: right;">'
-
-                                    header_mapping = {
-                                        'file_name': 'שם קובץ',
-                                        'customer_name': 'שם לקוח',
-                                        'merged_description': 'תיאור מורחב',
-                                        'quantity': 'כמות',
-                                        'merged_bom': 'עץ מוצר',
-                                        'merged_notes': 'הערות מיוחדות של לקוח',
-                                        'part_number': 'מספר פריט',
-                                        'revision': 'מספר גירסא',
-                                        'drawing_number': 'מספר שרטוט'
-                                    }
-
-                                    html_table += '<tr style="background-color: #4472C4; color: white; font-weight: bold;">\n'
-                                    for col in display_columns:
-                                        header_name = header_mapping.get(col, col)
-                                        html_table += f'<th>{header_name}</th>\n'
-                                    html_table += '</tr>\n'
-
-                                    df = df.fillna('')
-                                    ltr_columns = {'part_number', 'revision', 'drawing_number'}
-
-                                    # Ensure merged/summary columns exist
-                                    for col in ('merged_description', 'merged_bom', 'merged_notes', 'quantity'):
-                                        if col not in df.columns:
-                                            df[col] = ''
-                                        else:
-                                            df[col] = df[col].astype(str).str.strip()
-                                            df.loc[df[col] == 'nan', col] = ''
-
-                                    has_pl_override_col = 'part_number_ocr_original' in df.columns
-
-                                    for _, row in df.iterrows():
-                                        confidence = str(row.get('confidence_level', '')).strip().upper()
-
-                                        if confidence in ['HIGH', 'FULL']:
-                                            row_color = '#C6E0B4'
-                                        elif confidence == 'MEDIUM':
-                                            row_color = '#FFE699'
-                                        else:
-                                            row_color = '#F4B084'
-
-                                        is_pl_override = False
-                                        is_pl_confirmed = False
-                                        if has_pl_override_col:
-                                            ocr_orig = str(row.get('part_number_ocr_original', '')).strip()
-                                            if ocr_orig and ocr_orig != 'nan':
-                                                is_pl_override = True
-                                        # Check for AS PL (PL confirmed, no override)
-                                        if 'pl_override_note' in df.columns:
-                                            pl_note = str(row.get('pl_override_note', '')).strip()
-                                            if pl_note == 'AS PL':
-                                                is_pl_confirmed = True
-
-                                        html_table += f'<tr style="background-color: {row_color};">\n'
-                                        for col in display_columns:
-                                            value = row.get(col, "")
-                                            if col == 'part_number' and is_pl_override:
-                                                html_table += (
-                                                    '<td dir="ltr" style="text-align:left; background-color: #DAEEF3; unicode-bidi:bidi-override;">'
-                                                    f'<font color="#00008B"><b><span dir="ltr" style="unicode-bidi:bidi-override;">&lrm;{value}</span></b></font>'
-                                                    ' <font size="1" color="#00008B">(PL)</font>'
-                                                    '</td>\n'
-                                                )
-                                            elif col == 'part_number' and is_pl_confirmed:
-                                                html_table += (
-                                                    '<td dir="ltr" style="text-align:left; background-color: #E2EFDA; unicode-bidi:bidi-override;">'
-                                                    f'<span dir="ltr" style="unicode-bidi:bidi-override;">&lrm;{value}</span>'
-                                                    ' <font size="1" color="#2E7D32">(AS PL)</font>'
-                                                    '</td>\n'
-                                                )
-                                            elif col in ltr_columns:
-                                                value = f'&lrm;{value}'
-                                                html_table += (
-                                                    '<td dir="ltr" style="text-align:left; unicode-bidi:bidi-override;">'
-                                                    f'<span dir="ltr" style="unicode-bidi:bidi-override;">{value}</span>'
-                                                    '</td>\n'
-                                                )
-                                            elif col in ('merged_bom', 'merged_description'):
-                                                # Multi-line fields: newlines → <br>, alternates → italic
-                                                cell = str(value or '')
-                                                # Italicise individual (חלופי) items
-                                                cell = re.sub(
-                                                    r'([^|,<\n]+\(חלופי\)[^|,<\n]*)',
-                                                    r'<i>\1</i>',
-                                                    cell,
-                                                )
-                                                cell = cell.replace('\n', '<br>')
-                                                html_table += f'<td>{cell}</td>\n'
-                                            else:
-                                                html_table += f'<td>{value}</td>\n'
-                                        html_table += '</tr>\n'
-
-                                    html_table += '</table>\n<br>\n'
-
-                                    # הוסף לינק למייל מקור
-                                    source_link_html = ""
-                                    if source_web_link:
-                                        source_link_html = (
-                                            '<p style="margin-top:10px;">'
-                                            f'<a href="{source_web_link}" style="color:#0078D4;text-decoration:none;font-size:13px;">'
-                                            '\U0001f4e7 פתח מייל מקור ב-Outlook</a></p>'
-                                        )
-
-                                    email_body_html = html_table + source_link_html + email_body_html
-
-                                except Exception as e:
-                                    logger.debug(f"Error: {e}")
-                                    import traceback
-                                    traceback.print_exc()
-
-                            # Fallback: הוסף לינק למייל מקור גם אם לא נבנתה טבלה
-                            if source_web_link and 'פתח מייל מקור' not in email_body_html:
-                                source_link_html = (
-                                    '<p style="margin-top:10px;">'
-                                    f'<a href="{source_web_link}" style="color:#0078D4;text-decoration:none;font-size:13px;">'
-                                    '\U0001f4e7 פתח מייל מקור ב-Outlook</a></p>'
-                                )
-                                email_body_html = source_link_html + email_body_html
-
-                            # Add category banner from original email
-                            if msg_categories:
-                                cat_banner = _build_category_banner(msg_categories, _mailbox_category_colors)
-                                email_body_html = cat_banner + email_body_html
+                            email_body_html = self._build_email_body_html(
+                                output_path, source_web_link, original_body_html,
+                                msg_categories, _mailbox_category_colors,
+                            )
 
                             email_subject = f"B2B_Quotation_{request_id or run_stamp}"
                             if sender:
@@ -1773,40 +2089,7 @@ class AutomationRunner:
                         _cost_usd = cost_summary.get('total_cost', 0) or 0
                         _files_processed = cost_summary.get('successful_files', 0) or cost_summary.get('total_files', 0) or 0
 
-                    _accuracy_data = {"full": 0, "high": 0, "medium": 0, "low": 0, "none": 0, "total": 0}
-                    _customers = []
-                    _pl_overrides = 0
-                    _error_types = []
-                    try:
-                        _acc_path = output_path if output_path and Path(output_path).exists() else None
-                        if _acc_path:
-                            import pandas as pd
-                            df_acc = pd.read_excel(_acc_path)
-                            if 'confidence_level' in df_acc.columns:
-                                for _, _acc_row in df_acc.iterrows():
-                                    conf = str(_acc_row.get('confidence_level', '')).strip().lower()
-                                    pn = str(_acc_row.get('part_number', '')).strip()
-                                    _accuracy_data["total"] += 1
-                                    if not pn or pn == 'nan' or pn == '':
-                                        _accuracy_data["none"] += 1
-                                        _error_types.append("missing_part_number")
-                                    elif conf in ('full', 'high', 'medium', 'low'):
-                                        _accuracy_data[conf] += 1
-                                        if conf == 'low':
-                                            _error_types.append("low_confidence")
-                                    else:
-                                        _accuracy_data["none"] += 1
-
-                                    cust = str(_acc_row.get('customer_name', '')).strip()
-                                    if cust and cust != 'nan':
-                                        _customers.append(cust)
-
-                                    ocr_orig = str(_acc_row.get('part_number_ocr_original', '')).strip()
-                                    if ocr_orig and ocr_orig != 'nan':
-                                        _pl_overrides += 1
-                    except Exception as e:
-                        logger.debug(f"Ignored: {e}")
-                        pass
+                    _accuracy_data, _customers, _pl_overrides, _error_types = self._collect_accuracy_data(output_path)
 
                     _append_log(log_path, {
                         "id": str(uuid4()),

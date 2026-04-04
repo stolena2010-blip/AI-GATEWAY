@@ -1,0 +1,435 @@
+12:47:29 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 9270x7484 → 6095x4921 (69M → 30M px)
+12:47:30 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 340 chars
+12:47:39 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 6623x4678 → 6517x4603 (31M → 30M px)
+12:47:40 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 1417 chars
+12:47:48 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: 700090024000_ma-l2103-1111_sh
+12:47:48 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[12:47:58]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,645 in / 52 out | cost=$0.0074
+12:47:58 │ src.services.extraction.ocr_engine   │ INFO │ Stage 1B: IAI Top Red Header OCR Fallback
+12:47:58 │ src.services.extraction.ocr_engine   │ INFO │ IAI fallback: regular attempts did not provide part/drawing. Trying top red header...
+12:47:58 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[12:48:05]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 3,337 in / 67 out | cost=$0.0093
+[12:48:14]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 5,333 in / 106 out | cost=$0.0149
+[12:48:22]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 2,086 in / 21 out | cost=$0.0055
+[12:48:26]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 2,179 in / 11 out | cost=$0.0056
+12:49:18 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 211 chars
+12:49:22 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 1020 chars
+12:49:27 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: md-c1324-2090-e_sheet1_a
+12:49:27 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[12:49:35]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,827 in / 76 out | cost=$0.0082
+12:49:35 │ src.services.extraction.ocr_engine   │ INFO │ Stage 1B: IAI Top Red Header OCR Fallback
+12:49:35 │ src.services.extraction.ocr_engine   │ INFO │ IAI fallback: regular attempts did not provide part/drawing. Trying top red header...
+12:49:35 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[12:49:41]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 3,112 in / 68 out | cost=$0.0088
+[12:49:49]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 5,112 in / 135 out | cost=$0.0148
+[12:49:53]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 1,865 in / 21 out | cost=$0.0050
+[12:49:58]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 1,958 in / 12 out | cost=$0.0050
+14:40:25 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 7484x4630 → 6963x4308 (35M → 30M px)
+14:40:26 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 1109 chars
+14:40:32 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 4127 chars
+14:40:36 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: R00-217725-C-PDM-R00-217725C
+14:40:36 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+14:40:37 │ src.services.extraction.ocr_engine   │ INFO │ Extracted Title Block (bottom-full): 26194x4053px (enlarged 3.5x, 4.2MB)
+[14:40:45]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 4,513 in / 45 out | cost=$0.0120
+14:40:45 │ src.services.extraction.stages_rafael │ INFO │ ✓ Stage 1: P.N.=S63L0023A, DRAWING NO.=R00-217725 (correctly different)
+[14:40:56]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 7,099 in / 530 out | cost=$0.0257
+[14:41:11]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 3,852 in / 865 out | cost=$0.0226
+[14:41:16]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 3,945 in / 11 out | cost=$0.0100
+14:41:33 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 7484x4630 → 6963x4308 (35M → 30M px)
+14:41:35 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 1175 chars
+14:41:41 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 4907 chars
+14:41:45 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: R00-218564-D-PDM-R00-218564D
+14:41:45 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+14:41:46 │ src.services.extraction.ocr_engine   │ INFO │ Extracted Title Block (bottom-full): 26194x4053px (enlarged 3.5x, 4.7MB)
+[14:41:55]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 4,546 in / 48 out | cost=$0.0121
+14:41:55 │ src.services.extraction.stages_rafael │ INFO │ ✓ Stage 1: P.N.=S63L0022A, DRAWING NO.=R00-218564 (correctly different)
+[14:42:10]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 7,557 in / 536 out | cost=$0.0269
+[14:42:24]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 4,310 in / 850 out | cost=$0.0235
+[14:42:29]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 4,403 in / 10 out | cost=$0.0111
+15:01:31 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 10596x6548 → 6967x4305 (69M → 30M px)
+15:01:33 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 903 chars
+15:01:41 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 6623x4678 → 6517x4603 (31M → 30M px)
+15:01:43 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 1934 chars
+15:01:49 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: 0365
+15:01:49 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[15:01:59]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 3,150 in / 66 out | cost=$0.0089
+15:01:59 │ src.services.extraction.ocr_engine   │ INFO │ Stage 1B: IAI Top Red Header OCR Fallback
+15:01:59 │ src.services.extraction.ocr_engine   │ INFO │ IAI fallback: regular attempts did not provide part/drawing. Trying top red header...
+15:01:59 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[15:02:06]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 3,374 in / 68 out | cost=$0.0095
+[15:02:19]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 9,236 in / 269 out | cost=$0.0271
+[15:02:29]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 5,989 in / 216 out | cost=$0.0182
+[15:02:34]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 3,040 in / 10 out | cost=$0.0077
+15:16:33 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 10596x6548 → 6967x4305 (69M → 30M px)
+15:16:34 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 362 chars
+15:16:42 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 6623x4678 → 6517x4603 (31M → 30M px)
+15:16:44 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 3229 chars
+15:16:49 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: 1040n451-001_pdf_3ku03qab11m1h_stamped
+15:16:49 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[15:16:55]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,946 in / 56 out | cost=$0.0082
+15:16:55 │ src.services.extraction.ocr_engine   │ INFO │ SUCCESS on attempt 1 for '1040n451-001_pdf_3ku03qab11m1h_stamped' with confidence 'high'
+[15:17:05]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 7,184 in / 293 out | cost=$0.0224
+[15:17:17]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 3,937 in / 745 out | cost=$0.0210
+[15:17:21]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 4,030 in / 11 out | cost=$0.0102
+15:31:26 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 211 chars
+15:31:29 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 1020 chars
+15:31:33 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: md-c1324-2090-e_sheet1_a
+15:31:33 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[15:31:41]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,827 in / 76 out | cost=$0.0082
+15:31:41 │ src.services.extraction.ocr_engine   │ INFO │ Stage 1B: IAI Top Red Header OCR Fallback
+15:31:41 │ src.services.extraction.ocr_engine   │ INFO │ IAI fallback: regular attempts did not provide part/drawing. Trying top red header...
+15:31:41 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[15:31:46]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 3,112 in / 68 out | cost=$0.0088
+[15:31:53]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 5,112 in / 135 out | cost=$0.0148
+[15:31:57]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 1,865 in / 21 out | cost=$0.0050
+[15:32:01]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 1,958 in / 12 out | cost=$0.0050
+15:39:01 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 10596x6548 → 6967x4305 (69M → 30M px)
+15:39:02 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 362 chars
+15:39:10 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 6623x4678 → 6517x4603 (31M → 30M px)
+15:39:12 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 3229 chars
+15:39:17 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: 1040n451-001_pdf_3ku03qab11m1h_stamped
+15:39:17 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[15:39:24]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,946 in / 56 out | cost=$0.0082
+15:39:24 │ src.services.extraction.ocr_engine   │ INFO │ SUCCESS on attempt 1 for '1040n451-001_pdf_3ku03qab11m1h_stamped' with confidence 'high'
+[15:39:32]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 7,184 in / 253 out | cost=$0.0218
+[15:39:43]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 3,937 in / 745 out | cost=$0.0210
+[15:39:47]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 4,030 in / 11 out | cost=$0.0102
+15:54:22 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 10596x6548 → 6967x4305 (69M → 30M px)
+15:54:23 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 362 chars
+15:54:32 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 6623x4678 → 6517x4603 (31M → 30M px)
+15:54:34 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 3229 chars
+15:54:39 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: 1040n451-001_pdf_3ku03qab11m1h_stamped
+15:54:39 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[15:54:45]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,946 in / 56 out | cost=$0.0082
+15:54:45 │ src.services.extraction.ocr_engine   │ INFO │ SUCCESS on attempt 1 for '1040n451-001_pdf_3ku03qab11m1h_stamped' with confidence 'high'
+[15:54:55]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 7,184 in / 261 out | cost=$0.0219
+[15:55:07]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 3,937 in / 745 out | cost=$0.0210
+[15:55:11]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 4,030 in / 11 out | cost=$0.0102
+15:56:42 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 10596x6548 → 6967x4305 (69M → 30M px)
+15:56:44 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 903 chars
+15:56:53 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 6623x4678 → 6517x4603 (31M → 30M px)
+15:56:55 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 1934 chars
+15:57:00 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: 0365
+15:57:00 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[15:57:10]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 3,150 in / 74 out | cost=$0.0090
+15:57:10 │ src.services.extraction.ocr_engine   │ INFO │ Stage 1B: IAI Top Red Header OCR Fallback
+15:57:10 │ src.services.extraction.ocr_engine   │ INFO │ IAI fallback: regular attempts did not provide part/drawing. Trying top red header...
+15:57:10 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[15:57:16]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 3,374 in / 68 out | cost=$0.0095
+[15:57:30]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 9,236 in / 273 out | cost=$0.0272
+[15:57:39]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 5,989 in / 216 out | cost=$0.0182
+[15:57:44]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 3,040 in / 10 out | cost=$0.0077
+16:04:49 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 10596x6548 → 6967x4305 (69M → 30M px)
+16:04:50 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 903 chars
+16:04:59 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 6623x4678 → 6517x4603 (31M → 30M px)
+16:05:01 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 1934 chars
+16:05:07 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: 0365
+16:05:07 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[16:05:17]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 3,150 in / 66 out | cost=$0.0089
+16:05:17 │ src.services.extraction.ocr_engine   │ INFO │ Stage 1B: IAI Top Red Header OCR Fallback
+16:05:17 │ src.services.extraction.ocr_engine   │ INFO │ IAI fallback: regular attempts did not provide part/drawing. Trying top red header...
+16:05:17 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[16:05:23]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 3,374 in / 68 out | cost=$0.0095
+[16:05:35]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 9,236 in / 269 out | cost=$0.0271
+[16:05:45]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 5,989 in / 216 out | cost=$0.0182
+[16:05:49]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 3,040 in / 10 out | cost=$0.0077
+16:10:52 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 10596x6548 → 6967x4305 (69M → 30M px)
+16:10:53 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 903 chars
+16:11:02 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 6623x4678 → 6517x4603 (31M → 30M px)
+16:11:04 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 1934 chars
+16:11:11 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: 0365
+16:11:11 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[16:11:20]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 3,150 in / 66 out | cost=$0.0089
+16:11:20 │ src.services.extraction.ocr_engine   │ INFO │ Stage 1B: IAI Top Red Header OCR Fallback
+16:11:20 │ src.services.extraction.ocr_engine   │ INFO │ IAI fallback: regular attempts did not provide part/drawing. Trying top red header...
+16:11:20 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[16:11:28]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 3,374 in / 68 out | cost=$0.0095
+[16:11:40]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 9,236 in / 270 out | cost=$0.0271
+[16:11:50]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 5,989 in / 216 out | cost=$0.0182
+[16:11:55]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 3,040 in / 10 out | cost=$0.0077
+16:13:34 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 10596x6548 → 6967x4305 (69M → 30M px)
+16:13:34 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 362 chars
+16:13:43 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 6623x4678 → 6517x4603 (31M → 30M px)
+16:13:45 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 3229 chars
+16:13:49 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: 1040n451-001_pdf_3ku03qab11m1h_stamped
+16:13:49 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[16:13:56]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,946 in / 56 out | cost=$0.0082
+16:13:56 │ src.services.extraction.ocr_engine   │ INFO │ SUCCESS on attempt 1 for '1040n451-001_pdf_3ku03qab11m1h_stamped' with confidence 'high'
+[16:14:04]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 7,184 in / 255 out | cost=$0.0218
+[16:14:16]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 3,937 in / 745 out | cost=$0.0210
+[16:14:21]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 4,030 in / 11 out | cost=$0.0102
+16:22:28 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 7040x4760 → 6661x4503 (34M → 30M px)
+16:22:29 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 397 chars
+16:22:34 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 2728 chars
+16:22:45 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: B2BDraw_un3016B135-02_RevC_A0_S2_962_30
+16:22:45 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[16:22:53]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,838 in / 59 out | cost=$0.0080
+[16:23:03]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 7,812 in / 311 out | cost=$0.0242
+[16:23:15]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 4,565 in / 450 out | cost=$0.0182
+[16:23:19]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 3,374 in / 11 out | cost=$0.0085
+16:23:32 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 7040x4760 → 6661x4503 (34M → 30M px)
+16:23:33 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 569 chars
+16:23:39 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 3546 chars
+16:23:46 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: B2BDraw_un3016B136-02_RevE_A0_S2_961_30
+16:23:46 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[16:23:55]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,917 in / 61 out | cost=$0.0082
+[16:24:05]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 6,979 in / 310 out | cost=$0.0221
+[16:24:16]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 3,732 in / 501 out | cost=$0.0168
+[16:24:21]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 3,651 in / 11 out | cost=$0.0092
+16:24:24 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 858 chars
+16:24:29 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: B2BDraw_un3016B149-02_Rev--_A0_S2_961_30
+16:24:29 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[16:24:35]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,909 in / 58 out | cost=$0.0081
+[16:24:44]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 8,309 in / 329 out | cost=$0.0257
+[16:24:52]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 5,062 in / 213 out | cost=$0.0158
+[16:24:56]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 3,031 in / 10 out | cost=$0.0077
+16:25:10 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 7040x4760 → 6661x4503 (34M → 30M px)
+16:25:11 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 584 chars
+16:25:17 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 2962 chars
+16:25:26 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: B2BDraw_un3016B205-01_RevB_A0_S2_169_30
+16:25:26 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[16:25:37]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,931 in / 61 out | cost=$0.0082
+[16:25:47]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 6,518 in / 290 out | cost=$0.0206
+[16:25:56]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 3,271 in / 234 out | cost=$0.0117
+[16:26:01]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 3,190 in / 11 out | cost=$0.0081
+16:26:15 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 7040x4760 → 6661x4503 (34M → 30M px)
+16:26:16 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 696 chars
+16:26:21 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 2577 chars
+16:26:29 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: B2BDraw_un3016B206-01_RevA_A0_S2_705_30
+16:26:29 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[16:26:38]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,971 in / 61 out | cost=$0.0083
+[16:26:46]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 6,332 in / 230 out | cost=$0.0193
+[16:26:54]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 3,085 in / 189 out | cost=$0.0105
+[16:26:59]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 3,004 in / 11 out | cost=$0.0076
+16:27:13 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 7040x4760 → 6661x4503 (34M → 30M px)
+16:27:14 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 490 chars
+16:27:19 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 3014 chars
+16:27:27 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: B2BDraw_un3016B207-01_RevA_A0_S2_962_30
+16:27:27 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[16:27:37]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,890 in / 59 out | cost=$0.0081
+[16:27:48]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 6,675 in / 445 out | cost=$0.0234
+[16:27:56]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 3,428 in / 319 out | cost=$0.0134
+[16:28:00]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 3,347 in / 11 out | cost=$0.0085
+16:28:18 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 7040x4760 → 6661x4503 (34M → 30M px)
+16:28:19 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 592 chars
+16:28:24 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 2815 chars
+16:28:33 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: B2BDraw_un3016B208-02_RevB_A0_S2_529_30
+16:28:33 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[16:28:43]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,928 in / 59 out | cost=$0.0082
+[16:28:53]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 6,542 in / 358 out | cost=$0.0217
+[16:29:01]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 3,295 in / 292 out | cost=$0.0126
+[16:29:06]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 3,214 in / 11 out | cost=$0.0081
+16:29:23 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 7040x4760 → 6661x4503 (34M → 30M px)
+16:29:24 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 598 chars
+16:29:28 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 2400 chars
+16:29:37 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: B2BDraw_un3016B209-01_RevD_A0_S2_035_30
+16:29:37 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[16:29:46]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,916 in / 60 out | cost=$0.0082
+[16:29:53]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 6,312 in / 237 out | cost=$0.0193
+[16:30:00]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 3,065 in / 189 out | cost=$0.0105
+[16:30:04]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 2,984 in / 11 out | cost=$0.0076
+16:30:17 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 7040x4760 → 6661x4503 (34M → 30M px)
+16:30:18 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 701 chars
+16:30:23 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 2056 chars
+16:30:32 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: B2BDraw_un3016B210-02_Rev--_A0_S2_478_30
+16:30:32 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[16:30:42]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,961 in / 59 out | cost=$0.0083
+[16:30:50]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 7,364 in / 279 out | cost=$0.0226
+[16:30:58]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 4,117 in / 193 out | cost=$0.0132
+[16:31:01]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 2,926 in / 10 out | cost=$0.0074
+16:38:32 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 211 chars
+16:38:35 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 1020 chars
+16:38:40 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: md-c1324-2090-e_sheet1_a
+16:38:40 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[16:38:48]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,827 in / 76 out | cost=$0.0082
+16:38:48 │ src.services.extraction.ocr_engine   │ INFO │ Stage 1B: IAI Top Red Header OCR Fallback
+16:38:48 │ src.services.extraction.ocr_engine   │ INFO │ IAI fallback: regular attempts did not provide part/drawing. Trying top red header...
+16:38:48 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[16:38:53]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 3,112 in / 68 out | cost=$0.0088
+[16:38:59]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 5,112 in / 127 out | cost=$0.0147
+[16:39:10]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 1,865 in / 21 out | cost=$0.0050
+[16:39:14]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 1,958 in / 12 out | cost=$0.0050
+17:45:16 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 211 chars
+17:45:19 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 1020 chars
+17:45:24 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: md-c1324-2090-e_sheet1_a
+17:45:24 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[17:45:31]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,827 in / 76 out | cost=$0.0082
+17:45:31 │ src.services.extraction.ocr_engine   │ INFO │ Stage 1B: IAI Top Red Header OCR Fallback
+17:45:31 │ src.services.extraction.ocr_engine   │ INFO │ IAI fallback: regular attempts did not provide part/drawing. Trying top red header...
+17:45:31 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[17:45:37]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 3,112 in / 69 out | cost=$0.0088
+[17:45:43]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 5,112 in / 115 out | cost=$0.0145
+[17:45:47]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 1,865 in / 21 out | cost=$0.0050
+[17:45:51]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 1,958 in / 12 out | cost=$0.0050
+17:47:06 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 10596x6548 → 6967x4305 (69M → 30M px)
+17:47:07 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 362 chars
+17:47:15 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 6623x4678 → 6517x4603 (31M → 30M px)
+17:47:17 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 3229 chars
+17:47:22 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: 1040n451-001_pdf_3ku03qab11m1h_stamped
+17:47:22 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[17:47:29]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,946 in / 56 out | cost=$0.0082
+17:47:29 │ src.services.extraction.ocr_engine   │ INFO │ SUCCESS on attempt 1 for '1040n451-001_pdf_3ku03qab11m1h_stamped' with confidence 'high'
+[17:47:36]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 7,184 in / 250 out | cost=$0.0217
+[17:47:48]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 3,937 in / 745 out | cost=$0.0210
+[17:47:52]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 4,030 in / 11 out | cost=$0.0102
+18:16:36 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 10596x6548 → 6967x4305 (69M → 30M px)
+18:16:37 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 362 chars
+18:16:45 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 6623x4678 → 6517x4603 (31M → 30M px)
+18:16:47 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 3229 chars
+18:16:52 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: 1040n451-001_pdf_3ku03qab11m1h_stamped
+18:16:52 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[18:17:00]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,946 in / 56 out | cost=$0.0082
+18:17:00 │ src.services.extraction.ocr_engine   │ INFO │ SUCCESS on attempt 1 for '1040n451-001_pdf_3ku03qab11m1h_stamped' with confidence 'high'
+[18:17:08]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 7,184 in / 275 out | cost=$0.0221
+[18:17:22]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 3,937 in / 739 out | cost=$0.0209
+[18:17:26]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 4,030 in / 11 out | cost=$0.0102
+18:18:32 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 211 chars
+18:18:35 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 1020 chars
+18:18:40 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: md-c1324-2090-e_sheet1_a
+18:18:40 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[18:18:48]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,827 in / 76 out | cost=$0.0082
+18:18:48 │ src.services.extraction.ocr_engine   │ INFO │ Stage 1B: IAI Top Red Header OCR Fallback
+18:18:48 │ src.services.extraction.ocr_engine   │ INFO │ IAI fallback: regular attempts did not provide part/drawing. Trying top red header...
+18:18:48 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[18:18:53]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 3,112 in / 68 out | cost=$0.0088
+[18:19:01]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 5,112 in / 140 out | cost=$0.0149
+[18:19:05]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 1,865 in / 21 out | cost=$0.0050
+[18:19:09]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 1,958 in / 12 out | cost=$0.0050
+21:51:49 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 10596x6548 → 6967x4305 (69M → 30M px)
+21:51:50 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 362 chars
+21:51:59 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 6623x4678 → 6517x4603 (31M → 30M px)
+21:52:01 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 3229 chars
+21:52:05 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: 1040n451-001_pdf_3ku03qab11m1h_stamped
+21:52:05 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[21:52:18]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,946 in / 56 out | cost=$0.0082
+21:52:18 │ src.services.extraction.ocr_engine   │ INFO │ SUCCESS on attempt 1 for '1040n451-001_pdf_3ku03qab11m1h_stamped' with confidence 'high'
+[21:52:37]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 7,184 in / 284 out | cost=$0.0222
+[21:53:06]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 3,937 in / 745 out | cost=$0.0210
+[21:53:11]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 4,030 in / 11 out | cost=$0.0102
+21:54:31 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 211 chars
+21:54:34 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 1020 chars
+21:54:39 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: md-c1324-2090-e_sheet1_a
+21:54:39 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[21:54:46]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,827 in / 76 out | cost=$0.0082
+21:54:46 │ src.services.extraction.ocr_engine   │ INFO │ Stage 1B: IAI Top Red Header OCR Fallback
+21:54:46 │ src.services.extraction.ocr_engine   │ INFO │ IAI fallback: regular attempts did not provide part/drawing. Trying top red header...
+21:54:46 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[21:54:50]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 3,112 in / 68 out | cost=$0.0088
+[21:54:56]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 5,112 in / 135 out | cost=$0.0148
+[21:55:00]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 1,865 in / 21 out | cost=$0.0050
+[21:55:04]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 1,958 in / 12 out | cost=$0.0050
+07:01:19 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 10596x6548 → 6967x4305 (69M → 30M px)
+07:01:20 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 362 chars
+07:01:28 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 6623x4678 → 6517x4603 (31M → 30M px)
+07:01:30 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 3229 chars
+07:01:36 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: 1040n451-001_pdf_3ku03qab11m1h_stamped
+07:01:36 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[07:01:42]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,946 in / 56 out | cost=$0.0082
+07:01:42 │ src.services.extraction.ocr_engine   │ INFO │ SUCCESS on attempt 1 for '1040n451-001_pdf_3ku03qab11m1h_stamped' with confidence 'high'
+[07:01:51]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 7,184 in / 340 out | cost=$0.0231
+[07:02:04]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 3,937 in / 743 out | cost=$0.0210
+[07:02:07]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 4,030 in / 11 out | cost=$0.0102
+10:07:06 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 10596x6548 → 6967x4305 (69M → 30M px)
+10:07:07 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 362 chars
+10:07:16 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 6623x4678 → 6517x4603 (31M → 30M px)
+10:07:18 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 3229 chars
+10:07:23 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: 1040n451-001_pdf_3ku03qab11m1h_stamped
+10:07:23 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[10:07:29]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,946 in / 56 out | cost=$0.0082
+10:07:29 │ src.services.extraction.ocr_engine   │ INFO │ SUCCESS on attempt 1 for '1040n451-001_pdf_3ku03qab11m1h_stamped' with confidence 'high'
+[10:07:36]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 7,184 in / 267 out | cost=$0.0220
+[10:07:49]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 3,937 in / 743 out | cost=$0.0210
+[10:07:53]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 4,030 in / 11 out | cost=$0.0102
+10:08:59 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 211 chars
+10:09:02 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 1020 chars
+10:09:06 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: md-c1324-2090-e_sheet1_a
+10:09:06 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[10:09:13]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,827 in / 76 out | cost=$0.0082
+10:09:13 │ src.services.extraction.ocr_engine   │ INFO │ Stage 1B: IAI Top Red Header OCR Fallback
+10:09:13 │ src.services.extraction.ocr_engine   │ INFO │ IAI fallback: regular attempts did not provide part/drawing. Trying top red header...
+10:09:13 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[10:09:17]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 3,112 in / 68 out | cost=$0.0088
+[10:09:25]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 5,112 in / 140 out | cost=$0.0149
+[10:09:29]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 1,865 in / 21 out | cost=$0.0050
+[10:09:33]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 1,958 in / 12 out | cost=$0.0050
+10:27:35 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 211 chars
+10:27:38 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 1020 chars
+10:27:41 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: md-c1324-2090-e_sheet1_a
+10:27:41 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[10:27:47]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,827 in / 76 out | cost=$0.0082
+10:27:47 │ src.services.extraction.ocr_engine   │ INFO │ Stage 1B: IAI Top Red Header OCR Fallback
+10:27:47 │ src.services.extraction.ocr_engine   │ INFO │ IAI fallback: regular attempts did not provide part/drawing. Trying top red header...
+10:27:47 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[10:27:52]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 3,112 in / 68 out | cost=$0.0088
+[10:27:59]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 5,112 in / 121 out | cost=$0.0146
+[10:28:03]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 1,865 in / 21 out | cost=$0.0050
+[10:28:07]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 1,958 in / 12 out | cost=$0.0050
+10:29:22 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 10596x6548 → 6967x4305 (69M → 30M px)
+10:29:23 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 362 chars
+10:29:30 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 6623x4678 → 6517x4603 (31M → 30M px)
+10:29:32 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 3229 chars
+10:29:36 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: 1040n451-001_pdf_3ku03qab11m1h_stamped
+10:29:36 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[10:29:41]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,946 in / 56 out | cost=$0.0082
+10:29:41 │ src.services.extraction.ocr_engine   │ INFO │ SUCCESS on attempt 1 for '1040n451-001_pdf_3ku03qab11m1h_stamped' with confidence 'high'
+[10:29:49]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 7,184 in / 263 out | cost=$0.0219
+[10:30:03]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 3,937 in / 743 out | cost=$0.0210
+[10:30:09]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 4,030 in / 11 out | cost=$0.0102
+10:37:43 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 10596x6548 → 6967x4305 (69M → 30M px)
+10:37:44 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 362 chars
+10:37:54 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 6623x4678 → 6517x4603 (31M → 30M px)
+10:37:56 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 3229 chars
+10:38:00 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: 1040n451-001_pdf_3ku03qab11m1h_stamped
+10:38:00 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[10:38:06]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,946 in / 56 out | cost=$0.0082
+10:38:06 │ src.services.extraction.ocr_engine   │ INFO │ SUCCESS on attempt 1 for '1040n451-001_pdf_3ku03qab11m1h_stamped' with confidence 'high'
+[10:38:13]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 7,184 in / 235 out | cost=$0.0215
+[10:38:26]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 3,937 in / 739 out | cost=$0.0209
+[10:38:30]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 4,030 in / 11 out | cost=$0.0102
+10:50:50 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 211 chars
+10:50:53 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 1020 chars
+10:50:57 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: md-c1324-2090-e_sheet1_a
+10:50:57 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[10:51:03]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,827 in / 76 out | cost=$0.0082
+10:51:03 │ src.services.extraction.ocr_engine   │ INFO │ Stage 1B: IAI Top Red Header OCR Fallback
+10:51:03 │ src.services.extraction.ocr_engine   │ INFO │ IAI fallback: regular attempts did not provide part/drawing. Trying top red header...
+10:51:03 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[10:51:07]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 3,112 in / 68 out | cost=$0.0088
+[10:51:14]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 5,112 in / 121 out | cost=$0.0146
+[10:51:18]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 1,865 in / 21 out | cost=$0.0050
+[10:51:22]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 1,958 in / 12 out | cost=$0.0050
+11:39:00 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 10596x6548 → 6967x4305 (69M → 30M px)
+11:39:01 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 362 chars
+11:39:09 │ src.services.extraction.ocr_engine   │ INFO │ Downscaling for Tesseract: 6623x4678 → 6517x4603 (31M → 30M px)
+11:39:11 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 3229 chars
+11:39:15 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: 1040n451-001_pdf_3ku03qab11m1h_stamped
+11:39:15 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[11:39:20]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,946 in / 56 out | cost=$0.0082
+11:39:20 │ src.services.extraction.ocr_engine   │ INFO │ SUCCESS on attempt 1 for '1040n451-001_pdf_3ku03qab11m1h_stamped' with confidence 'high'
+[11:39:28]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 7,184 in / 372 out | cost=$0.0235
+[11:39:40]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 3,937 in / 745 out | cost=$0.0210
+[11:39:45]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 4,030 in / 11 out | cost=$0.0102
+11:41:06 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 211 chars
+11:41:09 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 1020 chars
+11:41:13 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: md-c1324-2090-e_sheet1_a
+11:41:13 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[11:41:20]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,827 in / 76 out | cost=$0.0082
+11:41:20 │ src.services.extraction.ocr_engine   │ INFO │ Stage 1B: IAI Top Red Header OCR Fallback
+11:41:20 │ src.services.extraction.ocr_engine   │ INFO │ IAI fallback: regular attempts did not provide part/drawing. Trying top red header...
+11:41:20 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[11:41:24]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 3,112 in / 68 out | cost=$0.0088
+[11:41:30]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 5,112 in / 140 out | cost=$0.0149
+[11:41:34]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 1,865 in / 21 out | cost=$0.0050
+[11:41:38]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 1,958 in / 12 out | cost=$0.0050
+11:48:16 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 211 chars
+11:48:19 │ src.services.extraction.ocr_engine   │ INFO │ Tesseract: 1020 chars
+11:48:23 │ src.services.extraction.ocr_engine   │ INFO │ Attempt 1/1 for file: md-c1324-2090-e_sheet1_a
+11:48:23 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[11:48:29]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 2,827 in / 76 out | cost=$0.0082
+11:48:29 │ src.services.extraction.ocr_engine   │ INFO │ Stage 1B: IAI Top Red Header OCR Fallback
+11:48:29 │ src.services.extraction.ocr_engine   │ INFO │ IAI fallback: regular attempts did not provide part/drawing. Trying top red header...
+11:48:29 │ src.services.extraction.ocr_engine   │ INFO │ OCR cache hit (saved ~5-10 sec)
+[11:48:33]       💲 Stage 1 (Basic Info) | model=gpt-5.4 | tokens: 3,112 in / 68 out | cost=$0.0088
+[11:48:50]       💲 Stage 2 (Processes) | model=gpt-5.4 | tokens: 5,112 in / 121 out | cost=$0.0146
+[11:48:55]       💲 Stage 3 (Notes) | model=gpt-5.4 | tokens: 1,865 in / 21 out | cost=$0.0050
+[11:48:59]       💲 Stage 4 (Area) | model=gpt-4o-vision | tokens: 1,958 in / 12 out | cost=$0.0050

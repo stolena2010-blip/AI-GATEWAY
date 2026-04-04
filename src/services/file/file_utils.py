@@ -656,15 +656,26 @@ def _copy_folder_to_tosend(source_folder: Path, tosend_folder: Path, file_classi
                         except Exception as e:
                             logger.error(f"Error saving ALL variant: {e}")
             
-            # Step 1: Delete unwanted variant files (keep target + ALL_B2B)
-            for bf in b2b_files:
-                prefix = bf.stem.split('-')[0]  # e.g., "B2BH" or "B2B"
-                if prefix != target_variant and not bf.name.startswith("ALL_B2B"):
-                    try:
-                        bf.unlink()
-                        logger.debug(f"Removed {prefix}: {bf.name}")
-                    except Exception as e:
-                        logger.error(f"Error removing {bf.name}: {e}")
+            # Step 1: Check if target variant exists before deleting others
+            target_variant_exists = any(
+                bf.stem.split('-')[0] == target_variant
+                for bf in b2b_files
+                if not bf.name.startswith("ALL_B2B")
+            )
+            
+            if not target_variant_exists:
+                # Target variant (e.g. B2BH) has no rows — keep original B2B as fallback
+                logger.info(f"⚠ {target_variant} variant not found — keeping original B2B file")
+            else:
+                # Delete unwanted variant files (keep target + ALL_B2B)
+                for bf in b2b_files:
+                    prefix = bf.stem.split('-')[0]  # e.g., "B2BH" or "B2B"
+                    if prefix != target_variant and not bf.name.startswith("ALL_B2B"):
+                        try:
+                            bf.unlink()
+                            logger.debug(f"Removed {prefix}: {bf.name}")
+                        except Exception as e:
+                            logger.error(f"Error removing {bf.name}: {e}")
             
             # Step 2: Rename target variant to standard "B2B-0_" name (if needed)
             remaining_files = list(source_folder.glob("B2B[HM]-*.txt"))

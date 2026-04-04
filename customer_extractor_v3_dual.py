@@ -88,13 +88,15 @@ from src.services.reporting.excel_export import (
     _save_results_to_excel,
 )
 from src.services.file.file_utils import (
-    _get_file_metadata,
-    _build_drawing_part_map,
     _find_associated_drawing,
-    _copy_folder_to_tosend,
 )
 from src.services.file.classifier import classify_file_type
 from src.services.file.file_renamer import rename_files_by_classification as _rename_files_by_classification
+from src.pipeline.archive_extractor import extract_archives_in_folders
+from src.pipeline.drawing_processor import process_drawings
+from src.pipeline.pl_processor import update_pl_associations, extract_and_process_pl, propagate_pl_data
+from src.pipeline.folder_saver import save_folder_output
+from src.pipeline.results_merger import merge_all_results, copy_folders_to_tosend, print_final_summary
 from src.services.extraction.document_reader import (
     _read_email_content,
     _extract_item_details_from_documents,
@@ -206,8 +208,7 @@ from src.services.extraction.stages_iai import (
     extract_notes_text_iai,
     extract_area_info_iai,
 )
-from src.services.extraction.insert_validator import validate_inserts_hardware
-from src.services.extraction.insert_price_lookup import enrich_inserts_with_prices
+
 
 
 # ── Functions moved to src/services/extraction/ ──
@@ -331,13 +332,26 @@ def scan_folder(
     stage1_skip_retry_resolution_px: int = 8000,
     max_file_size_mb: Optional[int] = None,
     max_image_dimension: Optional[int] = None,
+    profile_config: Optional[Dict[str, Any]] = None,
 ) -> List[Dict[str, Any]]:
     """Scan folder for drawings
     
     Args:
         confidence_level: B2B file confidence filter - "LOW" (all rows), "MEDIUM" (MEDIUM+HIGH+FULL), "HIGH" (HIGH+FULL only)
+        profile_config: Optional flat config dict (from _normalize_profile_config).
+                        When provided, prompts_folder is extracted and set as thread-local
+                        context so all downstream load_prompt() calls use the correct folder.
     """
     global MAX_FILE_SIZE_MB, MAX_IMAGE_DIMENSION
+
+    # ── Set prompts context from profile config ───────────────────
+    _prompts_folder = None
+    if profile_config:
+        _prompts_folder = profile_config.get("prompts_folder") or None
+    from src.utils.prompt_loader import set_prompts_context
+    set_prompts_context(_prompts_folder)
+    if _prompts_folder:
+        logger.info(f"📂 Prompts folder: {_prompts_folder}")
 
     try:
         if max_file_size_mb is not None:
@@ -357,6 +371,7 @@ def scan_folder(
     folder_path = folder_path.resolve()
     if not folder_path.exists():
         logger.info(f"Folder not found: {folder_path}")
+        set_prompts_context(None)
         return [], folder_path, None, {}
     
     logger.info(f"Scanning folder: {folder_path}")
@@ -388,107 +403,7 @@ def scan_folder(
     # 
     # שלב 0.5: פתיחת קובצי ZIP ו-RAR אל תוך התיקיות
     # 
-    for current_folder in subfolders_to_process:
-        # Extract ZIP files
-        for zip_path in current_folder.glob("*.zip"):
-            try:
-                if not zipfile.is_zipfile(zip_path):
-                    continue
-                logger.info(f"Extracting ZIP: {zip_path.name} -> {current_folder}")
-                with zipfile.ZipFile(zip_path, "r") as zf:
-                    # Extract all files to root folder (flatten structure)
-                    for member in zf.namelist():
-                        # Skip directories
-                        if member.endswith('/'):
-                            continue
-                        # Get just the filename (no path)
-                        filename = Path(member).name
-                        if not filename:  # Skip if empty
-                            continue
-                        # Extract to root folder with flattened name
-                        source = zf.open(member)
-                        target_path = current_folder / filename
-                        with open(target_path, 'wb') as target:
-                            target.write(source.read())
-                        source.close()
-                    logger.info(f"Extracted {len([m for m in zf.namelist() if not m.endswith('/')])} files (flattened)")
-                try:
-                    zip_path.unlink()
-                    logger.info(f"Deleted ZIP after extract: {zip_path.name}")
-                except Exception as e:
-                    logger.error(f"** Failed to delete ZIP {zip_path.name}: {e}")
-            except Exception as e:
-                logger.error(f"** Failed to extract {zip_path.name}: {e}")
-        
-        # Extract RAR files using UnRAR.exe or 7z
-        for rar_path in current_folder.glob("*.rar"):
-            try:
-                logger.info(f"Extracting RAR: {rar_path.name} -> {current_folder}")
-                extracted = False
-
-                # Locate UnRAR.exe in common WinRAR install paths
-                unrar_exe = None
-                for _p in (
-                    Path(r"C:\Program Files\WinRAR\UnRAR.exe"),
-                    Path(r"C:\Program Files (x86)\WinRAR\UnRAR.exe"),
-                ):
-                    if _p.exists():
-                        unrar_exe = str(_p)
-                        break
-                if not unrar_exe:
-                    import shutil as _sh
-                    unrar_exe = _sh.which("UnRAR")
-
-                if unrar_exe:
-                    result = subprocess.run(
-                        [unrar_exe, 'e', '-o+', '-y', str(rar_path), str(current_folder) + os.sep],
-                        capture_output=True, text=True, timeout=60,
-                        encoding='utf-8', errors='replace',
-                    )
-                    if result.returncode == 0:
-                        logger.info(f"Extracted RAR via UnRAR")
-                        extracted = True
-                    else:
-                        logger.warning(f"UnRAR failed (rc={result.returncode}): {result.stderr[:200]}")
-
-                # Fallback: try 7z
-                if not extracted:
-                    _7z_exe = None
-                    for _p in (
-                        Path(r"C:\Program Files\7-Zip\7z.exe"),
-                        Path(r"C:\Program Files (x86)\7-Zip\7z.exe"),
-                    ):
-                        if _p.exists():
-                            _7z_exe = str(_p)
-                            break
-                    if not _7z_exe:
-                        import shutil as _sh
-                        _7z_exe = _sh.which("7z")
-
-                    if _7z_exe:
-                        result = subprocess.run(
-                            [_7z_exe, 'e', str(rar_path), f'-o{current_folder}', '-aoa'],
-                            capture_output=True, text=True, timeout=60,
-                            encoding='utf-8', errors='replace',
-                        )
-                        if result.returncode == 0:
-                            logger.info(f"Extracted RAR via 7z")
-                            extracted = True
-                        else:
-                            logger.warning(f"7z failed (rc={result.returncode}): {result.stderr[:200]}")
-
-                if extracted:
-                    try:
-                        rar_path.unlink()
-                        logger.info(f"Deleted RAR after extract: {rar_path.name}")
-                    except Exception as e:
-                        logger.error(f"** Failed to delete RAR {rar_path.name}: {e}")
-                else:
-                    logger.warning(f"⚠️ Cannot extract {rar_path.name}: UnRAR and 7z not found")
-                    logger.info(f"→ Install WinRAR or 7-Zip for RAR support")
-
-            except Exception as e:
-                logger.error(f"** Failed to extract {rar_path.name}: {e}")
+    extract_archives_in_folders(subfolders_to_process)
     
     logger.info(f"[FOLDER] Found {len(subfolders_to_process)} folder(s) to process\n")
     
@@ -519,6 +434,7 @@ def scan_folder(
     all_classifications = []
     folder_classifications_map = {}  # {target_folder: file_classifications} for TOSEND copy
     total_rafael_rows = 0
+    skipped_large_files = []
     
     # Global classification tracking
     global_classification_tokens_in = 0
@@ -801,29 +717,23 @@ def scan_folder(
                 
                 continue
             
-            # Filter out files that are too large
-            filtered_drawing_files = []
-            skipped_large_files = []
+            # Process drawing files through extraction pipeline
+            new_results, ext_cost, ext_tokens_in, ext_tokens_out = process_drawings(
+                drawing_files, target_folder, client, ocr_engine, cost_tracker,
+                selected_stages=selected_stages,
+                enable_image_retry=enable_image_retry,
+                stage1_skip_retry_resolution_px=stage1_skip_retry_resolution_px,
+                max_file_size_mb=MAX_FILE_SIZE_MB,
+            )
+            subfolder_results.extend(new_results)
+            folder_extraction_cost_accurate += ext_cost
+            folder_extraction_tokens_in += ext_tokens_in
+            folder_extraction_tokens_out += ext_tokens_out
             
-            for fc in drawing_files:
-                metadata = _get_file_metadata(fc['file_path'])
-                if metadata['is_too_large']:
-                    skipped_large_files.append({
-                        'file': fc['file_path'].name,
-                        'size_mb': metadata['file_size_mb']
-                    })
-                    logger.info(f"SKIPPING (too large): {fc['file_path'].name} ({metadata['file_size_mb']}MB)")
-                else:
-                    if metadata['is_large_file']:
-                        logger.warning(f"WARNING (large file): {fc['file_path'].name} ({metadata['file_size_mb']}MB)")
-                    filtered_drawing_files.append(fc)
-            
-            if not filtered_drawing_files:
-                logger.info(f"No processable drawing files (all too large) - skipping to next folder")
-                # Filter out None values before extending
+            if not subfolder_results and drawing_files:
+                # All drawing files were filtered out (too large) or failed
                 all_classifications.extend([fc for fc in file_classifications if fc and isinstance(fc, dict)])
                 
-                # Collect folder statistics even if all files too large
                 from collections import Counter
                 file_type_counts = Counter(fc.get('file_type', 'UNKNOWN') for fc in file_classifications if fc and isinstance(fc, dict))
                 
@@ -834,7 +744,7 @@ def scan_folder(
                     'name': target_folder.name,
                     'total_files': len(file_classifications),
                     'file_types': dict(file_type_counts),
-                    'total_drawings': len(drawing_files),  # Count drawing files even if not processed
+                    'total_drawings': len(drawing_files),
                     'confidence_high': 0,
                     'confidence_medium': 0,
                     'confidence_low': 0,
@@ -846,178 +756,6 @@ def scan_folder(
                 folder_stats.append(folder_info)
                 
                 continue
-            
-            logger.info(f"PHASE 2: Processing {len(filtered_drawing_files)} Drawing Files")
-            if skipped_large_files:
-                logger.info(f"Skipped: {len(skipped_large_files)} files (too large)")
-            logger.info("=" * 70)
-            
-            logger.debug(f"\nDEBUG: About to process {len(filtered_drawing_files)} drawing files")
-            logger.debug(f"DEBUG: subfolder_results before processing = {len(subfolder_results)}")
-            
-            # 
-            # Phase 1: process drawings - extract item_numbers
-            # 
-            logger.info("Phase 1: Processing drawings (extracting item details)...")
-            
-            for idx, fc in enumerate(filtered_drawing_files, 1):
-                file_path = fc['file_path']
-                logger.info(f"[{idx}/{len(filtered_drawing_files)}]  {file_path.name}")
-                
-                # Check if GUI requested stop BEFORE starting new file
-                if _ocr_mod._gui_should_stop and _ocr_mod._gui_should_stop():
-                    logger.info("Stopped by user from GUI")
-                    logger.info("All results so far were already saved in subfolders")
-                    raise KeyboardInterrupt
-                # Check if GUI requested skip
-                if _ocr_mod._gui_should_skip and _ocr_mod._gui_should_skip():
-                    logger.info(f"Skipping {file_path.name} (requested by GUI)")
-                    # Reset skip flag for next file
-                    import customer_extractor_v3_dual
-                    if hasattr(customer_extractor_v3_dual, '_gui_skip_reset'):
-                        customer_extractor_v3_dual._gui_skip_reset()
-                    continue
-                
-                cost_tracker.total_files += 1
-                
-                # Track execution time for this file
-                file_start_time = time.time()
-                
-                try:
-                    data, usage = extract_customer_name(
-                        str(file_path),
-                        client,
-                        ocr_engine,
-                        selected_stages=selected_stages,
-                        enable_retry=enable_image_retry,
-                        stage1_skip_retry_resolution_px=stage1_skip_retry_resolution_px
-                    )
-                    
-                    # Check if GUI requested skip right after processing
-                    if _ocr_mod._gui_should_skip and _ocr_mod._gui_should_skip():
-                        logger.info(f"Skipping {file_path.name} (requested by GUI)")
-                        # Reset skip flag
-                        import customer_extractor_v3_dual
-                        if hasattr(customer_extractor_v3_dual, '_gui_skip_reset'):
-                            customer_extractor_v3_dual._gui_skip_reset()
-                        continue
-                
-                except KeyboardInterrupt:
-                    # User pressed Ctrl+C during processing
-                    logger.info("Ctrl+C pressed!")
-                    logger.info("Choose an action:")
-                    logger.info("[S] Skip - skip current file and continue to next")
-                    logger.info("[Q] Quit - stop all processing and save results")
-                    logger.info("[C] Continue - continue processing current file")
-                    
-                    choice = input("   Your choice (S/Q/C): ").strip().upper()
-                    
-                    if choice == 'S':
-                        logger.info(f"Skipping {file_path.name}...")
-                        continue
-                    elif choice == 'Q':
-                        logger.info("Stopped by user")
-                        logger.info("All results so far were already saved in subfolders")
-                        raise KeyboardInterrupt
-                    else:
-                        logger.info(f"Continuing to process {file_path.name}...")
-                        # Try again
-                        data, usage = extract_customer_name(
-                            str(file_path),
-                            client,
-                            ocr_engine,
-                            selected_stages=selected_stages,
-                            enable_retry=enable_image_retry,
-                            stage1_skip_retry_resolution_px=stage1_skip_retry_resolution_px
-                        )
-                
-                except Exception as file_error:
-                    # Catch any non-KeyboardInterrupt exception so one bad file
-                    # doesn't kill processing of the entire email/folder
-                    logger.error(f"❌ FAILED to process {file_path.name}: {file_error}", exc_info=True)
-                    continue
-                
-                # Calculate execution time and cost for this file
-                file_end_time = time.time()
-                file_execution_time = file_end_time - file_start_time
-                file_cost = 0.0
-                
-                if usage:
-                    # Use accurate per-stage cost from pipeline when available
-                    file_cost = (data.get('_pipeline_cost_usd') or 0) if data else 0
-                    if not file_cost:
-                        # Fallback: base-model price (for older callers)
-                        file_cost = (usage[0] / 1_000_000 * MODEL_INPUT_PRICE_PER_1M) + (usage[1] / 1_000_000 * MODEL_OUTPUT_PRICE_PER_1M)
-                    cost_tracker.add_usage(usage[0], usage[1], cost=file_cost)
-                    # Track extraction tokens for this folder
-                    folder_extraction_tokens_in += usage[0]
-                    folder_extraction_tokens_out += usage[1]
-                    folder_extraction_cost_accurate += file_cost
-                
-                # Print summary for this file
-                logger.info(f"Runtime: {file_execution_time:.2f}s | Cost: ${file_cost:.4f}")
-                
-                try:
-                    if data and isinstance(data, dict):
-                        cost_tracker.successful_files += 1
-                        # Add execution time and cost to data
-                        data['execution_time_seconds'] = round(file_execution_time, 2)
-                        data['extraction_cost_usd'] = round(file_cost, 4)
-                        data.pop('_pipeline_cost_usd', None)  # internal key
-                        
-                        # שמור את המידע מהשרטוט (ללא כמויות עדיין)
-                        result_dict = {
-                            # ============ מידע מהשרטוט ============
-                            "file_name": file_path.name,
-                            "customer_name": data.get("customer_name") or "",
-                            "part_number": data.get("part_number") or "",
-                            "item_name": data.get("item_name") or "",
-                            "drawing_number": data.get("drawing_number") or "",
-                            "revision": data.get("revision") or "",
-                            "needs_review": data.get("needs_review") or "",
-                            "confidence_level": data.get("confidence_level") or "",
-                            "material": data.get("material") or "",
-                            "coating_processes": data.get("coating_processes") or "",
-                            "painting_processes": data.get("painting_processes") or "",
-                            "colors": data.get("colors") or "",
-                            "part_area": data.get("part_area") or "",
-                            "specifications": data.get("specifications") or "",
-                            "parts_list_page": data.get("parts_list_page") or "",
-                            "inserts_hardware": enrich_inserts_with_prices(
-                                validate_inserts_hardware(
-                                    data.get("inserts_hardware") or [],
-                                    part_number=data.get("part_number") or data.get("drawing_number") or "",
-                                )
-                            ),
-                            "process_summary_hebrew": data.get("process_summary_hebrew") or "",
-                            "process_summary_hebrew_short": data.get("process_summary_hebrew_short") or "",
-                            "notes_full_text": data.get("notes_full_text") or "",
-                            "num_pages": data.get("num_pages") or 1,
-                            # ============ מידע מהזמנות/הצעות מחיר (יתמלא בשלב 2) ============
-                            "quantity": "",  # יתמלא אחר כך
-                            "quantity_match_type": "",  # ספציפי למספר פריט / כללי
-                            "quantity_source": "",  # מייל / הצעה/הזמנה
-                            "work_description_doc": "",  # תיאור עבודה מהזמנה/הצעה (יתמלא בשלב 2)
-                            "work_description_email": "",  # תיאור עבודה מהמייל (יתמלא בשלב 2)
-                            # ============ מידע מהמייל ============
-                            "email_from": "",  # יתמלא בשלב 2
-                            "email_subject": "",  # יתמלא בשלב 2
-                            # ============ מידע טכני על איכות ============
-                            "subfolder": target_folder.name,
-                            "validation_warnings": data.get("validation_warnings") or "",
-                            "image_resolution": data.get("image_resolution") or "",
-                            "drawing_layout": data.get("drawing_layout") or "",
-                            "quality_issues": data.get("quality_issues") or "",
-                            "execution_time_seconds": data.get("execution_time_seconds") or 0,
-                            "extraction_cost_usd": data.get("extraction_cost_usd") or 0
-                        }
-                        
-                        # שמור בזיכרון לשלב 2
-                        subfolder_results.append(result_dict)
-                except Exception as result_error:
-                    # Catch errors in result building (e.g. validate_inserts_hardware)
-                    # so one bad result doesn't kill the entire batch
-                    logger.error(f"❌ FAILED to build result for {file_path.name}: {result_error}", exc_info=True)
             
             # 
             # שלב 2: התאמת כמויות ותיאורים לאחר עיבוד כל השרטוטים
@@ -1106,364 +844,16 @@ def scan_folder(
                 logger.info(f"{items_with_general_qty} items with general quantity")
             
             # 
-            # עדכן associated_item עבור PL files בـ file_classifications אחרי שsubfolder_results מלא
-            # זה חיוני כי ב-Stage 0 drawing_results לא היה קיים עדיין
+            # Phase 2c+6+6b: PL association, extraction, override, propagation
             # 
             logger.debug(f"DEBUG: Before PL associated_item update - subfolder_results={len(subfolder_results) if subfolder_results else 0}, file_classifications={len(file_classifications) if file_classifications else 0}")
-            
-            if subfolder_results and file_classifications:
-                # Safely count PL files, handling None values
-                pl_file_count = len([fc for fc in file_classifications if fc and isinstance(fc, dict) and fc.get('file_type') == 'PARTS_LIST'])
-                if pl_file_count > 0:
-                    logger.info(f"Updating file_classifications with associated_item for {pl_file_count} PL files...")
-                    
-                    # Build drawing_map once (not per-PL)
-                    temp_drawing_map = {}
-                    for dr in subfolder_results:
-                        dr_file = dr.get('file_name', '')
-                        dr_part_num = dr.get('part_number', '')
-                        if dr_file and dr_part_num:
-                            temp_drawing_map[dr_file] = dr_part_num
-                            dr_item = _extract_item_number_from_filename(dr_file)
-                            if dr_item:
-                                temp_drawing_map[dr_item] = dr_part_num
-                    
-                    # Collect all PLs that need association
-                    pl_files = [fc for fc in file_classifications 
-                                if fc and isinstance(fc, dict) 
-                                and fc.get('file_type') == 'PARTS_LIST' 
-                                and not fc.get('associated_item')]
-                    
-                    # Score ALL PLs against ALL drawings, then assign uniquely
-                    all_scores = []  # [(pl_fc, part_number, pl_filename)]
-                    
-                    for fc in pl_files:
-                        pl_filename = fc['file_path'].name if hasattr(fc.get('file_path'), 'name') else str(fc.get('file_path'))
-                        associated_part = _find_associated_drawing(fc['file_path'], 'PARTS_LIST', temp_drawing_map)
-                        if associated_part:
-                            all_scores.append((fc, associated_part, pl_filename))
-                    
-                    # ── Unique assignment: if 2+ PLs got same drawing, resolve ──
-                    from collections import defaultdict
-                    by_pn = defaultdict(list)
-                    for fc, pn, pl_name in all_scores:
-                        by_pn[pn].append((fc, pl_name))
-                    
-                    already_assigned = set()  # part_numbers already taken
-                    
-                    for pn, pl_list in by_pn.items():
-                        if len(pl_list) == 1:
-                            # Only one PL wants this drawing — assign
-                            fc, pl_name = pl_list[0]
-                            fc['associated_item'] = pn
-                            already_assigned.add(pn)
-                            logger.info(f"PL: {pl_name} → associated_item: {pn}")
-                        else:
-                            # Multiple PLs want same drawing — pick best by PL hint match
-                            logger.warning(f"⚠️ {len(pl_list)} PLs compete for {pn}: {[n for _, n in pl_list]}")
-                            
-                            best_fc = None
-                            best_name = ""
-                            best_overlap = 0
-                            pn_clean = re.sub(r'[^a-z0-9]', '', pn.lower())
-                            
-                            for fc, pl_name in pl_list:
-                                # Extract PL hint
-                                pl_stem = fc['file_path'].stem.upper()
-                                pl_clean = re.sub(r'^PL[_\-]?', '', pl_stem)
-                                pl_clean = re.sub(r'[_\-][A-Z\-]{1,3}$', '', pl_clean)
-                                pl_hint = re.sub(r'[^a-z0-9]', '', pl_clean.lower())
-                                
-                                # Count prefix overlap with PN
-                                overlap = 0
-                                for a, b in zip(pl_hint, pn_clean):
-                                    if a == b:
-                                        overlap += 1
-                                    else:
-                                        break
-                                
-                                if overlap > best_overlap:
-                                    best_overlap = overlap
-                                    best_fc = fc
-                                    best_name = pl_name
-                            
-                            if best_fc:
-                                best_fc['associated_item'] = pn
-                                already_assigned.add(pn)
-                                logger.info(f"PL: {best_name} → associated_item: {pn} (won conflict)")
-                                
-                                # Remaining PLs — try to find their second-best match
-                                for fc, pl_name in pl_list:
-                                    if fc.get('associated_item'):
-                                        continue  # Already assigned
-                                    # Rebuild map without already-assigned PNs
-                                    filtered_map = {k: v for k, v in temp_drawing_map.items() 
-                                                    if (v if isinstance(v, str) else v.get('part_number', '')) not in already_assigned}
-                                    alt = _find_associated_drawing(fc['file_path'], 'PARTS_LIST', filtered_map)
-                                    if alt:
-                                        fc['associated_item'] = alt
-                                        already_assigned.add(alt)
-                                        logger.info(f"PL: {pl_name} → associated_item: {alt} (second choice)")
-                                    else:
-                                        logger.warning(f"PL: {pl_name} → no unique match found")
-                else:
-                    logger.info(f"No PL files in file_classifications to update")
-            elif subfolder_results and not file_classifications:
-                logger.error(f"Note: file_classifications is None (earlier stages may have failed), skipping PL update")
-            
-            logger.debug(f"DEBUG: After PL associated_item update, about to start Stage 6")
-            
-            # 
-            # STAGE 6: Extract data from PL (Parts List) PDF files
-            # Process each PL file identified during classification, analyze with Azure OpenAI
-            # 
-            logger.debug(f"\nDEBUG: Starting Stage 6...")
-            logger.debug(f"DEBUG: file_classifications type={type(file_classifications)}, length={len(file_classifications) if file_classifications else 0}")
-            
-            pl_items_list = []
-            # Safely filter for PL files, handling None entries
-            pl_files = []
-            if file_classifications:
-                for fc in file_classifications:
-                    if fc and isinstance(fc, dict) and fc.get('file_type') == 'PARTS_LIST':
-                        pl_files.append(fc)
-            
-            logger.debug(f"DEBUG: Found {len(pl_files)} PL files to process")
-            
-            if pl_files:
-                logger.info(f"[STAGE6] Stage 6: Extract PL data ({len(pl_files)} parts lists)...")
-                for pl_fc in pl_files:
-                    pl_path = pl_fc.get('file_path')
-                    if not pl_path:
-                        logger.error(f"ERROR: PL file has no file_path!")
-                        continue
-                    logger.info(f"Processing: {pl_path.name if hasattr(pl_path, 'name') else pl_path}")
-                    try:
-                        pl_extracted, tokens_in, tokens_out = extract_pl_data(str(pl_path), client, file_classifications)
-                        if pl_extracted:
-                            pl_items_list.extend(pl_extracted)
-                            folder_stage6_tokens_in += tokens_in
-                            folder_stage6_tokens_out += tokens_out
-                            logger.info(f"Extracted {len(pl_extracted)} items from this PL (${_calculate_stage_cost(tokens_in, tokens_out, STAGE_PL):.4f})")
-                    except Exception as pl_error:
-                        logger.error(f"ERROR processing PL: {str(pl_error)[:100]}")
-                
-                # Match PL items to drawings using associated_item from file_classifications
-                if subfolder_results and pl_items_list:
-                    logger.info(f"Matching {len(pl_items_list)} PL items to {len(subfolder_results)} drawings via associated_item...")
-                    for pl_item in pl_items_list:
-                        associated_item = pl_item.get('associated_item', '')
-                        if not associated_item:
-                            continue
-                        
-                        associated_norm = _normalize_item_number(associated_item)
-                        
-                        # Find matching drawing by associated_item
-                        for result_dict in subfolder_results:
-                            part_num = result_dict.get('part_number', '')
-                            part_num_norm = _normalize_item_number(part_num)
-                            
-                            # Check if associated_item matches this drawing's part_number
-                            if (associated_norm == part_num_norm or 
-                                associated_norm in part_num_norm or 
-                                part_num_norm in associated_norm):
-                                pl_item['matched_item_name'] = result_dict.get('item_name', part_num)
-                                pl_item['matched_drawing_part_number'] = part_num
-                                logger.info(f"PL item → drawing '{result_dict.get('item_name', '')}' (associated: {associated_item})")
-                                break
-                
-                logger.info(f"Stage 6 complete: {len(pl_items_list)} PL items extracted")
-                
-                # Propagate pl_main_part_number from PL items to drawing results
-                if subfolder_results and pl_items_list:
-                    for result_dict in subfolder_results:
-                        part_num = result_dict.get('part_number', '')
-                        part_num_norm = _normalize_item_number(part_num)
-                        for pl_item in pl_items_list:
-                            associated = pl_item.get('associated_item', '')
-                            associated_norm = _normalize_item_number(associated)
-                            if (associated_norm == part_num_norm or
-                                associated_norm in part_num_norm or
-                                part_num_norm in associated_norm):
-                                pl_pn = pl_item.get('pl_main_part_number', '')
-                                if pl_pn:
-                                    result_dict['pl_main_part_number'] = pl_pn
-                                    break
-                
-                # ═══════════════════════════════════════════════════════
-                # PL PART NUMBER OVERRIDE
-                # If PL provides a reliable part number, override OCR
-                # ═══════════════════════════════════════════════════════
-                if subfolder_results and pl_items_list:
-                    logger.info(f"PL Part Number Override check...")
-                    
-                    for result_dict in subfolder_results:
-                        ocr_part_number = result_dict.get('part_number', '')
-                        ocr_part_normalized = _normalize_item_number(ocr_part_number)
-                        
-                        # Find matching PL item for this drawing
-                        matched_pl = None
-                        for pl_item in pl_items_list:
-                            pl_associated = _normalize_item_number(pl_item.get('associated_item', ''))
-                            pl_matched = _normalize_item_number(pl_item.get('matched_drawing_part_number', ''))
-                            
-                            if pl_associated and (pl_associated == ocr_part_normalized or 
-                                                   pl_associated in ocr_part_normalized or
-                                                   ocr_part_normalized in pl_associated):
-                                matched_pl = pl_item
-                                break
-                            if pl_matched and (pl_matched == ocr_part_normalized or
-                                                pl_matched in ocr_part_normalized or
-                                                ocr_part_normalized in pl_matched):
-                                matched_pl = pl_item
-                                break
-                        
-                        if not matched_pl:
-                            continue
-                        
-                        pl_main_pn = matched_pl.get('pl_main_part_number', '')
-                        
-                        # Skip if no PL part number or MULTIPLE
-                        if not pl_main_pn or pl_main_pn == 'MULTIPLE':
-                            if pl_main_pn == 'MULTIPLE':
-                                result_dict['pl_part_number'] = 'MULTIPLE'
-                                result_dict['pl_override_note'] = 'PL מכיל מספר פריטים מיוצרים'
-                            continue
-                        
-                        # Validate: PL part number must look like a real P.N.
-                        # Must contain at least 3 digits and be at least 6 chars
-                        digit_count = sum(1 for c in pl_main_pn if c.isdigit())
-                        if digit_count < 3 or len(pl_main_pn) < 6:
-                            logger.warning(f"⚠️ Skipping PL PN '{pl_main_pn}' — too short or too few digits")
-                            continue
-                        
-                        # Reject revision-like values: REV:A-001, REV:B-001, REV:-001
-                        if pl_main_pn.upper().startswith('REV'):
-                            logger.warning(f"⚠️ Skipping PL PN '{pl_main_pn}' — looks like revision, not P.N.")
-                            continue
-                        
-                        # Reject common words that are not real part numbers
-                        _INVALID_PN_WORDS = {
-                            'category', 'description', 'part', 'number', 'rev', 'revision',
-                            'catalog', 'seq', 'item', 'type', 'make', 'buy', 'qty',
-                            'status', 'release', 'name', 'unit', 'level', 'none', 'null',
-                        }
-                        if pl_main_pn.lower() in _INVALID_PN_WORDS or len(pl_main_pn) < 3:
-                            logger.warning(f"⚠️ Skipping invalid PL part number: '{pl_main_pn}'")
-                            continue
-                        
-                        pl_main_normalized = _normalize_item_number(pl_main_pn)
-                        
-                        # Compare OCR vs PL
-                        if ocr_part_normalized == pl_main_normalized:
-                            # Normalized match — check if RAW strings differ
-                            if ocr_part_number.strip() != pl_main_pn.strip():
-                                # Raw differs → PL has more info (e.g. dash-number)
-                                old_part = ocr_part_number
-                                result_dict['part_number_ocr_original'] = old_part
-                                result_dict['part_number'] = pl_main_pn
-                                result_dict['pl_part_number'] = pl_main_pn
-                                result_dict['pl_override_note'] = f'AS PL (OCR: {old_part})'
-                                # Also fix drawing_number if it was the same bad OCR value
-                                dwg = result_dict.get('drawing_number', '')
-                                if dwg and _normalize_item_number(dwg) == _normalize_item_number(old_part):
-                                    base, suffix = _extract_base_and_suffix(pl_main_pn)
-                                    result_dict['drawing_number'] = base if suffix else pl_main_pn
-                                logger.info(f"✓ OVERRIDE (dash-number): '{old_part}' → '{pl_main_pn}'")
-                                continue
-                            # Truly identical
-                            result_dict['pl_part_number'] = pl_main_pn
-                            result_dict['pl_override_note'] = 'AS PL'
-                            logger.info(f"✓ CONFIRMED: '{ocr_part_number}' matches PL (AS PL)")
-                            continue
-                        
-                        # ── OVERRIDE ──
-                        old_part = ocr_part_number
-                        result_dict['part_number_ocr_original'] = old_part
-                        result_dict['part_number'] = pl_main_pn
-                        result_dict['pl_part_number'] = pl_main_pn
-                        result_dict['pl_override_note'] = f'מ-PL (OCR מקורי: {old_part})'
-                        # Also fix drawing_number if it was the same bad OCR value
-                        dwg = result_dict.get('drawing_number', '')
-                        if dwg and _normalize_item_number(dwg) == _normalize_item_number(old_part):
-                            base, suffix = _extract_base_and_suffix(pl_main_pn)
-                            result_dict['drawing_number'] = base if suffix else pl_main_pn
-                        
-                        logger.info(f"✓ OVERRIDE: '{old_part}' → '{pl_main_pn}' (from PL)")
-                    
-                    # Count overrides
-                    overrides = sum(1 for r in subfolder_results if r.get('part_number_ocr_original'))
-                    if overrides:
-                        logger.info(f"═══ {overrides} part numbers overridden from PL ═══")
-                    else:
-                        logger.info(f"No overrides needed (OCR matches PL)")
+            update_pl_associations(subfolder_results, file_classifications)
 
-                    # ── EMAIL P.N. OVERRIDE ──
-                    _is_iai_email = any(
-                        'IAI' in str(r.get('customer_name', '')).upper()
-                        for r in subfolder_results if r.get('customer_name')
-                    )
-                    _override_pn_from_email(subfolder_results, email_data, is_iai=_is_iai_email)
-                
-                # ═══════════════════════════════════════════════════════
-                # UPDATE associated_item in file_classifications
-                # So classification Excel + rename use corrected part number
-                # ═══════════════════════════════════════════════════════
-                if subfolder_results and file_classifications:
-                    override_map = {}
-                    for result_dict in subfolder_results:
-                        ocr_original = result_dict.get('part_number_ocr_original', '')
-                        if ocr_original:
-                            new_pn = result_dict.get('part_number', '')
-                            override_map[_normalize_item_number(ocr_original)] = new_pn
-                    
-                    if override_map:
-                        for fc in file_classifications:
-                            assoc = fc.get('associated_item', '')
-                            assoc_norm = _normalize_item_number(assoc)
-                            if assoc_norm in override_map:
-                                old_assoc = assoc
-                                fc['associated_item'] = override_map[assoc_norm]
-                                logger.info(f"✓ Updated associated_item: '{old_assoc}' → '{fc['associated_item']}'")
-            else:
-                pl_items_list = []
-            
-            # ═══════════════════════════════════════════════════════
-            # Propagate PL Summary Hebrew → subfolder_results
-            # (needed for Stage 9 merge before Excel save)
-            # ═══════════════════════════════════════════════════════
-            if subfolder_results and pl_items_list:
-                for result_dict in subfolder_results:
-                    part_num_norm = _normalize_item_number(result_dict.get('part_number', ''))
-                    ocr_orig_norm = _normalize_item_number(result_dict.get('part_number_ocr_original', ''))
-                    heb_parts = []
-                    pl_hw_parts = []
-                    for pl_item in pl_items_list:
-                        if not pl_item:
-                            continue
-                        assoc_norm = _normalize_item_number(str(pl_item.get('associated_item', '')))
-                        # ── Match by associated_item OR fallback: single drawing gets all PL ──
-                        matched = False
-                        if assoc_norm and (
-                            assoc_norm == part_num_norm or assoc_norm in part_num_norm or part_num_norm in assoc_norm
-                            or (ocr_orig_norm and (assoc_norm == ocr_orig_norm or assoc_norm in ocr_orig_norm or ocr_orig_norm in assoc_norm))
-                        ):
-                            matched = True
-                        elif not assoc_norm and len(subfolder_results) == 1:
-                            # Fallback: PL item has no associated_item, but only 1 drawing → assign
-                            matched = True
-                        if matched:
-                            heb = pl_item.get('pl_summary_hebrew', '')
-                            if heb and heb not in heb_parts:
-                                heb_parts.append(heb)
-                            pl_hw = pl_item.get('pl_hardware', '')
-                            if pl_hw and pl_hw not in pl_hw_parts:
-                                pl_hw_parts.append(pl_hw)
-                    if heb_parts:
-                        result_dict['PL Summary Hebrew'] = ' | '.join(heb_parts)
-                        logger.info(f"PL Summary Hebrew propagated to '{result_dict.get('part_number','')}': {len(heb_parts)} parts")
-                    if pl_hw_parts:
-                        result_dict['PL Hardware'] = ' | '.join(pl_hw_parts)
+            logger.debug(f"DEBUG: After PL associated_item update, about to start Stage 6")
+            pl_items_list, folder_stage6_tokens_in, folder_stage6_tokens_out = extract_and_process_pl(
+                file_classifications, subfolder_results, client, email_data,
+            )
+            propagate_pl_data(subfolder_results, pl_items_list)
 
             # ═══════════════════════════════════════════════════════
             # STAGE 9: Smart Description Merge (o4-mini)
@@ -1481,228 +871,28 @@ def scan_folder(
             elif not enable_stage9:
                 logger.info("[STAGE9] Stage 9 disabled — skipping description merge")
 
-            #  שמור קבצים בתוך התיקייה
-            logger.debug(f"DEBUG: subfolder_results has {len(subfolder_results) if subfolder_results else 0} items")
+            #  שמור קבצים בתוך התיקייה ואיסוף סטטיסטיקות
+            folder_info, subfolder_results = save_folder_output(
+                target_folder, subfolder_results, file_classifications, pl_items_list,
+                confidence_level, timestamp,
+                folder_classification_cost=folder_classification_cost,
+                folder_extraction_cost_accurate=folder_extraction_cost_accurate,
+                folder_extraction_tokens_in=folder_extraction_tokens_in,
+                folder_extraction_tokens_out=folder_extraction_tokens_out,
+                folder_stage6_tokens_in=folder_stage6_tokens_in,
+                folder_stage6_tokens_out=folder_stage6_tokens_out,
+                folder_start_time=folder_start_time,
+            )
+            if folder_info:
+                folder_stats.append(folder_info)
             if subfolder_results:
-                logger.info(f"Saving files in folder '{target_folder.name}'...")
-                
-                # יצירת שם תיקייה תקין לשם קובץ
-                safe_folder_name = target_folder.name.replace(" ", "_").replace("/", "_").replace("\\", "_")
-                
-                # 1. קובץ ניתוח שרטוטים
-                results_file = target_folder / f"drawing_results_{safe_folder_name}.xlsx"
-                logger.debug(f"DEBUG: About to save Excel to {results_file}")
-                _save_results_to_excel(subfolder_results, results_file, pl_items_list)
-                logger.info(f"✓ Drawing analysis: {results_file.name} ({len(subfolder_results)} drawings)")
-            else:
-                logger.debug(f"DEBUG: subfolder_results is EMPTY - skipping drawing_results save")
-            
-            # 2. קובץ מיפוי קבצים (רק של תיקייה זו) - INDEPENDENT של subfolder_results!
-            if file_classifications:
-                logger.debug(f"\nDEBUG: About to save file_classifications ({len(file_classifications)} files)")
-                # Backfill item_number/revision for drawings using actual results
-                if subfolder_results:
-                    drawing_index = {
-                        dr.get('file_name'): dr for dr in subfolder_results
-                        if dr.get('file_name')
-                    }
-                    for fc in file_classifications:
-                        # Store original filename before rename
-                        if 'original_filename' not in fc:
-                            fc['original_filename'] = fc['file_path'].name
-                        if fc.get('file_type') == 'DRAWING':
-                            dr = drawing_index.get(fc['file_path'].name)
-                            if dr:
-                                fc['item_number'] = dr.get('drawing_number', '')
-                                fc['revision'] = dr.get('revision', '')
-                
-                safe_folder_name = target_folder.name.replace(" ", "_").replace("/", "_").replace("\\", "_")
-                classification_file = target_folder / f"file_classification_{safe_folder_name}.xlsx"
-                drawing_map = _build_drawing_part_map(file_classifications, subfolder_results)
-                _save_classification_report(file_classifications, target_folder, 
-                                          0, 0,  # No tokens for individual report
-                                          custom_filename=classification_file.name,
-                                          drawing_map=drawing_map,
-                                          drawing_results=subfolder_results)
-                logger.info(f"✓ File mapping: {classification_file.name} ({len(file_classifications)} files)")
-                
-                # Post-process: Update PL sheet with associated_items from file_classifications
-                # Classification file was just saved, so it should exist
-                if subfolder_results:  # Only if we have results to update
-                    results_file = target_folder / f"drawing_results_{safe_folder_name}.xlsx"
-                    if classification_file.exists() and results_file.exists():
-                        logger.info(f"Updating Parts_List_Items with associated_items...")
-                        _update_pl_sheet_with_associated_items(results_file, classification_file)
-                    elif not results_file.exists():
-                        logger.info(f"Note: drawing_results file not found ({results_file.name}), skipping associated_item update")
-                    else:
-                        logger.info(f"Note: classification file not found, skipping associated_item update")
-            else:
-                logger.debug(f"DEBUG: file_classifications is EMPTY - skipping classification save")
-            
-            # 3. קובץ טקסט מסכם (TAB delimited) - INDEPENDENT of both files!
-            if subfolder_results:
-                # קרא כתובת מייל מקובץ email.txt
-                sender_email = ""
-                subject_text = ""
-                email_file = target_folder / "email.txt"
-                if email_file.exists():
-                    try:
-                        with open(email_file, 'r', encoding='utf-8', errors='ignore') as f:
-                            lines = f.readlines()
-                        if lines:
-                            # בדוק אם השורה הראשונה היא כתובת מייל
-                            first_line = lines[0].strip()
-                            if first_line and "@" in first_line:
-                                sender_email = first_line.replace("כתובת שולח:", "").replace("From:", "").strip()
-                        
-                        # חיפוש נוסף ב-Subject/נושא
-                        for line in lines:
-                            line_strip = line.strip()
-                            if line_strip.lower().startswith("from:") and "@" in line_strip and not sender_email:
-                                sender_email = line_strip.split(":", 1)[1].strip()
-                                continue
-                            if line_strip.lower().startswith("subject:"):
-                                subject_text = line_strip.split(":", 1)[1].strip()
-                                break
-                            if line_strip.startswith("נושא:"):
-                                subject_text = line_strip.split(":", 1)[1].strip()
-                                break
-                    except Exception:
-                        pass
-                
-                # תחול את מידע המייל לכל הצירופים (results)
-                for result_dict in subfolder_results:
-                    if not result_dict.get('email_from'):  # רק אם עדיין לא הגדרנו
-                        result_dict['email_from'] = sender_email
-                        result_dict['email_subject'] = subject_text
-                
-                # חלץ מספר הצעה / הזנת רכש קודם מקובץ הסיווג (file_classifications)
-                quote_or_order_number = ""
-                
-                if file_classifications and isinstance(file_classifications, list):
-                    for fc in file_classifications:
-                        if not fc or not isinstance(fc, dict):  # Skip None or invalid entries
-                            continue
-                        qn = str(fc.get('quote_number', '')).strip() if fc.get('quote_number') else ""
-                        on = str(fc.get('order_number', '')).strip() if fc.get('order_number') else ""
-                        if qn:
-                            quote_or_order_number = qn
-                            break
-                        if on:
-                            quote_or_order_number = on
-                            break
-                
-                def _extract_number(text: str) -> str:
-                    if not text:
-                        return ""
-                    # חיפוש לפי מילות מפתח (עברית/אנגלית)
-                    patterns = [
-                        r'(?:quotation|quote|rfq|הצעת מחיר|הצעה)[^0-9]{0,12}(\d{4,12})',
-                        r'(?:order|po|הזמנת רכש|הזנת רכש)[^0-9]{0,12}(\d{4,12})',
-                        r'B2B[_\s-]*Quotation[_\s-]*(\d{4,12})',
-                        r'B2B[_\s-]*Order[_\s-]*(\d{4,12})',
-                    ]
-                    for pattern in patterns:
-                        m = re.search(pattern, text, re.IGNORECASE)
-                        if m:
-                            return m.group(1)
-                    # חיפוש כללי של מספר
-                    m = re.search(r'(\d{5,12})', text)
-                    return m.group(1) if m else ""
-
-                def _looks_like_date(value: str) -> bool:
-                    if not value or len(value) != 8 or not value.isdigit():
-                        return False
-                    try:
-                        parsed = datetime.strptime(value, "%Y%m%d")
-                        return 2000 <= parsed.year <= 2100
-                    except Exception:
-                        return False
-                
-                # אם לא נמצא בסיווג, נסה מהנושא ואז משם התיקייה
-                if not quote_or_order_number:
-                    candidate = _extract_number(subject_text)
-                    if _looks_like_date(candidate):
-                        candidate = ""
-                    quote_or_order_number = candidate
-                if not quote_or_order_number:
-                    candidate = _extract_number(target_folder.name)
-                    if _looks_like_date(candidate):
-                        candidate = ""
-                    quote_or_order_number = candidate
-                if not quote_or_order_number:
-                    quote_or_order_number = timestamp
-                
-                # צור שם קובץ טקסט עם מספר הצעה/הזנה
-                b2b_number = "B2B-0_200002"
-                text_filename = f"{b2b_number}-{quote_or_order_number}.txt"
-                text_path = target_folder / text_filename
-                
-                # שמור קובץ טקסט עם מספר הצעה/הזנה כ-field 14 (יוצר שלושה קבצים: B2B, B2BH, B2BM)
-                _save_text_summary_with_variants(subfolder_results, text_path, sender_email, b2b_number, quote_or_order_number)
-                
-                # שמור לאיחוד בסוף
-                # Filter out None values before extending
                 if file_classifications:
                     all_classifications.extend([fc for fc in file_classifications if fc and isinstance(fc, dict)])
                 all_results.extend(subfolder_results)
-                
-                # Save file_classifications for this folder to use in TOSEND copy (filter None values)
                 if file_classifications:
                     folder_classifications_map[target_folder] = [fc for fc in file_classifications if fc and isinstance(fc, dict)]
                 else:
                     folder_classifications_map[target_folder] = []
-                
-                # Collect folder statistics for GUI (for folders with drawings that were saved)
-                from collections import Counter
-                file_type_counts = Counter(fc['file_type'] for fc in file_classifications)
-                
-                # Count confidence levels in drawings
-                drawing_confidence_counts = {'HIGH': 0, 'MEDIUM': 0, 'LOW': 0}
-                for result in subfolder_results:
-                    conf_level = str(result.get('confidence_level', '')).strip().upper()
-                    # Treat FULL as HIGH (FULL is highest confidence level)
-                    if conf_level == 'FULL':
-                        conf_level = 'HIGH'
-                    if conf_level in drawing_confidence_counts:
-                        drawing_confidence_counts[conf_level] += 1
-                
-                # Calculate extraction cost — prefer accurate per-stage cost
-                if folder_extraction_cost_accurate > 0:
-                    folder_extraction_cost = folder_extraction_cost_accurate
-                else:
-                    # Fallback: base-model price
-                    folder_extraction_cost = ((folder_extraction_tokens_in / 1_000_000) * MODEL_INPUT_PRICE_PER_1M +
-                                             (folder_extraction_tokens_out / 1_000_000) * MODEL_OUTPUT_PRICE_PER_1M)
-                
-                # Calculate Stage 6 cost from tracked tokens
-                folder_stage6_cost = _calculate_stage_cost(folder_stage6_tokens_in, folder_stage6_tokens_out, STAGE_PL)
-                
-                folder_end_time = time.time()
-                folder_total_time = folder_end_time - folder_start_time
-                folder_total_cost = folder_classification_cost + folder_extraction_cost + folder_stage6_cost
-                
-                folder_info = {
-                    'name': target_folder.name,
-                    'total_files': len(file_classifications),
-                    'file_types': dict(file_type_counts),
-                    'total_drawings': len(subfolder_results),
-                    'confidence_high': drawing_confidence_counts['HIGH'],
-                    'confidence_medium': drawing_confidence_counts['MEDIUM'],
-                    'confidence_low': drawing_confidence_counts['LOW'],
-                    'classification_cost': folder_classification_cost,
-                    'extraction_cost': folder_extraction_cost,
-                    'stage6_cost': folder_stage6_cost,
-                    'total_cost': folder_total_cost,
-                    'processing_time': folder_total_time
-                }
-                folder_stats.append(folder_info)
-                
-                # Rename files in this folder based on classification and associated item BEFORE copying
-                renamed_count = _rename_files_by_classification(file_classifications)
-                if renamed_count > 0:
-                    logger.info(f"Total renamed: {renamed_count} files")
         
         # All results processed with quantities
         if subfolder_results:
@@ -1721,255 +911,20 @@ def scan_folder(
     
     # Copy all folders to TO_SEND AFTER all processing is complete
     if tosend_folder:
-        logger.info(f"{'='*70}")
-        logger.info("Copying all processed folders to TO_SEND...")
-        logger.info(f"{'='*70}")
-        for target_folder in subfolders_to_process:
-            # Copy folder to TO_SEND with file_classifications from this folder
-            fc_list = folder_classifications_map.get(target_folder, None)
-            _copy_folder_to_tosend(target_folder, Path(tosend_folder), fc_list, confidence_level, all_results)
+        copy_folders_to_tosend(
+            subfolders_to_process, tosend_folder,
+            folder_classifications_map, confidence_level, all_results,
+        )
     
-    #  איחוד כל הקבצים ל-NEW FILES (קריאה מהקבצים שנוצרו בתת-תיקיות)
-    logger.info(f"{'='*70}")
-    logger.info("Merging files from all folders...")
-    logger.info(f"{'='*70}")
+    # Merge all per-folder files into SUMMARY files in NEW FILES
+    final_results_path, final_classification_path, all_file_classifications = merge_all_results(
+        subfolders_to_process, output_folder, timestamp,
+        all_results, all_classifications,
+        global_classification_tokens_in=global_classification_tokens_in,
+        global_classification_tokens_out=global_classification_tokens_out,
+    )
     
-    # איחוד קבצי ניתוח שרטוטים - קריאה מהתת-תיקיות
-    logger.info("Merging drawing_results files...")
-    all_drawing_results = []
-    all_pl_items = []  # Note: This is kept for debugging/logging only - actual PL data is copied directly from files
-    all_file_classifications = []  # Initialize for SUMMARY post-processing
-    final_classification_path = None  # Initialize
-    for target_folder in subfolders_to_process:
-        # חפש קבצי drawing_results בתיקייה
-        drawing_files = list(target_folder.glob("drawing_results_*.xlsx"))
-        for df_file in drawing_files:
-            try:
-                # קרא גיליון ראשי (שרטוטים)
-                df = pd.read_excel(df_file, sheet_name='Sheet1')
-                results = df.to_dict('records')
-                all_drawing_results.extend(results)
-                logger.info(f"Read {len(results)} rows from {df_file.name}")
-                
-                # נסה לקרוא גיליון PL Items אם קיים
-                try:
-                    df_pl = pd.read_excel(df_file, sheet_name='Parts_List_Items')
-                    if not df_pl.empty:
-                        pl_items = df_pl.to_dict('records')
-                        # Normalize column names (pandas reads them with spaces)
-                        # Headers are: 'PL Filename', 'Item Number', 'Description', 'Matched Item', 'Drawing Part Number', etc.
-                        normalized_items = []
-                        for item in pl_items:
-                            # Rename columns to match our internal format
-                            normalized = {
-                                'item_number': item.get('Item Number') or item.get('item_number'),
-                                'description': item.get('Description') or item.get('description'),
-                                'quantity': item.get('Quantity') or item.get('quantity'),
-                                'pl_filename': item.get('PL Filename') or item.get('pl_filename'),
-                                'matched_item_name': item.get('Matched Item') or item.get('matched_item_name'),
-                                'matched_drawing_part_number': item.get('Drawing Part Number') or item.get('matched_drawing_part_number')
-                            }
-                            normalized_items.append(normalized)
-                        
-                        # סנן שורות ריקות
-                        pl_items_filtered = [item for item in normalized_items if item.get('item_number')]
-                        if pl_items_filtered:
-                            all_pl_items.extend(pl_items_filtered)
-                            logger.info(f"Read {len(pl_items_filtered)} PL items from {df_file.name}")
-                except Exception as e:
-                    # אין גיליון PL Items בקובץ זה - עובר הלאה
-                    logger.info(f"(No PL sheet in this file: {str(e)[:50]})")
-                    pass
-            except Exception as e:
-                logger.error(f"Failed to read {df_file.name}: {e}")
-    
-    if all_drawing_results:
-        final_results_path = output_folder / f"SUMMARY_all_results_{timestamp}.xlsx"
-        
-        # First save the main results sheet
-        _save_results_to_excel(all_drawing_results, final_results_path, None)
-        
-        # Now add PL Items sheet by reading directly from sub-folder files
-        logger.info(f"Adding PL Items to summary file from sub-folders...")
-        try:
-            from openpyxl import load_workbook
-            from openpyxl.utils import get_column_letter
-            
-            all_pl_rows = []
-            
-            # Read all PL Items sheets from drawing_results files in sub-folders
-            for target_folder in subfolders_to_process:
-                drawing_files = list(target_folder.glob("drawing_results_*.xlsx"))
-                for df_file in drawing_files:
-                    try:
-                        # Try to read PL Items sheet
-                        df_pl = pd.read_excel(df_file, sheet_name='Parts_List_Items')
-                        if not df_pl.empty:
-                            # Convert to list of lists (rows)
-                            rows = df_pl.values.tolist()
-                            all_pl_rows.extend(rows)
-                            logger.info(f"Copied {len(rows)} rows from {df_file.name}")
-                    except Exception:
-                        # No PL Items sheet in this file
-                        pass
-            
-            # If we have PL items, add them to SUMMARY file
-            if all_pl_rows:
-                wb = load_workbook(final_results_path)
-                
-                # Check if sheet exists, if not create it
-                if "Parts_List_Items" in wb.sheetnames:
-                    # Sheet exists - append rows
-                    ws_pl = wb["Parts_List_Items"]
-                    start_row = ws_pl.max_row + 1
-                else:
-                    # Create new sheet with headers
-                    ws_pl = wb.create_sheet(title="Parts_List_Items")
-                    
-                    # Add headers (matching Stage 6 output format)
-                    headers = ['PL Filename', 'Item Number', 'Description', 'Associated Item', 'Matched Item', 'Drawing Part Number',
-                              'Quantity', 'Processes', 'Specifications', 'Product Tree', 'Item Type']
-                    ws_pl.append(headers)
-                    
-                    # Format header row
-                    from openpyxl.styles import Font, PatternFill, Alignment
-                    header_fill = PatternFill(start_color="366092", end_color="366092", fill_type="solid")
-                    header_font = Font(bold=True, color="FFFFFF")
-                    for cell in ws_pl[1]:
-                        cell.fill = header_fill
-                        cell.font = header_font
-                        cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
-                    
-                    start_row = 2
-                
-                # Add all rows
-                for row in all_pl_rows:
-                    ws_pl.append(row)
-                
-                # Set column widths
-                col_widths = [20, 15, 25, 18, 20, 18, 12, 25, 30, 35, 15]
-                for idx, width in enumerate(col_widths, 1):
-                    ws_pl.column_dimensions[chr(64 + idx)].width = width
-                    ws_pl.column_dimensions[chr(64 + idx)].alignment = Alignment(wrap_text=True)
-                
-                wb.save(final_results_path)
-                wb.close()
-                logger.info(f"Added PL Items sheet with {len(all_pl_rows)} rows to SUMMARY")
-            
-        except Exception as e:
-            logger.error(f"Error adding PL sheet to SUMMARY: {e}")
-        
-        # Post-process SUMMARY file: Update PL sheet with associated_items
-        if all_file_classifications and final_classification_path and final_results_path and final_results_path.exists():
-            logger.info(f"Updating SUMMARY Parts_List_Items with associated_items...")
-            _update_pl_sheet_with_associated_items(final_results_path, final_classification_path)
-        
-        logger.info(f"✅ Combined drawing analysis: {final_results_path.name} ({len(all_drawing_results)} drawings)")
-        if all_pl_items:
-            logger.info(f"Includes {len(all_pl_items)} combined PL items")
-        
-        # צור קובץ טקסט מסכם (TAB delimited)
-        logger.info("📄 Creating summary text file...")
-        
-        # נסה לקרוא כתובת מייל מקובץ email.txt בתיקייה הראשונה
-        customer_email = ""
-        for target_folder in subfolders_to_process:
-            email_file = target_folder / "email.txt"
-            if email_file.exists():
-                try:
-                    with open(email_file, 'r', encoding='utf-8', errors='ignore') as f:
-                        first_line = f.readline().strip()
-                        # השורה הראשונה היא הכתובת
-                        if first_line and "@" in first_line:
-                            # נקה פורמט ישן אם קיים
-                            customer_email = first_line.replace("כתובת שולח:", "").replace("From:", "").strip()
-                            break
-                except Exception:
-                    pass
-        
-        # קבע את הערך לשדה 14 ושם הקובץ (quote/order number או timestamp)
-        # קודם בדוק אם יש quote_number או order_number בתוצאות
-        request_id = timestamp  # ברירת מחדל
-        for item in all_drawing_results:
-            if item.get('quote_number'):
-                request_id = item['quote_number']
-                break
-            elif item.get('order_number'):
-                request_id = item['order_number']
-                break
-        
-        # צור שם קובץ
-        b2b_number = "B2B-0_200002"  # ניתן להגדיר דינמית
-        text_filename = f"{b2b_number}-{request_id}.txt"
-        text_path = output_folder / text_filename
-        
-        # שמור קובץ טקסט (יוצר שלושה קבצים: B2B, B2BH, B2BM)
-        _save_text_summary_with_variants(all_drawing_results, text_path, customer_email, b2b_number, request_id)
-    else:
-        final_results_path = None
-        logger.warning("⚠️ No drawings to merge")
-    
-    # איחוד קבצי מיפוי קבצים - התחל מ-all_classifications (שכבר נבנה בלולאה)
-    logger.info("Merging file_classification files...")
-    
-    # Use all_classifications that was already built during processing
-    # but verify paths are Path objects
-    for fc in all_classifications:
-        # Ensure file_path is a Path object
-        if 'file_path' in fc:
-            if not isinstance(fc['file_path'], Path):
-                fc['file_path'] = Path(fc['file_path'])
-        all_file_classifications.append(fc)
-    
-    logger.info(f"Found {len(all_file_classifications)} file classifications from current run")
-    
-    # Additionally, read from existing Excel files in subfolders (for cached/previous runs)
-    for target_folder in subfolders_to_process:
-        # חפש קבצי file_classification בתיקייה
-        classification_files = list(target_folder.glob("file_classification_*.xlsx"))
-        for cf_file in classification_files:
-            try:
-                df = pd.read_excel(cf_file)
-                # המר את השורות למבנה הנכון עם Path objects
-                found_in_memory = False
-                for _, row in df.iterrows():
-                    file_path_str = str(row['file_path'])
-                    # Check if already in all_file_classifications
-                    if any(str(fc.get('file_path', '')) == file_path_str for fc in all_file_classifications):
-                        found_in_memory = True
-                        continue  # Skip duplicates
-                    
-                    classification_dict = {
-                        'file_path': Path(file_path_str),
-                        'file_type': row['file_type'],
-                        'description': row['description'],
-                        'quote_number': row.get('quote_number', ''),
-                        'order_number': row.get('order_number', ''),
-                        'associated_item': row.get('associated_item', ''),
-                        'extension': row.get('extension', '')
-                    }
-                    all_file_classifications.append(classification_dict)
-                if found_in_memory:
-                    logger.info(f"Already in memory: {cf_file.name}")
-                else:
-                    logger.info(f"Read {len(df)} rows from {cf_file.name}")
-            except Exception as e:
-                logger.error(f"Failed to read {cf_file.name}: {e}")
-    
-    if all_file_classifications:
-        final_classification_path = output_folder / f"SUMMARY_all_classifications_{timestamp}.xlsx"
-        all_drawing_map = _build_drawing_part_map(all_file_classifications, all_results)
-        _save_classification_report(all_file_classifications, output_folder, 
-                                  global_classification_tokens_in, global_classification_tokens_out,
-                                  custom_filename=f"SUMMARY_all_classifications_{timestamp}.xlsx",
-                                  drawing_map=all_drawing_map,
-                                  drawing_results=all_results)
-        logger.info(f"Combined file mapping: {final_classification_path.name} ({len(all_file_classifications)} files)")
-    else:
-        final_classification_path = None
-        logger.info("No mapping files to merge")
-    
-    # Calculate execution time
+    # Calculate execution time and cost summary
     end_time = time.time()
     execution_time = end_time - start_time
     
@@ -1987,116 +942,8 @@ def scan_folder(
             'avg_time_per_drawing': 0
         }
     
-    # Add execution time to summary
     cost_summary['execution_time'] = execution_time
     cost_summary['avg_time_per_drawing'] = execution_time / cost_summary['successful_files'] if cost_summary['successful_files'] > 0 else 0
-    
-    # SUMMARY file already exists and is up-to-date
-    logger.info("" + "="*70)
-    logger.info("The following files were saved successfully:")
-    logger.info("="*70)
-    if final_results_path and final_results_path.exists():
-        logger.info(f"SUMMARY_all_results_{timestamp}.xlsx")
-        logger.info(f"- {len(all_results)} drawings combined")
-    if final_classification_path and final_classification_path.exists():
-        logger.info(f"SUMMARY_all_classifications_{timestamp}.xlsx")
-        logger.info(f"- {len(all_classifications)} files combined")
-    logger.info("Additional files in each subfolder:")
-    logger.info(f"- drawing_results_[subfolder].xlsx")
-    logger.info(f"- file_classification_[subfolder].xlsx")
-    logger.info("="*70)
-    
-    # Print final summary
-    if all_results and final_results_path and final_results_path.exists():
-        df = pd.DataFrame(all_results)
-        
-        logger.info("" + "="*70)
-        logger.info(f"Final Summary Excel file: {final_results_path}")
-        logger.info(f"Total files processed: {len(all_results)}")
-        logger.info(f"Folders processed: {len(subfolders_to_process)}")
-        if skipped_large_files:
-            logger.info(f"Files skipped (too large): {len(skipped_large_files)}")
-        if total_rafael_rows > 0:
-            logger.info(f"Total RAFAEL rows highlighted: {total_rafael_rows}")
-        
-        # Statistics
-        non_empty = lambda col: sum(1 for v in df[col] if v and str(v).strip())
-        
-        logger.info(f"Field Extraction Statistics:")
-        logger.info(f"- Customer: {non_empty('customer_name')}/{len(all_results)}")
-        logger.info(f"- Part#: {non_empty('part_number')}/{len(all_results)}")
-        logger.info(f"- Item Name: {non_empty('item_name')}/{len(all_results)}")
-        logger.info(f"- Drawing#: {non_empty('drawing_number')}/{len(all_results)}")
-        logger.info(f"- Revision: {non_empty('revision')}/{len(all_results)}")
-        
-        # Confidence level statistics
-        full_conf = sum(1 for v in df['confidence_level'] if v == 'full')
-        high_conf = sum(1 for v in df['confidence_level'] if v == 'high')
-        medium_conf = sum(1 for v in df['confidence_level'] if v == 'medium')
-        low_conf = sum(1 for v in df['confidence_level'] if v == 'low')
-        
-        logger.info(f"Confidence Levels (based on filename matching):")
-        logger.info(f"-  Full (exact match - both): {full_conf}")
-        logger.info(f"-  High (part# in filename): {high_conf}")
-        logger.info(f"-  Medium (only drawing# in filename): {medium_conf}")
-        logger.info(f"-  Low (none in filename): {low_conf}")
-        
-        # Quality warnings
-        needs_review_count = sum(1 for v in df['needs_review'] if v and str(v).strip() and "בעייתי" in str(v))
-        needs_check_count = sum(1 for v in df['needs_review'] if v and str(v).strip() and "בדיקה" in str(v))
-        if needs_review_count > 0 or needs_check_count > 0:
-            logger.info(f"Quality Alerts:")
-            if needs_review_count > 0:
-                logger.info(f"- Problematic: {needs_review_count}")
-            if needs_check_count > 0:
-                logger.info(f"- Needs verification: {needs_check_count}")
-        
-        logger.info(f"- Material: {non_empty('material')}/{len(all_results)}")
-        logger.info(f"- Coating: {non_empty('coating_processes')}/{len(all_results)}")
-        logger.info(f"- Painting: {non_empty('painting_processes')}/{len(all_results)}")
-        logger.info(f"- Colors: {non_empty('colors')}/{len(all_results)}")
-        logger.info(f"- Area: {non_empty('part_area')}/{len(all_results)}")
-        logger.info(f"- Specs: {non_empty('specifications')}/{len(all_results)}")
-        logger.info(f"- Has PL: {non_empty('parts_list_page')}/{len(all_results)}")
-        logger.info(f"- Process Summary: {non_empty('process_summary_hebrew')}/{len(all_results)}")
-        logger.info(f"- Full Notes: {non_empty('notes_full_text')}/{len(all_results)}")
-        
-        # Execution time and performance
-        logger.info(f"Execution Performance:")
-        minutes = int(execution_time // 60)
-        seconds = int(execution_time % 60)
-        time_str = f"{minutes}m {seconds}s" if minutes > 0 else f"{seconds}s"
-        logger.info(f"- Total execution time: {time_str}")
-        logger.info(f"- Average per drawing: {cost_summary.get('avg_time_per_drawing', 0):.1f}s")
-        
-        # Cost information
-        logger.info(f"API Costs:")
-        logger.info(f"- Input tokens: {cost_summary.get('input_tokens', 0):,}")
-        logger.info(f"- Output tokens: {cost_summary.get('output_tokens', 0):,}")
-        logger.info(f"- Drawing extraction cost: ${cost_summary.get('total_cost', 0):.4f} USD ({cost_summary.get('total_cost_ils', 0):.2f})")
-        logger.info(f"- Average per drawing: ${cost_summary.get('avg_cost', 0):.6f} USD ({cost_summary.get('avg_cost_ils', 0):.4f})")
-        
-        if cost_summary.get('classification_cost', 0) > 0:
-            logger.info(f"Stage 0 (File Classification):")
-            logger.info(f"- Input tokens: {cost_summary.get('classification_input_tokens', 0):,}")
-            logger.info(f"- Output tokens: {cost_summary.get('classification_output_tokens', 0):,}")
-            logger.info(f"- Cost: ${cost_summary.get('classification_cost', 0):.4f} USD ({cost_summary.get('classification_cost', 0)*3.7:.2f})")
-        
-        if cost_summary.get('stage6_cost', 0) > 0:
-            logger.info(f"Stage 6 (PL Extraction):")
-            logger.info(f"- Input tokens: {cost_summary.get('stage6_input_tokens', 0):,}")
-            logger.info(f"- Output tokens: {cost_summary.get('stage6_output_tokens', 0):,}")
-            logger.info(f"- Cost: ${cost_summary.get('stage6_cost', 0):.4f} USD ({cost_summary.get('stage6_cost', 0)*3.7:.2f})")
-        
-        total_all = cost_summary.get('total_cost_all', cost_summary.get('total_cost', 0))
-        if total_all != cost_summary.get('total_cost', 0):
-            logger.info(f"Total all stages: ${total_all:.4f} USD ({total_all*3.7:.2f})")
-        
-        logger.info("" + "="*70)
-        logger.info(f"All files saved in: {output_folder}")
-        logger.info("1 SUMMARY file (all results)")
-        logger.info("1 classification file (file_classification)")
-        logger.info("="*70)
     
     # Add classification costs to summary
     cost_summary['classification_input_tokens'] = global_classification_tokens_in
@@ -2121,9 +968,17 @@ def scan_folder(
     cost_summary['classification_time'] = global_classification_time
     cost_summary['classification_folder_count'] = classification_folder_count
     cost_summary['avg_classification_time_per_folder'] = global_classification_time / classification_folder_count if classification_folder_count > 0 else 0
-    cost_summary['folder_stats'] = folder_stats  # Per-folder statistics for GUI
+    cost_summary['folder_stats'] = folder_stats
     
-    return all_results, output_folder, final_results_path, cost_summary, all_file_classifications  # Return classifications for file renaming
+    print_final_summary(
+        all_results, all_classifications,
+        final_results_path, final_classification_path,
+        output_folder, timestamp, cost_summary,
+        subfolders_to_process, skipped_large_files, total_rafael_rows,
+    )
+    
+    set_prompts_context(None)
+    return all_results, output_folder, final_results_path, cost_summary, all_file_classifications
 
 
 # Alias for GUI compatibility

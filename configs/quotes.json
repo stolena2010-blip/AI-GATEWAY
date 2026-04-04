@@ -1,0 +1,114 @@
+{
+  "profile_name": "quotes",
+  "display_name": "הצעות מחיר",
+  "description": "Engineering drawing quote requests",
+  "email": {
+    "shared_mailbox": "tal@chrom.co.il",
+    "shared_mailboxes": [
+      "tal@chrom.co.il"
+    ],
+    "inbox_folder": "תיבת דואר נכנס",
+    "rerun_folder_name": "RERUN",
+    "rerun_mailbox": "quotes_check@algat.co.il",
+    "skip_senders": [
+      "netnorth@netnorth.co"
+    ],
+    "skip_categories": [
+      "ירדנה",
+      "נועם"
+    ],
+    "scan_from_date": "02/04/2026 20:40",
+    "category_processed": "AI Processed",
+    "category_processed_color": "preset20",
+    "category_error": "NO DRAW",
+    "category_error_color": "preset1",
+    "category_heavy": "AI HEAVY",
+    "category_heavy_color": "preset4",
+    "max_messages_per_cycle": 700,
+    "max_files_per_email": 12,
+    "max_file_size_mb": 100,
+    "scan_interval_minutes": 5
+  },
+  "folders": {
+    "download": "C:\\dev DrawingAI\\NEW FILES\\automation\\from",
+    "output": "C:\\dev DrawingAI\\NEW FILES\\automation\\to",
+    "archive": "C:\\dev DrawingAI\\NEW FILES\\automation\\archive",
+    "to_send": "C:\\dev DrawingAI\\NEW FILES\\automation\\to"
+  },
+  "ai_engine": {
+    "type": "vision",
+    "classify_model": "gpt-4o-vision",
+    "extract_model": "gpt-5.4",
+    "stages": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "stage_models": {
+      "0": "gpt-4o-vision",
+      "1": "gpt-5.4",
+      "2": "gpt-5.4",
+      "3": "gpt-5.4",
+      "4": "gpt-4o-vision",
+      "5": "gpt-5.4",
+      "6": "gpt-4o-mini-email",
+      "7": "o4-mini",
+      "8": "gpt-5.4",
+      "9": "o4-mini"
+    },
+    "prompts_folder": "prompts/quotes",
+    "enable_ocr": true,
+    "enable_image_retry": false,
+    "customer_variants": [
+      "generic",
+      "rafael",
+      "iai"
+    ],
+    "max_image_dimension": 4096,
+    "stage1_skip_retry_resolution_px": 8000,
+    "scan_dpi": 200,
+    "max_retries": 3,
+    "iai_top_red_fallback": true
+  },
+  "output": {
+    "method": "b2b",
+    "b2b_confidence_level": "HIGH",
+    "send_email": true,
+    "auto_send": true,
+    "send_to": "quotes_check@algat.co.il",
+    "send_cc": "",
+    "generate_excel": true,
+    "generate_interface": false,
+    "interface_format": null
+  },
+  "validation": {
+    "type": "internal",
+    "use_sql_server": false,
+    "pn_voting": true,
+    "sanity_checks": true
+  },
+  "processing": {
+    "recursive": true,
+    "archive_full": false,
+    "cleanup_download": true,
+    "mark_as_processed": true,
+    "debug_mode": false
+  },
+  "scheduler": {
+    "enabled": true,
+    "regular_from": "07:00",
+    "regular_to": "22:00",
+    "heavy_from": "22:00",
+    "heavy_to": "06:30",
+    "interval_minutes": 5,
+    "report_folder": "C:\\dev DrawingAI\\reports"
+  },
+  "log_file": "logs/quotes_log.jsonl"
+}

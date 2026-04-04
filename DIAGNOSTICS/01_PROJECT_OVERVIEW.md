@@ -1,13 +1,20 @@
-# DrawingAI Pro — סקירת פרויקט
+# AI GATEWAY KITARON — סקירת פרויקט
 
-> עדכון אחרון: 25/03/2026 — **ניקוי קבצים שלא בשימוש, עדכון ספירות ומבנה**
+> עדכון אחרון: 03/04/2026 — **Multi-Profile Engine (v4.1) — Pipeline Decomposition + Profile-Aware Infrastructure**
 
 ## 📌 תיאור כללי
 
-**DrawingAI Pro** הוא מערכת לניתוח אוטומטי של שרטוטים הנדסיים באמצעות Azure OpenAI Vision API.
-המערכת מזהה סוגי קבצים, מחלצת מידע הנדסי (לקוח, מק"ט, חומר, תהליכים, ציפויים, קשיחים מ-BOM),
-ממזגת תיאורים חכמים ב-Stage 9 (o4-mini), מבצעת חיפוש מחירי צבע וקשיחים מקטלוג,
-ומפיקה דוחות Excel ו-B2B.
+**AI GATEWAY KITARON** (לשעבר DrawingAI Pro) הוא מערכת Multi-Profile לניתוח אוטומטי של מסמכים הנדסיים
+באמצעות Azure OpenAI Vision API.
+המערכת תומכת ב-5 פרופילים עצמאיים:
+- **quotes** — הצעות מחיר (📐) — פעיל מלא
+- **orders** — הזמנות (📦)
+- **invoices** — חשבוניות (🧾)
+- **delivery** — תעודות משלוח (📋)
+- **complaints** — תלונות (📣)
+
+כל פרופיל פועל עם קונפיג עצמאי (`configs/{profile}.json`), מתזמן נפרד,
+tabs צבעוניים ב-UI, ותיקיית state/logs נפרדת (`data/{profile}/`).
 
 ### נקודות כניסה
 
@@ -17,9 +24,9 @@
 | `Run_GUI.bat` | מפעיל את ה-GUI הראשי (Tkinter Legacy) | — |
 | `streamlit_app/app.py` | ★ Streamlit entry point — ממשק Web ראשי | 42 |
 | `customer_extractor_gui.py` | ממשק גרפי (Tkinter Legacy) | 1,303 |
-| `customer_extractor_v3_dual.py` | מנוע הליבה (pipeline) | 2,127 |
+| `customer_extractor_v3_dual.py` | מנוע הליבה (pipeline) | 987 |
 | `main.py` | נקודת כניסה CLI | 50 |
-| `automation_runner.py` | הרצה אוטומטית מחזורית + heavy email | 1,731 |
+| `automation_runner.py` | הרצה אוטומטית מחזורית + heavy + RERUN | 2,038 |
 | `automation_main.py` | Tkinter entry point | 66 |
 
 ---
@@ -27,29 +34,44 @@
 ## 🏗️ ארכיטקטורה — מבנה תקיות
 
 ```
-AI DRAW/
-├── customer_extractor_v3_dual.py    ← מנוע ליבה (pipeline ראשי) — 2,127 שורות
+AI GATEWAY KITARON/
+├── customer_extractor_v3_dual.py    ← מנוע ליבה (pipeline ראשי) — 987 שורות
 ├── customer_extractor_gui.py        ← GUI ראשי (Tkinter Legacy) — 1,303 שורות
-├── automation_runner.py             ← runner אוטומטי + heavy email — 1,731 שורות
+├── automation_runner.py             ← runner אוטומטי + heavy + RERUN — 2,038 שורות
 ├── process_analysis.py              ← סטטיסטיקות תהליכים/חומרים — 403 שורות
 ├── main.py                          ← CLI entry point — 50 שורות
 ├── automation_main.py               ← Tkinter entry point — 66 שורות
 │
-├── streamlit_app/                   ← ★ Streamlit Web UI — 2,679 שורות
+├── configs/                         ← ★ קונפיג פר-פרופיל
+│   ├── quotes.json                  ← הצעות מחיר (פעיל מלא)
+│   ├── orders.json                  ← הזמנות
+│   ├── invoices.json                ← חשבוניות
+│   ├── delivery.json                ← תעודות משלוח
+│   └── complaints.json              ← תלונות
+│
+├── data/                            ← ★ state/logs פר-פרופיל
+│   ├── quotes/                      ← state.json, status_log.txt, automation_log.jsonl
+│   ├── orders/
+│   ├── invoices/
+│   ├── delivery/
+│   └── complaints/
+│
+├── streamlit_app/                   ← ★ Streamlit Web UI — per-profile tabs
 │   ├── app.py                       ← 42 שורות — entry point + page config
-│   ├── brand.py                     ← 492 שורות — לוגו, CSS, brand (Green Coat/Algat)
+│   ├── brand.py                     ← CSS, לוגו, brand, **profile colors & banners**
 │   ├── backend/
-│   │   ├── config_manager.py        ← 88 שורות — R/W automation_config.json
-│   │   ├── email_helpers.py         ← 133 שורות — חיבור תיבות משותפות + folders
-│   │   ├── excel_report_builder.py  ← 539 שורות — Excel report generation (dashboard export)
-│   │   ├── log_reader.py            ← 373 שורות — JSONL log + live log + detection
-│   │   ├── report_exporter.py       ← 37 שורות — report export helper
-│   │   └── runner_bridge.py         ← 306 שורות — thread-safe AutomationRunner wrapper
+│   │   ├── config_manager.py        ← R/W configs/{profile}.json + load_all_profiles()
+│   │   ├── email_helpers.py         ← חיבור תיבות משותפות + folders
+│   │   ├── excel_report_builder.py  ← Excel report generation (dashboard export)
+│   │   ├── log_reader.py            ← JSONL log + live log + detection
+│   │   ├── report_exporter.py       ← report export helper
+│   │   ├── runner_bridge.py         ← thread-safe wrapper (quotes backward compat)
+│   │   └── pipeline_bridge.py       ← ★ PipelineBridge singleton — 5 runners + per-profile scheduler
 │   ├── components/
 │   └── pages/
-│       ├── 1_🚀_Automation.py       ← 715 שורות — פאנל אוטומציה מלא (4 tabs)
-│       ├── 2_📊_Dashboard.py        ← 936 שורות — דשבורד סטטיסטיקה (6 tabs)
-│       └── 3_📧_Email.py            ← 79 שורות — ניהול מייל
+│       ├── 1_🚀_Automation.py       ← פאנל אוטומציה פר-פרופיל (colored tabs + banner)
+│       ├── 2_📊_Dashboard.py        ← דשבורד סטטיסטיקה פר-פרופיל + טאב "סה"כ"
+│       └── 3_📧_Email.py            ← ניהול מייל פר-פרופיל
 │
 ├── src/                             ← מודולים מחולצים — 14,495 שורות
 │   ├── core/                        ← קבועים, הגדרות, exceptions
@@ -94,15 +116,27 @@ AI DRAW/
 │   │       ├── graph_helper.py      ← 528 שורות
 │   │       ├── graph_auth.py        ← 261 שורות
 │   │       └── factory.py           ← 168 שורות
+│   ├── pipeline/                    ← ★ מודולי pipeline מחולצים מ-scan_folder
+│   │   ├── archive_extractor.py     ← 121 שורות — חילוץ ארכיונים
+│   │   ├── drawing_processor.py     ← 202 שורות — עיבוד שרטוטים
+│   │   ├── pl_processor.py          ← 404 שורות — עיבוד Parts List
+│   │   ├── folder_saver.py          ← 290 שורות — שמירת תוצרים + TO_SEND
+│   │   └── results_merger.py        ← 334 שורות — מיזוג תוצאות + דוחות
 │   ├── models/
 │   │   ├── drawing.py               ← 180 שורות
 │   │   └── enums.py                 ← 48 שורות
 │   └── utils/
 │       ├── logger.py                ← 141 שורות
-│       └── prompt_loader.py         ← 39 שורות
+│       └── prompt_loader.py         ← 57 שורות — ★ profile-aware (thread-local context)
 │
-├── prompts/                         ← 15 פרומפטים ל-AI
-├── tests/                           ← 25 קבצי בדיקות
+├── prompts/                         ← 15 פרומפטים ל-AI + תת-תיקיות פר-פרופיל
+│   ├── *.txt                        ← 15 פרומפטים (root fallback)
+│   ├── quotes/                      ← 15 פרומפטים (זהים ל-root)
+│   ├── orders/                      ← ריק (ממתין לתוכן)
+│   ├── invoices/                    ← ריק (ממתין לתוכן)
+│   ├── delivery/                    ← ריק (ממתין לתוכן)
+│   └── complaints/                  ← ריק (ממתין לתוכן)
+├── tests/                           ← 25 קבצי בדיקות (430 tests)
 ├── BOM/                             ← COLORS.xlsx, INSERTS.xlsx
 ├── deploy/                          ← install_server.ps1, register_service.ps1, UPDATE.bat
 ├── .streamlit/                      ← config.toml (theme, server, client)
@@ -129,22 +163,34 @@ AI DRAW/
 ┌──────────────────────────────────┐
 │  Browser (localhost:8501)         │
 ├──────────────────┬───────────────┤
-│  Pages (3)       │  Brand/CSS    │
-│  🚀 Automation   │  brand.py     │
-│  📊 Dashboard    │  (RTL, dark,  │
-│  📧 Email        │  orange/green)│
+│  Pages (per-profile) │  Brand/CSS    │
+│  🚀 Automation       │  brand.py     │
+│  📊 Dashboard        │  (RTL, dark,  │
+│  📧 Email            │  profile      │
+│  📝 Review           │  colors+      │
+│                      │  banners)     │
 ├──────────────────┴───────────────┤
 │  Backend Layer                    │
-│  config_manager │ runner_bridge  │
-│  log_reader     │ email_helpers  │
+│  config_manager │ pipeline_bridge │
+│  log_reader     │ runner_bridge   │
+│  email_helpers  │                 │
 ├──────────────────────────────────┤
-│  Core Engine                      │
-│  automation_runner.py             │
-│  customer_extractor_v3_dual.py    │
+│  Core Engine (per-profile runner)  │
+│  automation_runner.py              │
+│  customer_extractor_v3_dual.py     │
 └──────────────────────────────────┘
 ```
 
-### 🚀 Automation Page (715 שורות)
+### Profile Colors
+| Profile | צבע | Icon | Accent |
+|---------|------|------|--------|
+| quotes | כחול | 📐 | #3b82f6 |
+| orders | כתום | 📦 | #f59e0b |
+| invoices | ירוק | 🧾 | #10b981 |
+| delivery | סגול | 📋 | #8b5cf6 |
+| complaints | אדום | 📣 | #ef4444 |
+
+### 🚀 Automation Page (פר-פרופיל)
 - **Header**: auto-refresh `@st.fragment(run_every=5)` — סטטוס רגיל + כבדים + עלות יומית
 - **7 כפתורים**: שמור, בדוק, Run Once, Run Heavy, התחל, עצור, Reset (confirmation)
 - **4 tabs**: Email+Folders, Stages+Models, Run Settings, Live Log
@@ -237,3 +283,6 @@ AI DRAW/
 | 09/03/2026 | Heavy Email + Process Analysis + Graph categories |
 | 10-12/03/2026 | ★ Streamlit Web UI (3 pages, backend, brand, auto-refresh) |
 | 12/03/2026 | 10 KPI + deltas, weights editor, human verification, tooltips, reset confirmation, progress, cost header, toolbarMode=minimal, GPT-4o fallback |
+| 03/04/2026 | **v4.0** Multi-Profile Engine: 5 פרופילים, configs/, data/, PipelineBridge, colored tabs |
+| 03/04/2026 | **v4.1** Pipeline Decomposition: scan_folder 1,816→650 שורות, 5 pipeline modules מחולצים |
+| 03/04/2026 | **v4.1** Profile-Aware Infrastructure: prompt_loader thread-local, scan_folder profile_config, DI routing, GUI profile selector, Dashboard profile separation |

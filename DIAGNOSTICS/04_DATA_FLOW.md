@@ -1,6 +1,6 @@
-# DrawingAI Pro — Data Flow
+# AI GATEWAY KITARON — Data Flow
 
-> עדכון אחרון: 25/03/2026 — **כולל Streamlit data flows**
+> עדכון אחרון: 03/04/2026 — **Multi-Profile Engine + Pipeline Decomposition + Profile-Aware Routing**
 
 ## 📊 זרימת נתונים כללית
 
@@ -8,58 +8,86 @@
   Email Inbox (Graph API / EWS)
        │
        ▼
-  automation_runner.py ──→ scan_folder()
-       │                       │
-       │  ┌────────────────────┘
-       │  │
-       ▼  ▼
-  customer_extractor_v3_dual.py
+  automation_runner.py
+       │  _normalize_profile_config() → flat config with ai_engine_type, prompts_folder
+       │  _run_once_internal_locked() → route by ai_engine_type
+       │     ├─ "vision" → _scan_folder_compat(profile_config=config)
+       │     └─ "document_intelligence" → skip (not yet implemented)
        │
+       ▼
+  _scan_folder_compat() → scan_folder(profile_config=config)
+       │
+       ▼
+  customer_extractor_v3_dual.py :: scan_folder()
+       │  set_prompts_context(profile_config.prompts_folder) ← thread-local
+       │
+       ├─→ archive_extractor.extract_archives_in_folders()
        ├─→ classify_file_type() ──→ DRAWING / PO / QUOTE / PL / ...
        │
-       ├─→ extract_drawing_data() ──→ Pipeline (Stages 0-4)
-       │        │
-       │        ├─→ Stage 0: Layout
-       │        ├─→ Stage 0.5: Rotation
-       │        ├─→ Stage 1: Basic Info (P.N., customer)
-       │        ├─→ Stage 2: Processes (material, coating, BOM)
-       │        ├─→ Stage 3: Notes
-       │        ├─→ Stage 4: Area
-       │        ├─→ vote_best_pn() — 3-way voting
-       │        ├─→ run_pn_sanity_checks() — checks A-D
-       │        └─→ calculate_confidence() — full/high/medium/low/none
+       ├─→ drawing_processor.process_drawings()
+       │        └─→ extract_drawing_data() ──→ Pipeline (Stages 0-4)
+       │              ├─→ Stage 0: Layout (load_prompt uses prompts_folder context)
+       │              ├─→ Stage 0.5: Rotation
+       │              ├─→ Stage 1: Basic Info (P.N., customer)
+       │              ├─→ Stage 2: Processes (material, coating, BOM)
+       │              ├─→ Stage 3: Notes
+       │              ├─→ Stage 4: Area
+       │              ├─→ vote_best_pn() — 3-way voting
+       │              ├─→ run_pn_sanity_checks() — checks A-D
+       │              └─→ calculate_confidence() — full/high/medium/low/none
        │
+       ├─→ pl_processor.{update,extract,propagate}_pl()
        ├─→ match_quantities_to_drawings()
        ├─→ override_pn_from_email()
        ├─→ merge_descriptions() — Stage 9 (o4-mini)
        │        └─→ lookup_color_prices() — BOM/COLORS.xlsx
        ├─→ validate_inserts_hardware()
        ├─→ enrich_inserts_with_prices() — BOM/INSERTS.xlsx
-       ├─→ rename_files_by_classification()
        │
-       ├─→ _save_results_to_excel() ──→ Excel report
-       ├─→ _save_text_summary() ──→ B2B text files
-       └─→ send_email() ──→ Outlook
+       ├─→ folder_saver.save_folder_output()
+       │        ├─→ _save_results_to_excel() ──→ Excel report
+       │        ├─→ _save_text_summary() ──→ B2B text files
+       │        └─→ _copy_folder_to_tosend() ──→ TO_SEND
+       │
+       └─→ results_merger.{merge,copy,print}_*()
               │
               ▼
-       automation_log.jsonl ──→ JSONL entry per email
+       set_prompts_context(None)  ← reset thread context
+       │
+       ▼
+  automation_runner.py  → send_email() → log entry → mark processed
 ```
 
 ---
 
-## 📧 זרימת מייל (automation_runner.py)
+## 📧 זרימת מייל (automation_runner.py) — per-profile
 
 ```
+  PipelineBridge (singleton) ── 5× AutomationRunner threads
+       │
+       ├── quotes runner  → configs/quotes.json  → data/quotes/
+       ├── orders runner  → configs/orders.json  → data/orders/
+       ├── invoices runner→ configs/invoices.json→ data/invoices/
+       ├── delivery runner→ configs/delivery.json→ data/delivery/
+       └── complaints     → configs/complaints.json→ data/complaints/
+
+  Per profile (each runner thread):
   1. list_messages(received_after, max_messages)
   2. Filter: skip_senders, skip_categories, processed IDs
   3. _count_drawing_files(message_dir)
-       ├─→ ≤ max_files_per_email → process normally
-       └─→ > max_files_per_email → mark "AI HEAVY", skip
+       ├─→ ≤ max_files → process normally
+       └─→ > max_files → mark "AI HEAVY", skip
   4. scan_folder(message_dir, config)
-  5. Log entry → automation_log.jsonl
-  6. Send B2B email → recipient
-  7. Mark processed → automation_state.json
-  8. Set category in Outlook → ensure_category + replace_category
+  5. _copy_folder_to_tosend() ─→ TO_SEND folder
+       ├─ Rename files (B2BDraw_, B2BModel_, B2BImg_, B2BDoc_)
+       ├─ Create ALL_METADATA.json + metadata.json
+       ├─ B2B confidence filter (fallback if variant empty)
+       └─ shutil.copytree → {tosend_folder}/{name}_TO_SEND
+  6. Copy REPORT Excel → archive/{timestamp}/
+  7. Send B2B email → recipient
+  8. Log entry → data/{profile}/automation_log.jsonl
+  9. Mark processed → data/{profile}/state.json
+  10. Set category in Outlook
 ```
 
 ### Heavy Email Flow
@@ -68,6 +96,18 @@
        → only processes messages with "AI HEAVY" category
        → no max_files_per_email limit
        → removes "AI HEAVY" category after processing
+```
+
+### RERUN Flow
+```
+  1. Detect RERUN (sender == mailbox = our own reply)
+  2. Download reply with ALL_B2B attachment
+  3. Remove old B2B-0_*, rename ALL_B2B → B2B-0_
+  4. Swap ALL_METADATA → metadata.json
+  5. Send files to recipient
+  6. Copy to TO_SEND folder (shutil.copytree)
+  7. Cleanup rerun_* folder from FROM
+  8. Log entry with type: "RERUN"
 ```
 
 ---

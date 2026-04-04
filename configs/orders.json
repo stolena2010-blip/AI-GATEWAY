@@ -1,0 +1,81 @@
+{
+  "profile_name": "orders",
+  "display_name": "הזמנות לקוח",
+  "description": "Customer purchase orders",
+  "email": {
+    "shared_mailbox": "",
+    "shared_mailboxes": [],
+    "inbox_folder": "Inbox",
+    "rerun_folder_name": "",
+    "rerun_mailbox": "",
+    "skip_senders": [],
+    "skip_categories": ["AI ORD DONE", "AI ORD ERROR"],
+    "scan_from_date": "",
+    "category_processed": "AI ORD DONE",
+    "category_processed_color": "preset20",
+    "category_error": "AI ORD ERROR",
+    "category_error_color": "preset1",
+    "category_heavy": "",
+    "category_heavy_color": "",
+    "max_messages_per_cycle": 10,
+    "max_files_per_email": 20,
+    "max_file_size_mb": 100,
+    "scan_interval_minutes": 5
+  },
+  "folders": {
+    "download": "./data/orders/downloads",
+    "output": "./data/orders/output",
+    "archive": "./data/orders/archive",
+    "to_send": "./data/orders/TO_SEND"
+  },
+  "ai_engine": {
+    "type": "vision",
+    "classify_model": "gpt-4o-vision",
+    "extract_model": "gpt-5.4",
+    "stages": [0, 1, 2],
+    "stage_models": {},
+    "prompts_folder": "prompts/orders",
+    "enable_ocr": true,
+    "enable_image_retry": false,
+    "customer_variants": ["generic"],
+    "max_image_dimension": 4096,
+    "stage1_skip_retry_resolution_px": 8000,
+    "scan_dpi": 200,
+    "max_retries": 3,
+    "iai_top_red_fallback": false
+  },
+  "output": {
+    "method": "b2b",
+    "b2b_confidence_level": "MEDIUM",
+    "send_email": true,
+    "auto_send": true,
+    "send_to": "",
+    "send_cc": "",
+    "generate_excel": true,
+    "generate_interface": false,
+    "interface_format": null
+  },
+  "validation": {
+    "type": "internal",
+    "use_sql_server": false,
+    "pn_voting": true,
+    "sanity_checks": true
+  },
+  "processing": {
+    "recursive": true,
+    "archive_full": false,
+    "cleanup_download": true,
+    "mark_as_processed": true,
+    "debug_mode": false
+  },
+  "scheduler": {
+    "enabled": false,
+    "regular_from": "07:00",
+    "regular_to": "19:45",
+    "heavy_from": "",
+    "heavy_to": "",
+    "interval_minutes": 5,
+    "report_folder": ""
+  },
+  "log_file": "logs/orders_log.jsonl"
+}
