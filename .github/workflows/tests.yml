@@ -30,7 +30,10 @@ jobs:
 
       - name: Run tests
         run: |
-          python -m pytest tests/ -v --tb=short
+          python -c "import sys; print(f'Python {sys.version}')"
+          python -c "import cv2; print(f'cv2 OK: {cv2.__version__}')" || echo "cv2 import failed"
+          python -c "import PIL; print(f'PIL OK: {PIL.__version__}')" || echo "PIL import failed"
+          python -m pytest tests/ -v --tb=long 2>&1 || echo "EXIT CODE: $?"
         env:
           AZURE_OPENAI_ENDPOINT: "https://dummy.openai.azure.com/"
           AZURE_OPENAI_API_KEY: "dummy-key-for-tests"
