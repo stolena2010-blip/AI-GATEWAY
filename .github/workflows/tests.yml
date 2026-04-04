@@ -26,7 +26,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          # Install without GUI packages (customtkinter needs tkinter/display)
+          pip install $(grep -v -E 'customtkinter|streamlit' requirements.txt | grep -v '^#' | grep -v '^$')
           # Use headless OpenCV for CI (no display server needed)
           pip install opencv-python-headless
 
