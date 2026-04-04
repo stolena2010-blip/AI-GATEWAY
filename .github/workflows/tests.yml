@@ -30,29 +30,9 @@ jobs:
 
       - name: Run tests
         run: |
-          set +e
-          python -m pytest tests/ -v --tb=line 2>&1 | tee test_output.txt
-          TEST_EXIT=${PIPESTATUS[0]}
-          if [ $TEST_EXIT -ne 0 ]; then
-            echo "::error::PYTEST FAILURES:"
-            grep -E "^(FAILED|ERROR|tests/)" test_output.txt | grep -E "FAILED|ERROR" | head -30 | while read line; do
-              echo "::error::$line"
-            done
-            echo "::error::SUMMARY:"
-            tail -5 test_output.txt | while read line; do
-              echo "::error::$line"
-            done
-          fi
-          exit $TEST_EXIT
+          python -m pytest tests/ -v --tb=short
         env:
           AZURE_OPENAI_ENDPOINT: "https://dummy.openai.azure.com/"
           AZURE_OPENAI_API_KEY: "dummy-key-for-tests"
           AZURE_OPENAI_DEPLOYMENT: "gpt-4o-vision"
           AZURE_OPENAI_API_VERSION: "2024-12-01-preview"
-
-      - name: Upload test output
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-output
-          path: test_output.txt

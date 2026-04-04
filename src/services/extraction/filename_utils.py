@@ -543,7 +543,7 @@ def extract_part_number_from_filename(file_path: str) -> Optional[str]:
 
     Returns None when no plausible part-number can be identified.
     """
-    stem = Path(file_path).stem  # without extension
+    stem = Path(file_path.replace('\\', '/')).stem  # without extension
 
     if not stem or stem.startswith('.'):
         return None
