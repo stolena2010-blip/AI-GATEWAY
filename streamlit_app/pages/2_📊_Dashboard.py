@@ -45,14 +45,59 @@ _profiles = load_all_profiles()
 filter_cols = st.columns([2, 1, 1, 1])
 with filter_cols[0]:
     period = st.radio("תקופה:", ["היום", "שבוע", "חודש", "הכל", "טווח..."], horizontal=True, key="pf")
+
+# Reset offset when period changes
+if st.session_state.get("_last_period") != period:
+    st.session_state.day_offset = 0
+    st.session_state._last_period = period
+
+# ── Day navigation arrows (all non-"הכל" periods) ──
+if period != "הכל":
+    _nav_cols = st.columns([0.5, 6, 0.5])
+    with _nav_cols[0]:
+        _prev = st.button("◀", key="nav_prev", help="יום/תקופה קודמת")
+    with _nav_cols[2]:
+        _next = st.button("▶", key="nav_next", help="יום/תקופה הבאה")
+
+    # Initialise session offset
+    if "day_offset" not in st.session_state:
+        st.session_state.day_offset = 0
+    if _prev:
+        st.session_state.day_offset -= 1
+        st.rerun()
+    if _next:
+        st.session_state.day_offset += 1
+        st.rerun()
+    _day_delta = timedelta(days=st.session_state.day_offset)
+
+    # Show shifted date label in the center
+    _ref = datetime.now() + _day_delta
+    if period == "היום":
+        _label = _ref.strftime("%d/%m/%Y")
+    elif period == "שבוע":
+        _label = f'{(_ref - timedelta(days=7)).strftime("%d/%m")} → {_ref.strftime("%d/%m")}'
+    elif period == "חודש":
+        _label = f'{(_ref - timedelta(days=30)).strftime("%d/%m")} → {_ref.strftime("%d/%m")}'
+    else:
+        _label = ""
+    if _label and st.session_state.day_offset != 0:
+        with _nav_cols[1]:
+            st.markdown(f"<div style='text-align:center;padding-top:6px;color:#ffa500;'>{_label}</div>",
+                        unsafe_allow_html=True)
+else:
+    _day_delta = timedelta()
+    st.session_state.day_offset = 0
+
 with filter_cols[1]:
     date_from = ""
     if period == "טווח...":
-        date_from = st.date_input("מתאריך", value=datetime.now() - timedelta(days=30), key="df").strftime("%Y-%m-%d")
+        _default_from = (datetime.now() - timedelta(days=30) + _day_delta).date()
+        date_from = st.date_input("מתאריך", value=_default_from, key="df").strftime("%Y-%m-%d")
 with filter_cols[2]:
     date_to = ""
     if period == "טווח...":
-        date_to = st.date_input("עד תאריך", value=datetime.now(), key="dt").strftime("%Y-%m-%d")
+        _default_to = (datetime.now() + _day_delta).date()
+        date_to = st.date_input("עד תאריך", value=_default_to, key="dt").strftime("%Y-%m-%d")
 
 period_key = period if period != "טווח..." else "טווח"
 weights = get_accuracy_weights()
@@ -297,7 +342,8 @@ def _render_dashboard(profile_name: str, profile_display: str, tab_key: str):
     else:
         all_entries = load_all_profile_log_entries(profile_names=[profile_name])
 
-    filtered = filter_by_period(all_entries, period_key, date_from, date_to)
+    filtered = filter_by_period(all_entries, period_key, date_from, date_to,
+                                 day_offset=st.session_state.get("day_offset", 0))
     email_entries = [e for e in filtered if e.get("accuracy_data") or e.get("files_processed")]
 
     # ── Summary Cards ──

@@ -862,11 +862,46 @@ def extract_pl_data(pl_pdf_path: str, client: AzureOpenAI, file_classifications:
         try:
             with pdfplumber.open(pl_pdf_path) as pdf:
                 for page in pdf.pages:
-                    pl_text += page.extract_text() + "\n"
+                    pl_text += (page.extract_text() or "") + "\n"
         except Exception as e:
             logger.error(f"ERROR reading PDF {pl_pdf_path}: {str(e)}")
             return []
         
+        # If pdfplumber got no text (scanned/image PL), use Vision API OCR
+        _pl_is_image = False
+        if not pl_text.strip():
+            try:
+                import fitz  # PyMuPDF
+                doc = fitz.open(pl_pdf_path)
+                page = doc[0]
+                pix = page.get_pixmap(dpi=200)
+                img_bytes = pix.tobytes("png")
+                doc.close()
+
+                import base64
+                img_b64 = base64.b64encode(img_bytes).decode()
+
+                stage6_model, _, stage6_temperature = _resolve_stage_call_config(STAGE_PL, 2000, 0.2)
+                ocr_response = _chat_create_with_token_compat(
+                    client,
+                    model=stage6_model,
+                    messages=[{
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": "Extract ALL text from this Parts List image. Return the raw text only, preserving table structure with tabs/spaces."},
+                            {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{img_b64}", "detail": "high"}},
+                        ],
+                    }],
+                    temperature=0.1,
+                    max_tokens=4000,
+                )
+                pl_text = ocr_response.choices[0].message.content.strip()
+                _pl_is_image = True
+                logger.info(f"PL Vision OCR fallback: {len(pl_text)} chars from {Path(pl_pdf_path).name}")
+            except Exception as ocr_err:
+                logger.warning(f"WARNING: No text extracted from PL (pdfplumber + OCR failed): {pl_pdf_path} — {ocr_err}")
+                return []
+
         if not pl_text.strip():
             logger.warning(f"WARNING: No text extracted from PL: {pl_pdf_path}")
             return []

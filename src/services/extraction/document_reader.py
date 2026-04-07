@@ -792,175 +792,190 @@ def _extract_item_details_from_documents(folder_path: Path, file_classifications
         doc_type = fc.get('file_type')
         
         try:
+            # Collect page images — PDFs may have items across multiple pages
+            page_images: list[bytes] = []
             if file_path.suffix.lower() == '.pdf':
                 with pdfplumber.open(file_path) as pdf:
                     if len(pdf.pages) == 0:
                         continue
-                    # Extract image from first page with ULTRA high resolution
-                    page = pdf.pages[0]
-                    img = page.to_image(resolution=200)  # מאוזן — מספיק לקריאת טבלאות
-                    img_buffer = io.BytesIO()
-                    img.original.save(img_buffer, format='PNG')
-                    img_bytes = img_buffer.getvalue()
+                    for page_idx, page in enumerate(pdf.pages[:5]):
+                        img = page.to_image(resolution=200)
+                        img_buffer = io.BytesIO()
+                        img.original.save(img_buffer, format='PNG')
+                        page_images.append(img_buffer.getvalue())
+                    if len(pdf.pages) > 1:
+                        logger.info(f"Multi-page order/quote PDF: {len(pdf.pages)} pages (processing {len(page_images)})")
             else:
                 # Image file
                 with open(file_path, 'rb') as f:
-                    img_bytes = f.read()
+                    page_images.append(f.read())
             
-            #  חתוך את אזור הטבלה הרלוונטי
-            logger.info(f"Enhanced processing: cropping table area for {file_path.name}...")
-            try:
-                nparr = np.frombuffer(img_bytes, np.uint8)
-                img_full = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-                
-                if img_full is not None:
-                    full_height, full_width = img_full.shape[:2]
-                    
-                    # חתוך אזור גדול שמכיל את כל הטבלה (90% רוחב x 85% גובה)
-                    # מתחיל מ-10% מלמעלה כדי לכלול כותרות
-                    # לוקח עד כמעט הסוף כדי לכלול את השורה התחתונה עם הכמויות
-                    start_y = int(full_height * 0.10)  # התחל 10% מלמעלה
-                    start_x = int(full_width * 0.05)   # התחל 5% משמאל
-                    table_height = int(full_height * 0.85)  # קח 85% מהגובה
-                    table_width = int(full_width * 0.90)    # קח 90% מהרוחב
-                    
-                    table_region = img_full[start_y:start_y+table_height, start_x:start_x+table_width]
-                    
-                    # הגדל פי 2 — מספיק לקריאת טבלאות
-                    img_enlarged = cv2.resize(table_region, None, fx=2.0, fy=2.0, interpolation=cv2.INTER_CUBIC)
-                    
-                    #  שיפורי עיבוד תמונה מתקדמים
-                    # 1. המרה לגווני אפור
-                    gray = cv2.cvtColor(img_enlarged, cv2.COLOR_BGR2GRAY)
-                    
-                    # 2. Denoising חזק יותר - הסרת רעש
-                    denoised = cv2.fastNlMeansDenoising(gray, None, h=12, templateWindowSize=7, searchWindowSize=21)
-                    
-                    # 3. Double sharpening - חידוד כפול לבהירות מקסימלית
-                    kernel_sharp = np.array([[-1, -1, -1],
-                                            [-1,  9, -1],
-                                            [-1, -1, -1]])
-                    sharpened = cv2.filter2D(denoised, -1, kernel_sharp)
-                    sharpened2 = cv2.filter2D(sharpened, -1, kernel_sharp)  # חידוד נוסף
-                    
-                    # 4. Contrast enhancement מוגבר - שיפור ניגודיות
-                    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8,8))  # clipLimit גבוה יותר
-                    enhanced = clahe.apply(sharpened2)
-                    
-                    # 5. Morphological operations - ניקוי רעשים קטנים
-                    kernel_morph = np.ones((2, 2), np.uint8)
-                    morphed = cv2.morphologyEx(enhanced, cv2.MORPH_CLOSE, kernel_morph)
-                    
-                    # 6. Adaptive Thresholding משופר - סף אדפטיבי
-                    binary = cv2.adaptiveThreshold(morphed, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
-                                                   cv2.THRESH_BINARY, 13, 3)  # פרמטרים משופרים
-                    
-                    # המר חזרה ל-BGR
-                    final_image = cv2.cvtColor(binary, cv2.COLOR_GRAY2BGR)
-                    
-                    # Encode, 5: True
-                    _, buffer_final = cv2.imencode('.png', final_image)
-                    img_bytes = buffer_final.tobytes()
-                    
-                    logger.info(f"Enhanced TABLE: 2x zoom + processing ({img_enlarged.shape[1]}x{img_enlarged.shape[0]}px)")
-                else:
-                    logger.debug(f"Could not decode image, using original")
-                    
-            except Exception as crop_err:
-                logger.debug(f"Enhancement failed, using original: {crop_err}")
-            
-            if not img_bytes:
-                continue
-            
-            # Encode to base64
-            image_b64 = base64.b64encode(img_bytes).decode('utf-8')
-            
-            # בקש מ-GPT לחלץ פרטי פריטים (מסמכי הזמנה/הצעת מחיר)
-            # prompt מוגדר למעלה כדי להבטיח שהוא תמיד זמין
-            messages = [
-                {"role": "system", "content": prompt},
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "text", "text": "חלץ את פרטי הפריטים, הכמויות והתיאורים מהמסמך:"},
-                        {"type": "image_url", "image_url": {
-                            "url": f"data:image/png;base64,{image_b64}",
-                            "detail": "high"
-                        }}
-                    ]
-                }
-            ]
+            # Fallback: try deterministic table qty extraction from the PDF (once per document)
+            table_qty_map = {}
+            if file_path.suffix.lower() == '.pdf':
+                table_qty_map = _extract_quantities_from_order_pdf(file_path)
 
-            # Call Vision API with automatic content filter retry
-            logger.info(f"Sending PO/Quote to Vision API ({len(img_bytes)/1024:.0f}KB image)...")
-            response = _call_vision_api_with_retry(client, messages, max_tokens=1500, temperature=0, stage_num=STAGE_ORDER_ITEM_DETAILS)
-            if response is None:
-                logger.warning(f"Vision API failed for {file_path.name}")
-                continue
-            logger.info(f"Vision API response received for {file_path.name}")
-            
-            content = response.choices[0].message.content
-            
-            # Parse JSON
-            try:
-                # Try to extract JSON block if response contains extra text
-                json_match = re.search(r'\{[\s\S]*\}', content)
-                if json_match:
-                    data = json.loads(json_match.group())
-                else:
-                    data = json.loads(content)
+            # Process each page image
+            for page_num, img_bytes in enumerate(page_images, 1):
+                #  חתוך את אזור הטבלה הרלוונטי
+                if page_num == 1:
+                    logger.info(f"Enhanced processing: cropping table area for {file_path.name}...")
+                try:
+                    nparr = np.frombuffer(img_bytes, np.uint8)
+                    img_full = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+                    
+                    if img_full is not None:
+                        full_height, full_width = img_full.shape[:2]
+                        
+                        # חתוך אזור גדול שמכיל את כל הטבלה (90% רוחב x 85% גובה)
+                        # מתחיל מ-10% מלמעלה כדי לכלול כותרות
+                        # לוקח עד כמעט הסוף כדי לכלול את השורה התחתונה עם הכמויות
+                        start_y = int(full_height * 0.10)  # התחל 10% מלמעלה
+                        start_x = int(full_width * 0.05)   # התחל 5% משמאל
+                        table_height = int(full_height * 0.85)  # קח 85% מהגובה
+                        table_width = int(full_width * 0.90)    # קח 90% מהרוחב
+                        
+                        table_region = img_full[start_y:start_y+table_height, start_x:start_x+table_width]
+                        
+                        # הגדל פי 2 — מספיק לקריאת טבלאות
+                        img_enlarged = cv2.resize(table_region, None, fx=2.0, fy=2.0, interpolation=cv2.INTER_CUBIC)
+                        
+                        #  שיפורי עיבוד תמונה מתקדמים
+                        # 1. המרה לגווני אפור
+                        gray = cv2.cvtColor(img_enlarged, cv2.COLOR_BGR2GRAY)
+                        
+                        # 2. Denoising חזק יותר - הסרת רעש
+                        denoised = cv2.fastNlMeansDenoising(gray, None, h=12, templateWindowSize=7, searchWindowSize=21)
+                        
+                        # 3. Double sharpening - חידוד כפול לבהירות מקסימלית
+                        kernel_sharp = np.array([[-1, -1, -1],
+                                                [-1,  9, -1],
+                                                [-1, -1, -1]])
+                        sharpened = cv2.filter2D(denoised, -1, kernel_sharp)
+                        sharpened2 = cv2.filter2D(sharpened, -1, kernel_sharp)  # חידוד נוסף
+                        
+                        # 4. Contrast enhancement מוגבר - שיפור ניגודיות
+                        clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8,8))  # clipLimit גבוה יותר
+                        enhanced = clahe.apply(sharpened2)
+                        
+                        # 5. Morphological operations - ניקוי רעשים קטנים
+                        kernel_morph = np.ones((2, 2), np.uint8)
+                        morphed = cv2.morphologyEx(enhanced, cv2.MORPH_CLOSE, kernel_morph)
+                        
+                        # 6. Adaptive Thresholding משופר - סף אדפטיבי
+                        binary = cv2.adaptiveThreshold(morphed, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
+                                                       cv2.THRESH_BINARY, 13, 3)  # פרמטרים משופרים
+                        
+                        # המר חזרה ל-BGR
+                        final_image = cv2.cvtColor(binary, cv2.COLOR_GRAY2BGR)
+                        
+                        # Encode, 5: True
+                        _, buffer_final = cv2.imencode('.png', final_image)
+                        img_bytes = buffer_final.tobytes()
+                        
+                        logger.info(f"Enhanced TABLE: 2x zoom + processing ({img_enlarged.shape[1]}x{img_enlarged.shape[0]}px){f' [page {page_num}]' if len(page_images) > 1 else ''}")
+                    else:
+                        logger.debug(f"Could not decode image, using original")
+                        
+                except Exception as crop_err:
+                    logger.debug(f"Enhancement failed, using original: {crop_err}")
                 
-                items = data.get('items', [])
+                if not img_bytes:
+                    continue
+                
+                # Encode to base64
+                image_b64 = base64.b64encode(img_bytes).decode('utf-8')
+                
+                # בקש מ-GPT לחלץ פרטי פריטים (מסמכי הזמנה/הצעת מחיר)
+                # prompt מוגדר למעלה כדי להבטיח שהוא תמיד זמין
+                messages = [
+                    {"role": "system", "content": prompt},
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": "חלץ את פרטי הפריטים, הכמויות והתיאורים מהמסמך:"},
+                            {"type": "image_url", "image_url": {
+                                "url": f"data:image/png;base64,{image_b64}",
+                                "detail": "high"
+                            }}
+                        ]
+                    }
+                ]
 
-                # Fallback: try deterministic table qty extraction from the PDF
-                table_qty_map = {}
-                if file_path.suffix.lower() == '.pdf':
-                    table_qty_map = _extract_quantities_from_order_pdf(file_path)
+                # Call Vision API with automatic content filter retry
+                page_label = f" (page {page_num})" if len(page_images) > 1 else ""
+                logger.info(f"Sending PO/Quote to Vision API ({len(img_bytes)/1024:.0f}KB image){page_label}...")
+                response = _call_vision_api_with_retry(client, messages, max_tokens=1500, temperature=0, stage_num=STAGE_ORDER_ITEM_DETAILS)
+                if response is None:
+                    logger.warning(f"Vision API failed for {file_path.name}{page_label}")
+                    continue
+                logger.info(f"Vision API response received for {file_path.name}{page_label}")
                 
-                for item_idx, item in enumerate(items, 1):
-                    item_num = str(item.get('item_number', '')).strip()
-                    quantities = item.get('quantities', [])
-                    work_desc = (item.get('work_description') or '').strip()
+                content = response.choices[0].message.content
+                
+                # Parse JSON
+                try:
+                    # Try to extract JSON block if response contains extra text
+                    json_match = re.search(r'\{[\s\S]*\}', content)
+                    if json_match:
+                        data = json.loads(json_match.group())
+                    else:
+                        data = json.loads(content)
                     
-                    if not item_num:
-                        continue
+                    items = data.get('items', [])
                     
-                    # נרמל את מספר הפריט (הסר [D] וכו')
-                    item_num_normalized = _normalize_item_number(item_num)
-                    
-                    # Override quantities from table fallback if available
-                    fallback_qty = table_qty_map.get(item_num_normalized)
-                    if fallback_qty and (not quantities or quantities[0] in ['1', '2', '3', '4', '5']):
-                        quantities = [fallback_qty]
+                    for item_idx, item in enumerate(items, 1):
+                        item_num = str(item.get('item_number', '')).strip()
+                        drawing_num = str(item.get('drawing_number') or '').strip()
+                        quantities = item.get('quantities', [])
+                        work_desc = (item.get('work_description') or '').strip()
+                        
+                        if not item_num:
+                            continue
+                        
+                        # נרמל את מספר הפריט (הסר [D] וכו')
+                        item_num_normalized = _normalize_item_number(item_num)
+                        
+                        # Override quantities from table fallback if available
+                        fallback_qty = table_qty_map.get(item_num_normalized)
+                        if fallback_qty and (not quantities or quantities[0] in ['1', '2', '3', '4', '5']):
+                            quantities = [fallback_qty]
 
-                    # אחד מידע לפי מספר פריט מנורמל
-                    if item_num_normalized not in item_details:
-                        item_details[item_num_normalized] = {
-                            'quantities': [],
-                            'work_description': '',
-                            'original_item_number': item_num
-                        }
+                        # אחד מידע לפי מספר פריט מנורמל
+                        if item_num_normalized not in item_details:
+                            item_details[item_num_normalized] = {
+                                'quantities': [],
+                                'work_description': '',
+                                'original_item_number': item_num
+                            }
+                        
+                        # הוסף כמויות (ללא כפילויות)
+                        for qty in quantities:
+                            qty_str = str(qty).strip()
+                            if qty_str and qty_str not in item_details[item_num_normalized]['quantities']:
+                                item_details[item_num_normalized]['quantities'].append(qty_str)
+                        
+                        # עדכן תיאור (קח את המפורט ביותר)
+                        if work_desc:
+                            if not item_details[item_num_normalized]['work_description']:
+                                item_details[item_num_normalized]['work_description'] = work_desc
+                            elif len(work_desc) > len(item_details[item_num_normalized]['work_description']):
+                                item_details[item_num_normalized]['work_description'] = work_desc
+                        
+                        # אם יש מספר שרטוט נפרד, הוסף גם אותו כמפתח חלופי
+                        if drawing_num and drawing_num != 'null' and drawing_num != 'nan':
+                            drawing_num_normalized = _normalize_item_number(drawing_num)
+                            if drawing_num_normalized != item_num_normalized and drawing_num_normalized not in item_details:
+                                item_details[drawing_num_normalized] = item_details[item_num_normalized]
+                                logger.info(f"Drawing number alias: '{drawing_num_normalized}' → '{item_num_normalized}'")
                     
-                    # הוסף כמויות (ללא כפילויות)
-                    for qty in quantities:
-                        qty_str = str(qty).strip()
-                        if qty_str and qty_str not in item_details[item_num_normalized]['quantities']:
-                            item_details[item_num_normalized]['quantities'].append(qty_str)
+                    logger.info(f"Extracted {len(items)} items from document{page_label}")
                     
-                    # עדכן תיאור (קח את המפורט ביותר)
-                    if work_desc:
-                        if not item_details[item_num_normalized]['work_description']:
-                            item_details[item_num_normalized]['work_description'] = work_desc
-                        elif len(work_desc) > len(item_details[item_num_normalized]['work_description']):
-                            item_details[item_num_normalized]['work_description'] = work_desc
-                
-                logger.info(f"Extracted {len(items)} items from document")
-                
-            except json.JSONDecodeError as e:
-                logger.warning(f"Failed to parse JSON: {e}")
-                logger.debug(f"Response length: {len(content)} chars")
-                logger.debug(f"First 500 chars: {content[:500]}")
-                continue
+                except json.JSONDecodeError as e:
+                    logger.warning(f"Failed to parse JSON{page_label}: {e}")
+                    logger.debug(f"Response length: {len(content)} chars")
+                    logger.debug(f"First 500 chars: {content[:500]}")
+                    continue
                 
         except Exception as e:
             logger.warning(f"Failed to process {file_path.name}: {e}")

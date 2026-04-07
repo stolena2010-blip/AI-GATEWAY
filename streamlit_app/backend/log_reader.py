@@ -74,23 +74,27 @@ def load_log_entries(max_entries: int = 10000, profile_name: str = "quotes") -> 
 
 
 def filter_by_period(entries: List[Dict[str, Any]], period: str,
-                     date_from: str = "", date_to: str = "") -> List[Dict[str, Any]]:
+                     date_from: str = "", date_to: str = "",
+                     day_offset: int = 0) -> List[Dict[str, Any]]:
     """Filter entries by period: today, week, month, all, or custom range."""
     if period == "הכל" and not date_from and not date_to:
         return entries
     if not entries:
         return entries
 
-    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    now = datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(days=day_offset)
     cutoff_start = None
     cutoff_end = None
 
     if period == "היום":
         cutoff_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        cutoff_end = cutoff_start + timedelta(days=1)
     elif period == "שבוע":
         cutoff_start = now - timedelta(days=7)
+        cutoff_end = now.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
     elif period == "חודש":
         cutoff_start = now - timedelta(days=30)
+        cutoff_end = now.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
     elif period == "טווח" and date_from:
         try:
             cutoff_start = datetime.strptime(date_from, "%Y-%m-%d")

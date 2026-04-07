@@ -457,6 +457,11 @@ def merge_descriptions(
     for r in subfolder_results:
         r["merged_description"] = _build_merged_description(r)
 
+    # ── Filter excluded processes from all description fields ──
+    from src.services.extraction.process_exclusion import filter_excluded_processes
+    for r in subfolder_results:
+        filter_excluded_processes(r)
+
     # ── Color / paint price lookup ──
     from src.services.extraction.color_price_lookup import lookup_color_prices
     for r in subfolder_results:

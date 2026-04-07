@@ -480,6 +480,13 @@ def _save_results_to_excel(results: List[Dict], output_path: Path, pl_items: Lis
         except Exception as _acc_err:
             logger.warning(f"WARNING: Could not add accuracy_score column: {_acc_err}")
 
+        # Sanitize illegal XML characters that openpyxl rejects
+        import re
+        _ILLEGAL_XML_RE = re.compile(r'[\x00-\x08\x0b\x0c\x0e-\x1f]')
+        for col in df.columns:
+            if df[col].dtype == object:
+                df[col] = df[col].apply(lambda v: _ILLEGAL_XML_RE.sub('', v) if isinstance(v, str) else v)
+
         # Save to Excel
         df.to_excel(output_path, index=False)
         

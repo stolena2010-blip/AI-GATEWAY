@@ -236,8 +236,9 @@ def propagate_pl_data(
             assoc_norm = _normalize_item_number(str(pl_item.get('associated_item', '')))
             matched = False
             if assoc_norm and (
-                assoc_norm == part_num_norm or assoc_norm in part_num_norm or part_num_norm in assoc_norm
-                or (ocr_orig_norm and (assoc_norm == ocr_orig_norm or assoc_norm in ocr_orig_norm or ocr_orig_norm in assoc_norm))
+                assoc_norm == part_num_norm
+                or _norm_match(assoc_norm, part_num_norm)
+                or (ocr_orig_norm and (assoc_norm == ocr_orig_norm or _norm_match(assoc_norm, ocr_orig_norm)))
             ):
                 matched = True
             elif not assoc_norm and len(subfolder_results) == 1:
@@ -259,6 +260,28 @@ def propagate_pl_data(
 
 # ===== internal helpers =====================================================
 
+def _norm_match(a: str, b: str) -> bool:
+    """Safe normalized-string match: exact OR containment with ≥ 3-char excess.
+
+    The minimum excess avoids false positives caused by trailing-zero stripping
+    in ``_normalize_item_number``.  For example ``_normalize('UCP-280-13630')``
+    gives ``'ucp2801363'`` which is a 1-char-shorter prefix of
+    ``'ucp28013631'`` — that must **not** be treated as a match.  Requiring
+    ≥ 3 excess characters still allows legitimate suffix matches like
+    ``'gst421152'`` inside ``'gst421152001'`` (excess = 3).
+    """
+    if not a or not b:
+        return False
+    if a == b:
+        return True
+    _MIN_EXCESS = 3
+    if a in b:
+        return (len(b) - len(a)) >= _MIN_EXCESS
+    if b in a:
+        return (len(a) - len(b)) >= _MIN_EXCESS
+    return False
+
+
 def _match_pl_items_to_drawings(pl_items_list, subfolder_results, _normalize):
     logger.info(f"Matching {len(pl_items_list)} PL items to {len(subfolder_results)} drawings via associated_item...")
     for pl_item in pl_items_list:
@@ -266,26 +289,49 @@ def _match_pl_items_to_drawings(pl_items_list, subfolder_results, _normalize):
         if not associated_item:
             continue
         associated_norm = _normalize(associated_item)
+        # Pass 1: exact match
+        found = False
         for result_dict in subfolder_results:
             part_num = result_dict.get('part_number', '')
             part_num_norm = _normalize(part_num)
-            if (associated_norm == part_num_norm
-                    or associated_norm in part_num_norm
-                    or part_num_norm in associated_norm):
+            if associated_norm == part_num_norm:
                 pl_item['matched_item_name'] = result_dict.get('item_name', part_num)
                 pl_item['matched_drawing_part_number'] = part_num
                 logger.info(f"PL item → drawing '{result_dict.get('item_name', '')}' (associated: {associated_item})")
+                found = True
+                break
+        if found:
+            continue
+        # Pass 2: safe containment
+        for result_dict in subfolder_results:
+            part_num = result_dict.get('part_number', '')
+            part_num_norm = _normalize(part_num)
+            if _norm_match(associated_norm, part_num_norm):
+                pl_item['matched_item_name'] = result_dict.get('item_name', part_num)
+                pl_item['matched_drawing_part_number'] = part_num
+                logger.info(f"PL item → drawing '{result_dict.get('item_name', '')}' (associated: {associated_item}, containment)")
                 break
 
 
 def _propagate_pl_main_pn(subfolder_results, pl_items_list, _normalize):
     for result_dict in subfolder_results:
         part_num_norm = _normalize(result_dict.get('part_number', ''))
+        # Pass 1: exact match
+        found = False
         for pl_item in pl_items_list:
             assoc_norm = _normalize(pl_item.get('associated_item', ''))
-            if (assoc_norm == part_num_norm
-                    or assoc_norm in part_num_norm
-                    or part_num_norm in assoc_norm):
+            if assoc_norm == part_num_norm:
+                pl_pn = pl_item.get('pl_main_part_number', '')
+                if pl_pn:
+                    result_dict['pl_main_part_number'] = pl_pn
+                    found = True
+                    break
+        if found:
+            continue
+        # Pass 2: safe containment
+        for pl_item in pl_items_list:
+            assoc_norm = _normalize(pl_item.get('associated_item', ''))
+            if _norm_match(assoc_norm, part_num_norm):
                 pl_pn = pl_item.get('pl_main_part_number', '')
                 if pl_pn:
                     result_dict['pl_main_part_number'] = pl_pn
@@ -307,23 +353,25 @@ def _override_part_numbers(subfolder_results, pl_items_list, _normalize, _extrac
         ocr_part_normalized = _normalize(ocr_part_number)
 
         matched_pl = None
+        # Pass 1: exact match only
         for pl_item in pl_items_list:
             pl_associated = _normalize(pl_item.get('associated_item', ''))
             pl_matched = _normalize(pl_item.get('matched_drawing_part_number', ''))
-            if pl_associated and (
-                pl_associated == ocr_part_normalized
-                or pl_associated in ocr_part_normalized
-                or ocr_part_normalized in pl_associated
-            ):
+            if (pl_associated and pl_associated == ocr_part_normalized) or \
+               (pl_matched and pl_matched == ocr_part_normalized):
                 matched_pl = pl_item
                 break
-            if pl_matched and (
-                pl_matched == ocr_part_normalized
-                or pl_matched in ocr_part_normalized
-                or ocr_part_normalized in pl_matched
-            ):
-                matched_pl = pl_item
-                break
+        # Pass 2: safe containment (only if no exact match)
+        if not matched_pl:
+            for pl_item in pl_items_list:
+                pl_associated = _normalize(pl_item.get('associated_item', ''))
+                pl_matched = _normalize(pl_item.get('matched_drawing_part_number', ''))
+                if pl_associated and _norm_match(pl_associated, ocr_part_normalized):
+                    matched_pl = pl_item
+                    break
+                if pl_matched and _norm_match(pl_matched, ocr_part_normalized):
+                    matched_pl = pl_item
+                    break
 
         if not matched_pl:
             continue

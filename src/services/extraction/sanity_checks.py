@@ -150,7 +150,39 @@ def run_pn_sanity_checks(
                     logger.info(f"Part# near-match fix: '{ocr_part}' → '{near_match}' (filename preferred, 1 char diff)")
                     result_data['part_number'] = near_match
                 else:
-                    logger.info(f"Part# no match in filename, using OCR: '{ocr_part}'")
+                    # ── Fallback: prefer filename-derived number when OCR is
+                    #    completely unrelated to the filename ──
+                    fn_pn = extract_part_number_from_filename(file_path)
+                    # Only use filename if it looks like a real part number:
+                    # 1. Has ≥4 consecutive digits
+                    # 2. Not a junk scan name (lowercase+digits like '3120dr1bjejun')
+                    # 3. Not a document-management name (contains #Rev, _stamped,
+                    #    or starts with un/doc/t08_ prefix)
+                    _fn_has_digits = bool(re.search(r'\d{4,}', fn_pn)) if fn_pn else False
+                    _fn_is_junk = bool(fn_pn and re.search(r'[a-z]', fn_pn) and not re.search(r'[A-Z]', fn_pn))
+                    _fn_is_docmgmt = bool(fn_pn and re.search(
+                        r'#|_stamped|^(un|doc|t\d{2}_)', fn_pn, re.IGNORECASE))
+                    if fn_pn and len(fn_pn) >= 6 and _fn_has_digits and not _fn_is_junk and not _fn_is_docmgmt and fn_pn.upper() != normalized_ocr:
+                        fn_norm = re.sub(r'[^A-Za-z0-9]', '', fn_pn).upper()
+                        # If OCR value is embedded inside the filename (or vice
+                        # versa), the OCR is likely correct — don't override.
+                        # e.g. OCR='20249052026', filename='C000020249052026O5A1'
+                        if normalized_ocr in fn_norm or fn_norm in normalized_ocr:
+                            logger.info(f"Part# OCR embedded in filename, keeping OCR: '{ocr_part}'")
+                        else:
+                            common_prefix = 0
+                            for a, b in zip(fn_norm, normalized_ocr):
+                                if a == b:
+                                    common_prefix += 1
+                                else:
+                                    break
+                            if common_prefix < 5:
+                                logger.info(f"Part# fallback to filename: '{ocr_part}' → '{fn_pn}' (OCR unrelated to filename)")
+                                result_data['part_number'] = fn_pn
+                            else:
+                                logger.info(f"Part# no match in filename, using OCR: '{ocr_part}'")
+                    else:
+                        logger.info(f"Part# no match in filename, using OCR: '{ocr_part}'")
 
     # ============ SMART DISAMBIGUATION FOR DRAWING NUMBER ============
     if result_data.get('drawing_number'):
@@ -182,6 +214,9 @@ def run_pn_sanity_checks(
                     logger.info(f"Drawing# near-match fix: '{ocr_dwg}' → '{near_match}' (filename preferred, 1 char diff)")
                     result_data['drawing_number'] = near_match
                 else:
+                    # Drawing# can legitimately differ from the filename
+                    # (e.g. RAFAEL: filename=HLTG11103A-B, Drawing#=8H-A38222).
+                    # Do NOT fall back to filename for drawing_number.
                     logger.info(f"Drawing# no match in filename, using OCR: '{ocr_dwg}'")
 
     # ─── P.N. EXTEND FROM FILENAME ───
@@ -523,6 +558,12 @@ def run_pn_sanity_checks(
         if not fallback_pn:
             fn_pn = extract_part_number_from_filename(file_path)
             if fn_pn:
+                # If filename looks like RAFAEL doc ID (C0000...),
+                # extract the embedded real part number (11-digit numeric PN).
+                _c0_match = re.match(r'^C0{3,4}(\d{11})', fn_pn, re.IGNORECASE)
+                if _c0_match:
+                    fn_pn = _c0_match.group(1)
+                    logger.info(f"Stripped RAFAEL doc-ID prefix → '{fn_pn}'")
                 fallback_pn = fn_pn
                 fallback_source = 'filename extraction'
 
