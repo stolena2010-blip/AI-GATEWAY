@@ -1,0 +1,51 @@
+{
+    "_description": "Customer Part-Number pattern registry. Used ONLY to filter junk from filename fallback — never overrides AI-extracted or PL-sourced PNs. Generated from 2714 results via analyze_customer_patterns.py (2026-04-07).",
+    "patterns": {
+        "RAFAEL": [
+            "^[A-Z]{2}\\d{5}[A-Z]",
+            "^\\d{2}-\\d{6}$",
+            "^\\d{3}-\\d{5}$",
+            "^\\d{11}$"
+        ],
+        "IAI": [
+            "^\\d{4}[A-Z]\\d{3}-\\d{3}",
+            "^\\d{2}[A-Z]\\d{7}",
+            "^[A-Z]{2}-\\d{5}-\\d{6}",
+            "^\\d{4}-\\d{4}",
+            "^FC-\\d{5}-\\d{6}",
+            "^UCP-\\d{3}-\\d{5}",
+            "^MD-\\d{4}-\\d{4}",
+            "^AZ-\\d{5}-\\d{6}"
+        ],
+        "Elbit Systems": [
+            "^\\d{4}[A-Z]\\d{3}-\\d{2}$",
+            "^\\d{3}-\\d{2}-\\d{5}-\\d{2}$",
+            "^\\d{4}-\\d{4}-\\d{2}$",
+            "^\\d{5}[A-Z]-\\d{2}$"
+        ],
+        "TOMER": [
+            "^\\d{5}-[A-Z]\\d{4}[A-Z]\\d{4}$"
+        ],
+        "KLA": [
+            "^\\d{7}-\\d{3}$"
+        ],
+        "Applied Materials": [
+            "^\\d{4}-\\d{5}$"
+        ],
+        "PLASAN": [
+            "^\\d{10}-\\d{2}"
+        ],
+        "NANA ENGINEERS": [
+            "^[A-Z]\\d{5}-\\d{2}-\\d{2}-\\d{3}$"
+        ],
+        "DRS RADA": [
+            "^[A-Z]{2}\\d{7}-\\d{2}$"
+        ],
+        "DEGEL.US": [
+            "^[A-Z]\\d{3}-\\d{4}-\\d{3}$"
+        ],
+        "Gilat Satellite Networks Ltd.": [
+            "^[A-Z]{3}\\d{7}$"
+        ]
+    }
+}

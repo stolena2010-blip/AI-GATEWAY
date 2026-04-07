@@ -10,6 +10,7 @@ Functions:
 - calculate_confidence(): Confidence level based on filename matching
 """
 
+import json
 import re
 from pathlib import Path
 from typing import Optional
@@ -24,6 +25,42 @@ from src.services.extraction.pn_voting import extract_pn_dn_from_text
 from src.utils.logger import get_logger
 
 logger = get_logger(__name__)
+
+# ── Customer PN pattern registry (loaded once) ─────────────────
+_CUSTOMER_PN_PATTERNS: dict = {}
+
+
+def _load_customer_patterns():
+    """Load customer PN patterns from configs/customer_pn_patterns.json."""
+    global _CUSTOMER_PN_PATTERNS
+    if _CUSTOMER_PN_PATTERNS:
+        return
+    cfg_path = Path(__file__).resolve().parents[3] / "configs" / "customer_pn_patterns.json"
+    if cfg_path.exists():
+        try:
+            with open(cfg_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            _CUSTOMER_PN_PATTERNS = data.get("patterns", {})
+            logger.debug(f"Loaded PN patterns for {len(_CUSTOMER_PN_PATTERNS)} customers")
+        except Exception as e:
+            logger.warning(f"Failed to load customer PN patterns: {e}")
+
+
+def _matches_customer_pattern(pn_candidate: str, customer_name: str) -> bool:
+    """Check if pn_candidate matches any known pattern for the customer.
+    Returns True if it matches (or if no patterns are defined for this customer).
+    """
+    _load_customer_patterns()
+    if not _CUSTOMER_PN_PATTERNS or not customer_name:
+        return True  # no registry → don't block anything
+    patterns = _CUSTOMER_PN_PATTERNS.get(customer_name)
+    if not patterns:
+        return True  # unknown customer → don't block
+    normalized = pn_candidate.strip().upper()
+    for pat in patterns:
+        if re.search(pat, normalized, re.IGNORECASE):
+            return True
+    return False
 
 
 def _find_near_match_in_filename(ocr_value: str, filename: str) -> Optional[str]:
@@ -90,6 +127,7 @@ def run_pn_sanity_checks(
     pdfplumber_text: str = '',
     is_rafael: bool = False,
     is_iai: bool = False,
+    customer_name: str = '',
 ) -> dict:
     """
     Run all P.N./Drawing# sanity checks A-E and fallbacks.
@@ -163,24 +201,29 @@ def run_pn_sanity_checks(
                     _fn_is_docmgmt = bool(fn_pn and re.search(
                         r'#|_stamped|^(un|doc|t\d{2}_)', fn_pn, re.IGNORECASE))
                     if fn_pn and len(fn_pn) >= 6 and _fn_has_digits and not _fn_is_junk and not _fn_is_docmgmt and fn_pn.upper() != normalized_ocr:
-                        fn_norm = re.sub(r'[^A-Za-z0-9]', '', fn_pn).upper()
-                        # If OCR value is embedded inside the filename (or vice
-                        # versa), the OCR is likely correct — don't override.
-                        # e.g. OCR='20249052026', filename='C000020249052026O5A1'
-                        if normalized_ocr in fn_norm or fn_norm in normalized_ocr:
-                            logger.info(f"Part# OCR embedded in filename, keeping OCR: '{ocr_part}'")
+                        # Customer pattern check: if we know the customer's PN format,
+                        # reject filename PNs that don't match (filter junk only).
+                        if not _matches_customer_pattern(fn_pn, customer_name):
+                            logger.info(f"Part# filename '{fn_pn}' rejected — doesn't match {customer_name} PN pattern, keeping OCR: '{ocr_part}'")
                         else:
-                            common_prefix = 0
-                            for a, b in zip(fn_norm, normalized_ocr):
-                                if a == b:
-                                    common_prefix += 1
-                                else:
-                                    break
-                            if common_prefix < 5:
-                                logger.info(f"Part# fallback to filename: '{ocr_part}' → '{fn_pn}' (OCR unrelated to filename)")
-                                result_data['part_number'] = fn_pn
+                            fn_norm = re.sub(r'[^A-Za-z0-9]', '', fn_pn).upper()
+                            # If OCR value is embedded inside the filename (or vice
+                            # versa), the OCR is likely correct — don't override.
+                            # e.g. OCR='20249052026', filename='C000020249052026O5A1'
+                            if normalized_ocr in fn_norm or fn_norm in normalized_ocr:
+                                logger.info(f"Part# OCR embedded in filename, keeping OCR: '{ocr_part}'")
                             else:
-                                logger.info(f"Part# no match in filename, using OCR: '{ocr_part}'")
+                                common_prefix = 0
+                                for a, b in zip(fn_norm, normalized_ocr):
+                                    if a == b:
+                                        common_prefix += 1
+                                    else:
+                                        break
+                                if common_prefix < 5:
+                                    logger.info(f"Part# fallback to filename: '{ocr_part}' → '{fn_pn}' (OCR unrelated to filename)")
+                                    result_data['part_number'] = fn_pn
+                                else:
+                                    logger.info(f"Part# no match in filename, using OCR: '{ocr_part}'")
                     else:
                         logger.info(f"Part# no match in filename, using OCR: '{ocr_part}'")
 
@@ -564,8 +607,12 @@ def run_pn_sanity_checks(
                 if _c0_match:
                     fn_pn = _c0_match.group(1)
                     logger.info(f"Stripped RAFAEL doc-ID prefix → '{fn_pn}'")
-                fallback_pn = fn_pn
-                fallback_source = 'filename extraction'
+                # Customer pattern check on fallback filename PN
+                if _matches_customer_pattern(fn_pn, customer_name):
+                    fallback_pn = fn_pn
+                    fallback_source = 'filename extraction'
+                else:
+                    logger.info(f"🆓 FREE FALLBACK filename '{fn_pn}' rejected — doesn't match {customer_name} PN pattern")
 
         if fallback_pn:
             result_data['part_number'] = fallback_pn

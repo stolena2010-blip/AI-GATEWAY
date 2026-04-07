@@ -256,6 +256,7 @@ def extract_customer_name(file_path: str, client: AzureOpenAI, ocr_engine: Multi
         pdfplumber_text=context.get('pdfplumber_text', ''),
         is_rafael=context.get('is_rafael', False),
         is_iai=context.get('is_iai', False),
+        customer_name=result_data.get('customer_name', ''),
     )
 
     # Add metadata
