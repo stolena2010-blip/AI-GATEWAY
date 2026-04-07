@@ -35,7 +35,7 @@ def _load_customer_patterns():
     global _CUSTOMER_PN_PATTERNS
     if _CUSTOMER_PN_PATTERNS:
         return
-    cfg_path = Path(__file__).resolve().parents[3] / "configs" / "customer_pn_patterns.json"
+    cfg_path = Path(__file__).resolve().parent / "customer_pn_patterns.json"
     if cfg_path.exists():
         try:
             with open(cfg_path, "r", encoding="utf-8") as f:
