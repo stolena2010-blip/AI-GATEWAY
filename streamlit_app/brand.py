@@ -7,7 +7,7 @@ import base64
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-_LOGO_PATH = PROJECT_ROOT / "company_logo.png"
+_LOGO_PATH = PROJECT_ROOT / "BOM" / "company_logo.png"
 
 
 def _logo_b64() -> str:

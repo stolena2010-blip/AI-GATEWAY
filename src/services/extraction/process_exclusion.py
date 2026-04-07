@@ -19,7 +19,7 @@ import pandas as pd
 
 logger = logging.getLogger(__name__)
 
-_EXCLUDE_FILE = Path(__file__).resolve().parents[3] / "לא עושים.xlsx"
+_EXCLUDE_FILE = Path(__file__).resolve().parents[3] / "BOM" / "לא עושים.xlsx"
 
 # Module-level cache — reloads automatically when the file changes
 _excluded: Set[str] | None = None

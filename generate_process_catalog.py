@@ -14,7 +14,7 @@ from openpyxl.utils import get_column_letter
 
 NEW_FILES_DIR = Path(__file__).parent / "NEW FILES"
 OUTPUT = NEW_FILES_DIR / "CATALOG_processes_stats.xlsx"
-EXCLUDE_FILE = Path(__file__).parent / "לא עושים.xlsx"
+EXCLUDE_FILE = Path(__file__).parent / "BOM" / "לא עושים.xlsx"
 
 
 def load_excluded_processes() -> set[str]:

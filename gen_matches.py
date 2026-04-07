@@ -4,7 +4,7 @@ import pandas as pd
 from collections import defaultdict
 
 # 1. Load contacts
-contacts = pd.read_excel("אנשי קשר.xlsx", sheet_name=0)
+contacts = pd.read_excel("BOM/אנשי קשר.xlsx", sheet_name=0)
 contacts.columns = ["company", "email"]
 contacts["email"] = contacts["email"].str.strip().str.lower()
 contacts = contacts.dropna(subset=["email"])
@@ -32,7 +32,7 @@ for domain, comps in domain_companies.items():
 print(f"Contacts: {len(contacts)} rows, {len(email_to_company)} unique emails, {len(domain_to_company)} domains")
 
 # 1b. Load end-customer names from sheet 2
-df_end = pd.read_excel("אנשי קשר.xlsx", sheet_name=1, header=None)
+df_end = pd.read_excel("BOM/אנשי קשר.xlsx", sheet_name=1, header=None)
 end_customer_names_raw = [str(v).strip() for v in df_end[0].dropna().tolist() if str(v).strip()]
 # Remove " (Subscriber)" suffix and build clean list
 end_customer_names = []

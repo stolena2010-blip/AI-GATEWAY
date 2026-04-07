@@ -121,7 +121,7 @@ class DashboardWindow:
         try:
             from PIL import Image, ImageTk
             import os
-            icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "company_logo.png")
+            icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "BOM", "company_logo.png")
             if os.path.exists(icon_path):
                 logo_img = Image.open(icon_path).resize((40, 40), Image.LANCZOS)
                 self._logo_photo = ImageTk.PhotoImage(logo_img)

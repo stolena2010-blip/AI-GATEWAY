@@ -811,7 +811,7 @@ class AutomationPanel(ttk.Frame):
         try:
             from PIL import Image, ImageTk
             import os
-            icon_path = os.path.join(os.path.dirname(__file__), "company_logo.png")
+            icon_path = os.path.join(os.path.dirname(__file__), "BOM", "company_logo.png")
             if os.path.exists(icon_path):
                 logo_img = Image.open(icon_path).resize((64, 64), Image.LANCZOS)
                 self._logo_photo = ImageTk.PhotoImage(logo_img)
@@ -1162,7 +1162,7 @@ class AutomationPanel(ttk.Frame):
         try:
             from PIL import Image, ImageTk
             import os
-            _sprite_path = os.path.join(os.path.dirname(__file__), "company_logo.png")
+            _sprite_path = os.path.join(os.path.dirname(__file__), "BOM", "company_logo.png")
             if os.path.exists(_sprite_path):
                 _sprite_img = Image.open(_sprite_path).resize((48, 48), Image.LANCZOS)
                 self._gollum_sprite_photo = ImageTk.PhotoImage(_sprite_img)
