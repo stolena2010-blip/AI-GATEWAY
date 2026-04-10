@@ -2,6 +2,7 @@
     "_description": "Customer Part-Number pattern registry. Used ONLY to filter junk from filename fallback — never overrides AI-extracted or PL-sourced PNs. Generated from 2714 results via analyze_customer_patterns.py (2026-04-07).",
     "patterns": {
         "RAFAEL": [
+            "^[A-Z]{2}[A-Z0-9]{5,}",
             "^[A-Z]{2}\\d{5}[A-Z]",
             "^\\d{2}-\\d{6}$",
             "^\\d{3}-\\d{5}$",

@@ -78,6 +78,10 @@ from src.services.extraction.post_processing import (
 
 from src.utils.logger import get_logger
 
+# Stub: overlay system deferred — calls are no-ops until reactivated
+def set_customer_context(_name):
+    pass
+
 logger = get_logger(__name__)
 
 # ── Constants ─────────────────────────────────────────────────────────
@@ -461,7 +465,7 @@ def extract_drawing_data(
     if _pdfplumber_text:
         text_upper = text_upper + "\n" + _pdfplumber_text.upper()
 
-    # Check for IAI patterns FIRST
+    # ── Phase 1: Text-based scoring ────────────────────────────
     iai_indicators = 0
     if any(term in text_upper for term in ['IAI', 'I.A.I', 'ELTA', 'תעשייה אווירית', 'תעשיה אווירית', 'AEROSPACE INDUSTRIES']):
         iai_indicators += 3
@@ -474,51 +478,84 @@ def extract_drawing_data(
     if 'PROJ ID' in text_upper or 'PROJECT ID' in text_upper:
         iai_indicators += 1
 
-    if iai_indicators > 0:
-        is_iai_customer = True
-        logger.info(f"🎯 IAI Model (OCR, score: {iai_indicators})")
-    else:
-        rafael_indicators = 0
-        if 'RAFAEL' in text_upper:
-            rafael_indicators += 2
-        if 'COPYRIGHT' in text_upper and 'RAFAEL' in text_upper:
-            rafael_indicators += 2
-        if any(part_prefix in text_upper for part_prefix in ['RF21', 'RF20', 'RF19', 'RF18', 'RF17']):
-            rafael_indicators += 1
-        # PRODUCTION ROUTING CHART is specific to RAFAEL variant format
-        if 'PRODUCTION ROUTING CHART' in text_upper:
-            rafael_indicators += 2
+    rafael_indicators = 0
+    if 'RAFAEL' in text_upper:
+        rafael_indicators += 2
+    if 'COPYRIGHT' in text_upper and 'RAFAEL' in text_upper:
+        rafael_indicators += 2
+    if any(part_prefix in text_upper for part_prefix in ['RF21', 'RF20', 'RF19', 'RF18', 'RF17']):
+        rafael_indicators += 1
+    if 'PRODUCTION ROUTING CHART' in text_upper:
+        rafael_indicators += 2
+    # R00- prefix is a strong RAFAEL drawing number pattern
+    if re.search(r'\bR00-\d{5,}', text_upper):
+        rafael_indicators += 2
 
-        if rafael_indicators >= 3:
-            is_rafael_customer = True
-            logger.info(f"🎯 RAFAEL Model (OCR, score: {rafael_indicators})")
-        else:
-            # Vision-based customer detection
+    logger.info(f"🔍 Customer text scores: RAFAEL={rafael_indicators}, IAI={iai_indicators}")
+
+    # ── Phase 2: Vision API — always called for reliable detection ──
+    vision_customer = None
+    try:
+        messages = [{"role": "user", "content": [
+            {"type": "text", "text": (
+                "Look at the title block area (bottom-right corner) of this engineering drawing. "
+                "Identify the company/manufacturer from the logo or text in the title block. "
+                "Return ONLY a JSON object: {\"manufacturer\": \"RAFAEL\" | \"IAI\" | \"OTHER\"}"
+            )},
+            {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_b64_stage1}"}}
+        ]}]
+        response = _call_vision_api_with_retry(client, messages, max_tokens=50, temperature=0, stage_num=STAGE_CLASSIFICATION)
+        if response:
+            content = response.choices[0].message.content
             try:
-                messages = [{"role": "user", "content": [
-                    {"type": "text", "text": "Look at the title block/logo. Who is the manufacturer? Return JSON: {\"manufacturer\": \"RAFAEL\" | \"IAI\" | \"OTHER\"}"},
-                    {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_b64_stage1}"}}
-                ]}]
-                response = _call_vision_api_with_retry(client, messages, max_tokens=50, temperature=0, stage_num=STAGE_CLASSIFICATION)
-                if response:
-                    content = response.choices[0].message.content
-                    try:
-                        data = json.loads(content)
-                        answer = data.get("manufacturer", "").upper()
-                    except Exception as e:
-                        logger.debug(f"[CUSTOMER_DETECTION_JSON_PARSE] Error: {e}")
-                        answer = content.upper()
-                    if 'IAI' in answer and 'RAFAEL' not in answer:
-                        is_iai_customer = True
-                        logger.info(f"🎯 IAI Model (Vision)")
-                    elif 'RAFAEL' in answer and 'IAI' not in answer:
-                        is_rafael_customer = True
-                        logger.info(f"🎯 RAFAEL Model (Vision)")
-            except Exception as e:
-                logger.error(f"Customer detection failed: {e}")
+                vdata = json.loads(content)
+                answer = vdata.get("manufacturer", "").upper()
+            except Exception:
+                answer = content.upper()
+            if 'RAFAEL' in answer and 'IAI' not in answer:
+                vision_customer = 'RAFAEL'
+            elif 'IAI' in answer and 'RAFAEL' not in answer:
+                vision_customer = 'IAI'
+            logger.info(f"🔍 Customer Vision result: {vision_customer or 'OTHER'}")
+    except Exception as e:
+        logger.warning(f"Customer Vision detection failed: {e}")
+
+    # ── Phase 3: Decision — combine text + vision ───────────────
+    # Clear winner by text (high score, no conflict)
+    text_clear_rafael = rafael_indicators >= 4 and rafael_indicators > iai_indicators
+    text_clear_iai = iai_indicators >= 4 and iai_indicators > rafael_indicators
+
+    if text_clear_rafael and vision_customer != 'IAI':
+        is_rafael_customer = True
+        logger.info(f"🎯 RAFAEL (text: {rafael_indicators}, vision: {vision_customer})")
+    elif text_clear_iai and vision_customer != 'RAFAEL':
+        is_iai_customer = True
+        logger.info(f"🎯 IAI (text: {iai_indicators}, vision: {vision_customer})")
+    elif vision_customer == 'RAFAEL':
+        # Vision says RAFAEL — trust it (even if text had IAI noise)
+        is_rafael_customer = True
+        logger.info(f"🎯 RAFAEL (vision override, text: R={rafael_indicators}/I={iai_indicators})")
+    elif vision_customer == 'IAI':
+        is_iai_customer = True
+        logger.info(f"🎯 IAI (vision override, text: R={rafael_indicators}/I={iai_indicators})")
+    elif rafael_indicators >= 3 and rafael_indicators >= iai_indicators:
+        # No vision result — fall back to text scores
+        is_rafael_customer = True
+        logger.info(f"🎯 RAFAEL (text only: {rafael_indicators}, IAI: {iai_indicators})")
+    elif iai_indicators > 0:
+        is_iai_customer = True
+        logger.info(f"🎯 IAI (text only: {iai_indicators}, RAFAEL: {rafael_indicators})")
 
     if not is_rafael_customer and not is_iai_customer:
         logger.info(f"📋 Standard Customer")
+
+    # Set customer context for prompt overlays
+    if is_rafael_customer:
+        set_customer_context("RAFAEL")
+    elif is_iai_customer:
+        set_customer_context("IAI")
+    else:
+        set_customer_context(None)
 
     # ── Choose function set ──────────────────────────────────────
     if is_rafael_customer:
@@ -875,5 +912,8 @@ def extract_drawing_data(
         'num_pages': num_pages,
         'pipeline_cost_usd': pipeline_cost_usd,
     }
+
+    # Clear customer overlay context
+    set_customer_context(None)
 
     return result_data, (total_input, total_output), context

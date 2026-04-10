@@ -20,6 +20,7 @@ from src.services.extraction.filename_utils import (
     check_exact_match_in_filename,
     _disambiguate_part_number,
     extract_part_number_from_filename,
+    extract_all_candidates_from_filename,
 )
 from src.services.extraction.pn_voting import extract_pn_dn_from_text
 from src.utils.logger import get_logger
@@ -61,6 +62,21 @@ def _matches_customer_pattern(pn_candidate: str, customer_name: str) -> bool:
         if re.search(pat, normalized, re.IGNORECASE):
             return True
     return False
+
+
+def _matches_any_customer_pattern(pn_candidate: str) -> Optional[str]:
+    """Check if pn_candidate matches ANY known customer pattern.
+    Returns the customer name if matched, None otherwise.
+    """
+    _load_customer_patterns()
+    if not _CUSTOMER_PN_PATTERNS:
+        return None
+    normalized = pn_candidate.strip().upper()
+    for cust, patterns in _CUSTOMER_PN_PATTERNS.items():
+        for pat in patterns:
+            if re.search(pat, normalized, re.IGNORECASE):
+                return cust
+    return None
 
 
 def _find_near_match_in_filename(ocr_value: str, filename: str) -> Optional[str]:
@@ -426,12 +442,21 @@ def run_pn_sanity_checks(
             dwg_in_filename = check_value_in_filename(dwg, filename)
 
             if not pn_in_filename and dwg_in_filename:
-                logger.warning(
-                    f"⚠️  P.N. SANITY B: '{pn}' not in filename, "
-                    f"but Drawing# '{dwg}' is — likely project/assembly P.N. "
-                    f"Replacing with Drawing#"
-                )
-                result_data['part_number'] = dwg
+                # Safety: if PN matches a known customer pattern (e.g. RAFAEL TM9C..),
+                # the AI extraction is likely correct — don't override it.
+                matched_cust = _matches_any_customer_pattern(pn)
+                if matched_cust:
+                    logger.info(
+                        f"⚠️  P.N. SANITY B: '{pn}' not in filename but matches "
+                        f"{matched_cust} PN pattern — keeping OCR extraction"
+                    )
+                else:
+                    logger.warning(
+                        f"⚠️  P.N. SANITY B: '{pn}' not in filename, "
+                        f"but Drawing# '{dwg}' is — likely project/assembly P.N. "
+                        f"Replacing with Drawing#"
+                    )
+                    result_data['part_number'] = dwg
 
     # ─── P.N. SANITY CHECK C: truncated part number ───
     if result_data.get('part_number') and result_data.get('drawing_number'):
@@ -597,10 +622,10 @@ def run_pn_sanity_checks(
             fallback_pn = pl_pn
             fallback_source = 'PL Part Number'
 
-        # Priority 2: Extract from filename
+        # Priority 2: Extract from filename — try all candidates, not just the top one
         if not fallback_pn:
-            fn_pn = extract_part_number_from_filename(file_path)
-            if fn_pn:
+            all_fn_candidates = extract_all_candidates_from_filename(file_path)
+            for fn_pn in all_fn_candidates:
                 # If filename looks like RAFAEL doc ID (C0000...),
                 # extract the embedded real part number (11-digit numeric PN).
                 _c0_match = re.match(r'^C0{3,4}(\d{11})', fn_pn, re.IGNORECASE)
@@ -611,6 +636,7 @@ def run_pn_sanity_checks(
                 if _matches_customer_pattern(fn_pn, customer_name):
                     fallback_pn = fn_pn
                     fallback_source = 'filename extraction'
+                    break
                 else:
                     logger.info(f"🆓 FREE FALLBACK filename '{fn_pn}' rejected — doesn't match {customer_name} PN pattern")
 

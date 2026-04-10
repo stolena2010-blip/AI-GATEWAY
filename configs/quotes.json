@@ -3,11 +3,11 @@
   "display_name": "הצעות מחיר",
   "description": "Engineering drawing quote requests",
   "email": {
-    "shared_mailbox": "tal@chrom.co.il",
+    "shared_mailbox": "quotes_check@algat.co.il",
     "shared_mailboxes": [
-      "tal@chrom.co.il"
+      "quotes_check@algat.co.il"
     ],
-    "inbox_folder": "תיבת דואר נכנס",
+    "inbox_folder": "Inbox/TEST",
     "rerun_folder_name": "RERUN",
     "rerun_mailbox": "quotes_check@algat.co.il",
     "skip_senders": [
@@ -102,10 +102,10 @@
     "debug_mode": false
   },
   "scheduler": {
-    "enabled": true,
+    "enabled": false,
     "regular_from": "07:00",
-    "regular_to": "22:00",
-    "heavy_from": "22:00",
+    "regular_to": "21:30",
+    "heavy_from": "21:45",
     "heavy_to": "06:30",
     "interval_minutes": 5,
     "report_folder": "C:\\dev DrawingAI\\reports"

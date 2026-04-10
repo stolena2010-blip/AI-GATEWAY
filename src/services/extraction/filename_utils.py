@@ -595,3 +595,45 @@ def extract_part_number_from_filename(file_path: str) -> Optional[str]:
         return None
 
     return best
+
+
+def extract_all_candidates_from_filename(file_path: str) -> list[str]:
+    """Return all plausible PN candidates from filename, scored descending.
+
+    Same logic as extract_part_number_from_filename but returns ALL candidates
+    (≥3 chars) sorted by score, so callers can try alternatives when the top
+    candidate is rejected by customer-pattern rules.
+    """
+    stem = Path(file_path.replace('\\', '/')).stem
+    if not stem or stem.startswith('.'):
+        return []
+
+    tokens = re.split(r'[_ ]+', stem)
+
+    expanded_tokens = []
+    for tok in tokens:
+        sub_parts = re.split(r'-(?:PD|MD|AS|DW|DR)-', tok, flags=re.IGNORECASE)
+        if len(sub_parts) > 1:
+            for part in sub_parts:
+                expanded_tokens.extend(re.split(r'(?<=\w)-(?=[A-Z]$)', part))
+        else:
+            expanded_tokens.append(tok)
+    tokens = expanded_tokens
+
+    candidates: list[str] = []
+    for tok in tokens:
+        tok_stripped = tok.strip()
+        if not tok_stripped or len(tok_stripped) < 3:
+            continue
+        if any(pat.match(tok_stripped) for pat in _FILENAME_SKIP_PATTERNS):
+            continue
+        candidates.append(tok_stripped)
+
+    def _score(token: str) -> int:
+        has_alpha = bool(re.search(r'[A-Za-z]', token))
+        has_digit = bool(re.search(r'[0-9]', token))
+        length = len(token)
+        mixed = 1000 if (has_alpha and has_digit) else 0
+        return mixed + length
+
+    return sorted(candidates, key=_score, reverse=True)
